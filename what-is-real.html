@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is REAL? — Identity Infrastructure for the Internet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0F2044;
+    --gold: #FFD007;
+    --white: #FFFFFF;
+    --text-muted: rgba(255,255,255,0.6);
+    --text-dim: rgba(255,255,255,0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 20%, rgba(255,208,7,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,208,7,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+  header {
+    padding: 60px 0 80px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,208,7,0.15);
+    margin-bottom: 80px;
+  }
+  .shield {
+    display: inline-block;
+    margin-bottom: 32px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  .shield svg {
+    width: 80px;
+    height: 96px;
+    filter: drop-shadow(0 0 24px rgba(255,208,7,0.3));
+  }
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(42px, 7vw, 72px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; color: var(--gold); }
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  section { margin-bottom: 80px; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,208,7,0.2);
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--white); font-weight: 500; }
+  .highlight {
+    background: rgba(255,208,7,0.07);
+    border: 1px solid rgba(255,208,7,0.25);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+  .highlight p { color: var(--white); font-size: 17px; margin: 0; line-height: 1.8; }
+  .truth {
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 12px;
+    padding: 36px 40px;
+    margin: 40px 0;
+    text-align: center;
+  }
+  .truth p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.4;
+    margin: 0;
+  }
+  .steps { display: flex; flex-direction: column; gap: 0; margin: 32px 0; }
+  .step {
+    display: flex;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    min-width: 32px;
+    padding-top: 4px;
+    letter-spacing: 0.1em;
+  }
+  .step-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+  .step-content p { font-size: 15px; margin: 0; }
+  .objection {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+  .objection-q {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .objection p { font-size: 15px; margin: 0; }
+  .founder {
+    border-top: 1px solid rgba(255,208,7,0.15);
+    padding-top: 60px;
+    text-align: center;
+  }
+  .founder blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-style: italic;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.85);
+    max-width: 640px;
+    margin: 0 auto 32px;
+  }
+  .founder-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin-top: 80px;
+    padding: 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .footer-logo svg { width: 28px; height: 28px; }
+  .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; color: white; letter-spacing: 0.08em; }
+  .footer-right { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--text-dim); }
+  .footer-right a { color: var(--gold); text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+  .footer-right a:hover { opacity: 1; }
+  @media (max-width: 640px) { footer { flex-direction: column; align-items: flex-start; } }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="shield">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/>
+        <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z" fill-rule="nonzero"/>
+        <g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g>
+      </svg>
+    </div>
+    <div class="eyebrow">Identity Infrastructure for the Internet</div>
+    <h1>What is <em>REAL</em>?</h1>
+    <p class="subtitle">Everything you need to know about what REAL does, how it works, and why nothing else like it exists.</p>
+  </header>
+
+  <section>
+    <div class="section-label">The Problem</div>
+    <h2>Fake accounts are winning. And nobody has fixed it.</h2>
+    <p>Every day, real people — creators, entrepreneurs, coaches, online business owners — fight the same exhausting battle. Fake accounts wearing their face. Impersonators stealing their audience. Scammers using their brand to take money from the people who trust them.</p>
+    <p>They post the same warning over and over. <strong>"This is my only account." "I will never DM you first." "Report any accounts pretending to be me."</strong> And it never stops. Because there is nowhere online that proves, permanently and verifiably, that a real human controls every account they own.</p>
+    <p>Platform blue ticks only cover one platform at a time. Some can be purchased. None link together. None have history. None survive a ban. None prove anything across the internet as a whole.</p>
+    <div class="highlight">
+      <p>There has never been a single place that proves a real human controls every account they own across every platform — until REAL.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">The Solution</div>
+    <h2>REAL in plain English.</h2>
+    <p>REAL is an independent cross-platform identity verification platform. It proves that every social media account and online presence a person owns is genuinely theirs.</p>
+    <p>You verify your government ID once. You link every account you operate across every platform. You receive a unique REAL ID number, a permanent shield badge, and a public profile page at <strong>realverified.co.uk/yourname</strong>.</p>
+    <p>Anyone — a potential customer, a follower, a brand, a collaborator — can visit that page and confirm in five seconds that the account they're looking at is genuinely you.</p>
+    <div class="truth">
+      <p>"Anyone claiming to be you with no REAL profile link is not you."</p>
+    </div>
+    <p>That single sentence is the entire product. One verified home base for your online identity. Every platform. Every account. Permanent. Timestamped. Impossible to replicate.</p>
+  </section>
+
+  <section>
+    <div class="section-label">How It Works</div>
+    <h2>Four steps to being REAL verified.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">01</div>
+        <div class="step-content">
+          <h3>Verify your identity</h3>
+          <p>You submit your government ID through Stripe Identity — the same enterprise-grade verification technology used by banks and global financial platforms. Biometric matching, liveness detection, document authentication. Your ID document is never stored by REAL. Stripe handles it entirely and simply confirms you are who you say you are.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">02</div>
+        <div class="step-content">
+          <h3>Link every account you own</h3>
+          <p>You connect every platform you operate on. Instagram. TikTok. YouTube. LinkedIn. Facebook. X. Your website. Your Etsy shop. Your email signature. Every account that is genuinely yours goes on your REAL profile — and you control exactly what is shown.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">03</div>
+        <div class="step-content">
+          <h3>Receive your REAL ID and shield badge</h3>
+          <p>You receive a unique REAL ID number, a permanent shield badge in all formats, and your public profile page. REAL IDs are sequential, unique and permanent — never reassigned, never duplicated, never reused. The first 100 founding members receive RL-000001 through RL-000100. Every member after continues in sequence from RL-000101 onwards. A low number cannot be purchased after the fact. Your verification is timestamped permanently.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">04</div>
+        <div class="step-content">
+          <h3>Put your REAL link everywhere</h3>
+          <p>The REAL profile link goes in every bio, every platform, every email signature. It is the single place anyone can check to confirm the real you. A link can only be placed in a bio by the person who controls that account — so every platform showing your REAL link is confirmed as genuinely yours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Why It Works</div>
+    <h2>The fake account has no answer to this.</h2>
+    <p>A scammer creating a fake account already knows your public handles — they can find them in seconds. What they cannot do is pass government ID verification and create a genuine REAL profile in your name.</p>
+    <p>So they face an impossible choice.</p>
+    <p><strong>If they have no REAL link</strong> — anyone who checks immediately sees that the genuine you has a verified REAL profile and this account does not. The fake is exposed.</p>
+    <p><strong>If they copy your REAL link</strong> — it opens your verified profile. With your name. Your accounts. Your verification. Which immediately exposes them as the fake.</p>
+    <div class="highlight">
+      <p>Either way, the fake loses. The link in a bio can only be placed there by the person who controls that account. That is simply how every platform works.</p>
+    </div>
+    <p>REAL does not promise to prevent someone creating a fake account. It makes that fake account immediately and permanently identifiable as fake the moment anyone checks.</p>
+  </section>
+
+  <section>
+    <div class="section-label">The Check</div>
+    <h2>How anyone verifies a REAL member in five seconds.</h2>
+    <p>Every REAL ID number is searchable directly on realverified.co.uk. Someone sees RL-000047 in a bio — they type it in, one result comes up. That is the verified person that number belongs to. No ambiguity. No confusion.</p>
+    <p>The verified profile immediately shows — at the top, prominently, before anything else — the exact platform handles belonging to that verified identity.</p>
+    <div class="highlight">
+      <p>
+        RL-000047 — Verified since 14 February 2025<br><br>
+        Instagram: @realbusiness<br>
+        TikTok: @realbusiness<br>
+        YouTube: @realbusiness<br>
+        Website: realbusiness.co.uk
+      </p>
+    </div>
+    <p>If the account someone is looking at does not match those exact handles — it is not them. The handles are the killer detail. A fake account cannot simultaneously control the real person's Instagram. The handle will always differ. The REAL profile shows the exact verified handles to compare against.</p>
+    <p>Name search is also available as a secondary option — showing full profiles with handles and timestamps so differences between similar names are immediately visible.</p>
+    <p><strong>The REAL ID number is the key. The realverified.co.uk website is the lock. Nobody can fake the lock.</strong></p>
+  </section>
+
+  <section>
+    <div class="section-label">Who It's For</div>
+    <h2>Built for anyone building something real online.</h2>
+    <p>REAL is for every creator, entrepreneur, coach, educator, freelancer, and online business owner who operates across multiple platforms and needs people to know which accounts are genuinely theirs.</p>
+    <p><strong>Named personal brands.</strong> Your face, your name, your reputation. REAL proves every account carrying that name is controlled by you.</p>
+    <p><strong>Faceless brands.</strong> No face doesn't mean no identity. A faceless brand with a REAL verified profile proves the business is real, the accounts are real, and the person behind it has passed government verification.</p>
+    <p><strong>Online businesses running across platforms.</strong> Instagram, TikTok, a website, an Etsy shop, an email list — REAL links every single one under a single verified identity. One page that proves they all belong to the same verified person.</p>
+    <p><strong>Anyone who has ever had to say "this is my only account."</strong> You shouldn't have to keep saying it. REAL says it for you. Permanently. Verifiably. Without repetition.</p>
+  </section>
+
+  <section>
+    <div class="section-label">Common Questions</div>
+    <h2>The questions people ask.</h2>
+    <div class="objection">
+      <div class="objection-q">"I already have my storefront link in my bio. Doesn't that prove who I am?"</div>
+      <p>Your storefront proves where you sell. It does not prove who is selling. A scammer can build a fake Etsy shop, clone a website, or buy a similar domain. None of that requires passing government ID verification. REAL does. Your storefront says here is where I sell. REAL says here is proof that a verified human controls every account connected to this business. Those are completely different things.</p>
+    </div>
+    <div class="objection">
+      <div class="objection-q">"Does having a REAL profile make me more vulnerable to being hacked or impersonated?"</div>
+      <p>No. The REAL public profile only shows information you have already chosen to make public yourself. Your Instagram handle is already public. Your TikTok is already public. Your website is already public. REAL simply links them together under a verified umbrella. Your government ID, your address, your date of birth — none of that appears on your REAL profile. You control exactly what is shown.</p>
+    </div>
+    <div class="objection">
+      <div class="objection-q">"Can't someone just write a REAL ID number in their fake bio?"</div>
+      <p>Yes — they can write the number. But the number alone means nothing. The protection comes from what happens when anyone searches it. That search takes them directly to the genuine verified profile — which shows the real person's exact platform handles. If the fake account's handle doesn't match, it is immediately exposed. Anyone can write a number. Nobody can fake the verified record behind it.</p>
+    </div>
+    <div class="objection">
+      <div class="objection-q">"What if someone finds a way to fake a REAL verification?"</div>
+      <p>No verification system can promise it is unfakeable forever. What REAL honestly promises is this — faking it requires passing government ID verification with a forged document through Stripe Identity's biometric matching and liveness detection, which constitutes serious criminal fraud in the UK. The effort and risk versus the reward makes this practically impossible for the overwhelming majority of bad actors. And your verified timestamp predates any fraudulent copy — your history cannot be rewritten.</p>
+    </div>
+    <div class="objection">
+      <div class="objection-q">"What if a big platform builds something like this?"</div>
+      <p>Platforms have a financial incentive to keep fake accounts. Fake accounts generate traffic and engagement. They have no incentive to solve this properly across platforms. And if a big company does eventually build something similar — REAL's founding members have verified history that cannot be replicated overnight. Being early is the protection.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Honesty</div>
+    <h2>What REAL is not — and why that matters.</h2>
+    <p>REAL is not a magic takedown button. It cannot force Instagram or TikTok to remove a fake account faster. It cannot prevent someone from creating a fake account in the first place.</p>
+    <p>What it does — and does better than anything else that currently exists — is create permanent, verifiable, timestamped proof that the real person existed first on every platform. When a takedown report is needed, REAL's evidence layer is the strongest available.</p>
+    <p>REAL is a proof layer. A source of truth. Identity infrastructure. It makes the real person immediately verifiable and makes the fake account immediately identifiable. That is an honest and valuable product.</p>
+    <p>It only gets more powerful over time. As AI advances and faking an identity becomes easier, the cost of having no verified proof becomes higher. REAL members are building that proof now. Every month that passes, that history becomes more valuable and harder for anyone to replicate.</p>
+  </section>
+
+  <div class="divider">REAL™</div>
+
+  <section class="founder">
+    <div class="section-label" style="justify-content: center;">Why REAL exists</div>
+    <blockquote>
+      "I watched real people — people trying to change their lives — fight the same battle every single day. Fake accounts. Impersonators. Scammers wearing their face. The exhausting repetition of 'this is my only account' and 'I will never DM you first.' There had to be a single source of truth. One place. One verified identity. Every platform confirmed. So anyone can check for themselves in seconds. I just wanted a little bit of honesty in a dishonest world. That's REAL."
+    </blockquote>
+    <div class="founder-name">The Founder — REAL™</div>
+  </section>
+
+  <footer>
+    <a href="index.html" class="footer-logo">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/>
+        <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z" fill-rule="nonzero"/>
+        <g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g>
+      </svg>
+      <span class="footer-brand">REAL</span>
+    </a>
+    <span class="footer-right"><a href="index.html">realverified.co.uk</a> — Identity Infrastructure for the Internet</span>
+  </footer>
+
+</div>
+</body>
+</html>
