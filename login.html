@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REAL — Sign in</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0F2044;
+    --navy-mid: #1A3570;
+    --navy-light: #E8EDF7;
+    --gold: #FFD007;
+    --warm-white: #FAFAF8;
+    --cream: #F4F1EB;
+    --black: #0A0A0A;
+    --gray: #6B6B6B;
+    --gray-light: #9B9B9B;
+    --border: #E2DDD6;
+    --error: #c0392b;
+    --success: #22a366;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+
+  nav { padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo svg { width: 32px; height: 32px; }
+  .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: white; letter-spacing: 0.08em; }
+  .nav-right { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+  .nav-right a { color: var(--gold); text-decoration: none; }
+  .nav-right a:hover { text-decoration: underline; }
+
+  .page-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 24px; }
+  .card { background: var(--warm-white); width: 100%; max-width: 440px; padding: 56px 48px; }
+
+  .card-shield { display: flex; justify-content: center; margin-bottom: 32px; }
+  .card-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.2em; color: var(--gray-light); text-transform: uppercase; text-align: center; margin-bottom: 12px; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--navy); text-align: center; line-height: 1.1; margin-bottom: 8px; }
+  .card-sub { font-size: 14px; color: var(--gray); text-align: center; font-weight: 300; line-height: 1.6; margin-bottom: 40px; }
+
+  .form { display: flex; flex-direction: column; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-header { display: flex; align-items: center; justify-content: space-between; }
+  .field label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); }
+  .field-forgot { font-size: 12px; color: var(--gray-light); text-decoration: none; transition: color 0.2s; }
+  .field-forgot:hover { color: var(--navy); }
+  .field input { width: 100%; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; border: 1px solid var(--border); background: white; color: var(--black); outline: none; transition: border-color 0.2s; border-radius: 0; -webkit-appearance: none; }
+  .field input:focus { border-color: var(--navy); }
+  .field input::placeholder { color: var(--gray-light); }
+
+  .btn-submit { width: 100%; padding: 16px; background: var(--navy); color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; margin-top: 8px; }
+  .btn-submit:hover { background: var(--navy-mid); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .divider { height: 1px; background: var(--border); margin: 8px 0; }
+  .form-note { font-size: 12px; color: var(--gray-light); text-align: center; line-height: 1.6; margin-top: 4px; }
+  .form-note a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
+
+  .msg { padding: 14px 16px; font-size: 13px; line-height: 1.5; display: none; }
+  .msg.error { background: #fdf0ef; border-left: 3px solid var(--error); color: var(--error); }
+  .msg.success { background: #f0faf5; border-left: 3px solid var(--success); color: #1a6b45; }
+  .msg.visible { display: block; }
+
+  /* Reset password state */
+  .reset-state { display: none; }
+  .reset-state.visible { display: block; }
+  .form-state { }
+  .form-state.hidden { display: none; }
+
+  footer { padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+  .footer-note { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
+  .footer-note a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+  .footer-note a:hover { color: var(--gold); }
+
+  @media (max-width: 540px) {
+    nav { padding: 16px 20px; }
+    .card { padding: 40px 28px; }
+    footer { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <!-- DARK BG: white shield, navy REAL text, gold tick -->
+    <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/>
+      <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z" fill-rule="nonzero"/>
+      <g fill="#0F2044">
+        <path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/>
+        <path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+        <path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/>
+        <path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+      </g>
+    </svg>
+    <span class="nav-brand">REAL</span>
+  </a>
+  <span></span>
+</nav>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <!-- LOGIN FORM -->
+    <div id="loginState">
+      <div class="card-shield">
+        <!-- LIGHT BG: navy shield, white REAL text, gold tick -->
+        <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+          <path fill="#0F2044" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/>
+          <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z" fill-rule="nonzero"/>
+          <g fill="#ffffff">
+            <path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/>
+            <path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+            <path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/>
+            <path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="card-eyebrow">Identity Infrastructure for the Internet</p>
+      <h1 class="card-title">Welcome back</h1>
+      <p class="card-sub">Sign in to your REAL account to manage your verified identity.</p>
+
+      <div class="msg error" id="errorMsg"></div>
+      <div class="msg success" id="successMsg"></div>
+
+      <div class="form">
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" placeholder="jane@example.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <div class="field-header">
+            <label for="password">Password</label>
+            <a href="#" class="field-forgot" onclick="showReset(event)">Forgot password?</a>
+          </div>
+          <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="handleLogin()">Sign in to REAL →</button>
+
+
+      </div>
+    </div>
+
+    <!-- RESET PASSWORD STATE -->
+    <div id="resetState" class="reset-state">
+      <div class="card-shield">
+        <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+          <path fill="#0F2044" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/>
+          <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z" fill-rule="nonzero"/>
+          <g fill="#ffffff">
+            <path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/>
+            <path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+            <path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/>
+            <path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+          </g>
+        </svg>
+      </div>
+      <p class="card-eyebrow">Password reset</p>
+      <h1 class="card-title">Reset your<br>password</h1>
+      <p class="card-sub">Enter your email and we'll send you a link to reset your password.</p>
+
+      <div class="msg error" id="resetErrorMsg"></div>
+      <div class="msg success" id="resetSuccessMsg"></div>
+
+      <div class="form">
+        <div class="field">
+          <label for="resetEmail">Email address</label>
+          <input type="email" id="resetEmail" placeholder="jane@example.com">
+        </div>
+        <button class="btn-submit" id="resetBtn" onclick="handleReset()">Send reset link →</button>
+        <div class="divider"></div>
+        <p class="form-note"><a href="#" onclick="showLogin(event)">← Back to sign in</a></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p class="footer-note"><a href="privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;·&nbsp; <a href="index.html">Back to site</a></p>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
+
+  function showReset(e) { e.preventDefault(); document.getElementById('loginState').style.display = 'none'; document.getElementById('resetState').classList.add('visible'); }
+  function showLogin(e) { e.preventDefault(); document.getElementById('loginState').style.display = 'block'; document.getElementById('resetState').classList.remove('visible'); }
+
+  function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
+  function showSuccess(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
+  function clearMsgs() { ['errorMsg','successMsg','resetErrorMsg','resetSuccessMsg'].forEach(id => { const el = document.getElementById(id); if(el){ el.textContent=''; el.classList.remove('visible'); }}); }
+
+  async function handleLogin() {
+    clearMsgs();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submitBtn');
+
+    if (!email || !email.includes('@')) { showError('errorMsg', 'Please enter a valid email address.'); return; }
+    if (!password) { showError('errorMsg', 'Please enter your password.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError('errorMsg', 'Incorrect email or password. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Sign in to REAL →';
+        return;
+      }
+
+      // Store session token and redirect to dashboard
+      localStorage.setItem('real_access_token', data.access_token);
+      localStorage.setItem('real_refresh_token', data.refresh_token);
+      window.location.href = 'dashboard.html';
+
+    } catch (err) {
+      showError('errorMsg', 'Something went wrong. Please check your connection and try again.');
+      btn.disabled = false;
+      btn.textContent = 'Sign in to REAL →';
+    }
+  }
+
+  async function handleReset() {
+    clearMsgs();
+    const email = document.getElementById('resetEmail').value.trim();
+    const btn = document.getElementById('resetBtn');
+
+    if (!email || !email.includes('@')) { showError('resetErrorMsg', 'Please enter a valid email address.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+        body: JSON.stringify({ email })
+      });
+      showSuccess('resetSuccessMsg', 'If an account exists with that email, a reset link is on its way.');
+      btn.disabled = false;
+      btn.textContent = 'Send reset link →';
+    } catch (err) {
+      showError('resetErrorMsg', 'Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Send reset link →';
+    }
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (document.getElementById('resetState').classList.contains('visible')) { handleReset(); }
+      else { handleLogin(); }
+    }
+  });
+</script>
+</body>
+</html>
