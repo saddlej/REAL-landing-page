@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — REAL™</title>
+  <meta name="description" content="REAL Terms of Service — the agreement between you and REAL when using our identity verification platform." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2044;
+      --gold: #FFD007;
+      --white: #FFFFFF;
+      --navy-light: #1a3366;
+      --text-body: #1a1a2e;
+      --text-muted: #4a5568;
+      --border: #e2e8f0;
+      --bg: #f8f9fc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-body);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo svg { height: 32px; width: auto; }
+
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-links .btn-outline {
+      border: 1px solid rgba(255,208,7,0.5);
+      border-radius: 4px;
+      padding: 6px 16px;
+      color: var(--gold);
+    }
+
+    .nav-links .btn-outline:hover {
+      background: rgba(255,208,7,0.1);
+      border-color: var(--gold);
+    }
+
+    /* ── HERO BAND ── */
+    .page-hero {
+      background: var(--navy);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .page-hero .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .page-hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .page-hero .updated {
+      margin-top: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── LAYOUT ── */
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── TABLE OF CONTENTS ── */
+    .toc {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .toc ol {
+      padding-left: 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem 2rem;
+    }
+
+    @media (max-width: 580px) { .toc ol { grid-template-columns: 1fr; } }
+
+    .toc ol li { font-size: 0.88rem; }
+
+    .toc ol li a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .toc ol li a:hover { color: var(--gold); text-decoration: underline; }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-of-type { border-bottom: none; }
+
+    .section-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      line-height: 1.3;
+    }
+
+    .section h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 1.6rem 0 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.88rem;
+    }
+
+    .section p { margin-bottom: 1rem; color: var(--text-body); font-size: 0.95rem; }
+
+    .section ul, .section ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .section li {
+      font-size: 0.95rem;
+      color: var(--text-body);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.gold { border-left-color: var(--gold); background: #fffdf0; }
+    .callout.navy { border-left-color: var(--navy); background: #f0f3fa; }
+    .callout.red { border-left-color: #c0392b; background: #fdf2f2; }
+
+    .callout strong { display: block; margin-bottom: 0.3rem; color: var(--navy); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── CONTACT BOX ── */
+    .contact-box {
+      background: var(--navy);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .contact-box p { color: rgba(255,255,255,0.75); margin-bottom: 0.5rem; }
+
+    .contact-box a {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .contact-box a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    footer p {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.78rem;
+      margin-bottom: 0.5rem;
+    }
+
+    footer a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      margin: 0 0.75rem;
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/><path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/><g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g></svg>
+      <span class="nav-logo-text">REAL™</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/what-is-real.html" class="btn-outline">What is REAL?</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="label">Legal</div>
+    <h1>Terms of Service</h1>
+    <p>These are the terms of the agreement between you and REAL when you use our platform. Written clearly — no deliberate confusion.</p>
+    <div class="updated">Last updated: 3 May 2026 &nbsp;·&nbsp; Version 1.0</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="wrapper">
+
+    <div class="callout gold">
+      <strong>Plain English Summary</strong>
+      You use REAL to verify that your online accounts genuinely belong to you. You must be honest, be over 18, and be the real person you claim to be. We provide the service in good faith. Neither of us is trying to catch the other out — but this document sets out what happens if something goes wrong.
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <ol>
+        <li><a href="#acceptance">Acceptance of Terms</a></li>
+        <li><a href="#what-real-is">What REAL Is</a></li>
+        <li><a href="#eligibility">Eligibility</a></li>
+        <li><a href="#your-account">Your Account</a></li>
+        <li><a href="#verification">Identity Verification</a></li>
+        <li><a href="#real-id">Your REAL ID</a></li>
+        <li><a href="#billing">Billing and Subscriptions</a></li>
+        <li><a href="#acceptable-use">Acceptable Use</a></li>
+        <li><a href="#public-profile">Your Public Profile</a></li>
+        <li><a href="#intellectual-property">Intellectual Property</a></li>
+        <li><a href="#limitation">Limitation of Liability</a></li>
+        <li><a href="#termination">Termination</a></li>
+        <li><a href="#governing-law">Governing Law</a></li>
+        <li><a href="#changes">Changes to These Terms</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ol>
+    </div>
+
+    <!-- 1. ACCEPTANCE -->
+    <div class="section" id="acceptance">
+      <span class="section-number">Section 01</span>
+      <h2>Acceptance of Terms</h2>
+      <p>By accessing or using REAL (the "Service") at <strong>realverified.co.uk</strong>, joining the waitlist, or becoming a member, you agree to be bound by these Terms of Service ("Terms").</p>
+      <p>If you do not agree to these Terms, you must not use the Service.</p>
+      <p>These Terms form a legally binding agreement between you and REAL. They apply to all users — whether you are visiting the site, on the waitlist, or an active verified member.</p>
+      <p>Our <a href="/privacy-policy.html">Privacy Policy</a> is incorporated into these Terms by reference and forms part of this agreement.</p>
+    </div>
+
+    <!-- 2. WHAT REAL IS -->
+    <div class="section" id="what-real-is">
+      <span class="section-number">Section 02</span>
+      <h2>What REAL Is — and Is Not</h2>
+      <p>REAL is an independent cross-platform identity verification platform. It enables individuals to verify their government-issued identity once, link their online accounts across multiple platforms, and receive a unique REAL ID number and public profile that demonstrates genuine ownership of those accounts.</p>
+
+      <h3>What REAL provides</h3>
+      <ul>
+        <li>A verified public profile showing your confirmed handles across linked platforms</li>
+        <li>A unique, permanent REAL ID number</li>
+        <li>A shield badge you can display to signal your verified status</li>
+        <li>A trust timeline showing your verified history</li>
+        <li>A publicly searchable record that confirms the real you</li>
+      </ul>
+
+      <h3>What REAL does not provide</h3>
+      <div class="callout red">
+        <strong>Important Limitation</strong>
+        REAL is a proof layer and source of truth. It cannot prevent fake accounts from being created. It makes fake accounts immediately and permanently identifiable. REAL does not guarantee the removal of impersonating accounts from any platform. REAL does not provide legal services. REAL does not provide law enforcement services.
+      </div>
+      <p>The value of REAL is that a fake account either has no REAL link — which exposes them — or copies your REAL link — which opens your real verified profile and exposes them. The mechanism works because only you can place a link in your own bio.</p>
+    </div>
+
+    <!-- 3. ELIGIBILITY -->
+    <div class="section" id="eligibility">
+      <span class="section-number">Section 03</span>
+      <h2>Eligibility</h2>
+      <p>To use REAL, you must:</p>
+      <ul>
+        <li>Be at least <strong>18 years of age</strong></li>
+        <li>Be a real individual (not a corporation, bot, or other non-human entity)</li>
+        <li>Have the legal capacity to enter into a binding contract in your jurisdiction</li>
+        <li>Not be prohibited from using the Service under applicable law</li>
+        <li>Provide accurate and truthful information at all times</li>
+      </ul>
+      <p>REAL is available globally. Where local laws conflict with these Terms, you are responsible for ensuring your use of the Service complies with your local legal requirements.</p>
+      <p>By using the Service, you represent and warrant that you meet all eligibility requirements.</p>
+    </div>
+
+    <!-- 4. YOUR ACCOUNT -->
+    <div class="section" id="your-account">
+      <span class="section-number">Section 04</span>
+      <h2>Your Account</h2>
+      <p>You are responsible for maintaining the security of your REAL account and for all activity that occurs under it.</p>
+      <ul>
+        <li>You must provide accurate, complete, and current information at registration and keep it up to date</li>
+        <li>You are responsible for keeping your login credentials confidential</li>
+        <li>You must notify us immediately if you suspect unauthorised access to your account</li>
+        <li>You may not share your account with anyone or allow others to use it</li>
+        <li>One account per person — multiple accounts are not permitted</li>
+      </ul>
+      <p>We cannot and will not be liable for any loss or damage arising from your failure to maintain account security.</p>
+    </div>
+
+    <!-- 5. IDENTITY VERIFICATION -->
+    <div class="section" id="verification">
+      <span class="section-number">Section 05</span>
+      <h2>Identity Verification</h2>
+      <p>To become a verified REAL member, you must complete identity verification through our third-party verification partner, <strong>Stripe Identity</strong>.</p>
+      <p>By submitting to identity verification, you:</p>
+      <ul>
+        <li>Confirm you are submitting your own genuine government-issued identity document</li>
+        <li>Confirm the biometric data you provide is your own</li>
+        <li>Agree to Stripe Identity's own terms and privacy policy in addition to ours</li>
+        <li>Acknowledge that REAL never receives or stores your identity document — only a confirmation of successful verification</li>
+        <li>Understand that submitting false or fraudulent identity information may be a criminal offence in your jurisdiction</li>
+      </ul>
+
+      <div class="callout navy">
+        <strong>Platform Account Verification</strong>
+        When linking social media accounts and online platforms to your REAL profile, you confirm that you are the genuine owner and controller of each linked account. Linking an account you do not own or control is a material breach of these Terms and will result in immediate termination.
+      </div>
+    </div>
+
+    <!-- 6. REAL ID -->
+    <div class="section" id="real-id">
+      <span class="section-number">Section 06</span>
+      <h2>Your REAL ID Number</h2>
+      <p>Upon successful verification and first payment, you will be assigned a unique REAL ID number (e.g. RL-000001). You should understand the following about your REAL ID:</p>
+      <ul>
+        <li>Your REAL ID is <strong>permanent and unique</strong> — it is yours for life as long as your membership remains active</li>
+        <li>REAL ID numbers are assigned sequentially — a lower number means you joined earlier and cannot be replicated after the fact</li>
+        <li>REAL ID numbers are <strong>not assigned at waitlist signup</strong> — only upon verification and payment</li>
+        <li>If you cancel your membership, your REAL ID number is <strong>permanently retired</strong> — it is never reissued to another person</li>
+        <li>If you request erasure of your data under GDPR, your REAL ID number is retired with no data attached — the slot is permanently empty</li>
+        <li>Founding members (RL-000001 to RL-000100) receive a locked rate of £15/month for life, provided their membership remains continuous</li>
+      </ul>
+
+      <div class="callout gold">
+        <strong>Founding Member Rate</strong>
+        The founding member rate of £15/month is locked for the lifetime of a continuous membership. If a founding member cancels and later rejoins, the founding member rate is not guaranteed on return — the standard rate at that time will apply.
+      </div>
+    </div>
+
+    <!-- 7. BILLING -->
+    <div class="section" id="billing">
+      <span class="section-number">Section 07</span>
+      <h2>Billing and Subscriptions</h2>
+
+      <h3>Pricing</h3>
+      <ul>
+        <li>Founding members (RL-000001 to RL-000100): <strong>£15/month</strong>, locked for life</li>
+        <li>Standard members (RL-000101 onwards): <strong>£25/month</strong></li>
+        <li>A 14-day free trial is available — your shield badge activates only upon first payment</li>
+      </ul>
+
+      <h3>Payment</h3>
+      <p>All payments are processed securely by Stripe. By subscribing, you authorise REAL to charge your payment method on a recurring monthly basis. You must keep your payment information current and accurate.</p>
+
+      <h3>Cancellation</h3>
+      <p>You may cancel your subscription at any time through your member dashboard. Cancellation takes effect at the end of your current billing period — you will retain access until that date. We do not offer partial-month refunds.</p>
+
+      <h3>Refunds</h3>
+      <p>Given the nature of the service, we do not offer refunds for completed billing periods. If you believe you have been charged in error, contact us at <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a> within 14 days of the charge.</p>
+
+      <h3>Price Changes</h3>
+      <p>We reserve the right to change our standard pricing with 30 days' notice. Founding member rates are locked and unaffected by standard price changes.</p>
+
+      <h3>Failed Payments</h3>
+      <p>If a payment fails, we will attempt to retry and notify you by email. If payment cannot be collected after reasonable attempts, your account may be suspended or terminated. Your REAL ID number will be retired in accordance with Section 6.</p>
+
+      <h3>Consumer Rights (UK and EU)</h3>
+      <p>If you are based in the UK or EU, you may have a statutory right to cancel within 14 days of first subscribing under consumer protection law. By requesting that the service begin during this period, you acknowledge that your right of withdrawal may be limited or waived. Please contact us if you have questions about your consumer rights.</p>
+    </div>
+
+    <!-- 8. ACCEPTABLE USE -->
+    <div class="section" id="acceptable-use">
+      <span class="section-number">Section 08</span>
+      <h2>Acceptable Use</h2>
+      <p>You agree not to use REAL in any way that is unlawful, harmful, or in breach of these Terms. Specifically, you must not:</p>
+      <ul>
+        <li>Submit false, fraudulent, or misleading identity information</li>
+        <li>Link accounts that do not belong to you</li>
+        <li>Attempt to obtain a REAL ID number under a false identity</li>
+        <li>Use REAL to impersonate any other person</li>
+        <li>Attempt to manipulate, reverse-engineer, or circumvent any part of the platform</li>
+        <li>Use REAL to harass, threaten, or harm any individual</li>
+        <li>Attempt to access another member's account or data</li>
+        <li>Use automated tools, bots, or scraping tools on the platform without express written permission</li>
+        <li>Use REAL in any way that violates applicable law in your jurisdiction</li>
+        <li>Attempt to purchase, transfer, or sell a REAL ID number</li>
+      </ul>
+
+      <div class="callout red">
+        <strong>Zero Tolerance</strong>
+        Any attempt to fraudulently obtain a REAL ID, impersonate another person through our platform, or deliberately subvert our verification system will result in immediate termination, a permanent ban, and may be reported to law enforcement.
+      </div>
+    </div>
+
+    <!-- 9. PUBLIC PROFILE -->
+    <div class="section" id="public-profile">
+      <span class="section-number">Section 09</span>
+      <h2>Your Public Profile</h2>
+      <p>By becoming a verified REAL member, you agree that the following information will be publicly visible on your REAL profile page at <strong>realverified.co.uk/[your-identifier]</strong>:</p>
+      <ul>
+        <li>Your REAL ID number</li>
+        <li>Your verified name (as provided during verification)</li>
+        <li>Your verified date and timestamp</li>
+        <li>All platform handles you have chosen to link and verify</li>
+        <li>Your trust timeline showing when each handle was added or changed</li>
+      </ul>
+      <p>This information is publicly accessible without a REAL account — by design. The entire purpose of REAL is that anyone can check your verified profile in seconds. By joining REAL, you consent to this public disclosure.</p>
+
+      <h3>Removing Handles</h3>
+      <p>If you lose access to a platform account, are banned, or change handles, you can update your profile. Removed handles are marked as "no longer active" with a timestamp — they are not erased from the trust timeline, as the historical record is part of REAL's integrity.</p>
+    </div>
+
+    <!-- 10. INTELLECTUAL PROPERTY -->
+    <div class="section" id="intellectual-property">
+      <span class="section-number">Section 10</span>
+      <h2>Intellectual Property</h2>
+      <p>The REAL name, shield logo, REAL ID system, platform design, software, and all associated intellectual property belong to REAL and are protected by applicable intellectual property law.</p>
+      <p>You are granted a limited, non-exclusive, non-transferable licence to use the REAL shield badge and verified profile link for the sole purpose of indicating your verified status, while your membership is active.</p>
+      <p>You may not:</p>
+      <ul>
+        <li>Reproduce, copy, or create derivative works of REAL's branding or platform</li>
+        <li>Use REAL's name, logo, or brand in any way that implies endorsement without written consent</li>
+        <li>Continue using the shield badge or claim REAL verification after your membership ends</li>
+      </ul>
+      <p>Your verified name and linked handles remain your own — REAL claims no ownership over your personal information or social media accounts.</p>
+    </div>
+
+    <!-- 11. LIMITATION OF LIABILITY -->
+    <div class="section" id="limitation">
+      <span class="section-number">Section 11</span>
+      <h2>Limitation of Liability</h2>
+      <p>REAL provides the Service on an "as is" and "as available" basis. To the maximum extent permitted by applicable law:</p>
+      <ul>
+        <li>REAL makes no warranty that the Service will be uninterrupted, error-free, or completely secure</li>
+        <li>REAL is not liable for any failure or change by third-party platforms (Instagram, TikTok, YouTube, etc.) that affects your linked accounts</li>
+        <li>REAL is not liable for any loss or damage arising from fake accounts, impersonation, or identity theft — REAL is a tool to identify and expose fakes, not to prevent them entirely</li>
+        <li>REAL's total liability to you for any claim shall not exceed the total amount paid by you to REAL in the 3 months prior to the claim</li>
+        <li>REAL is not liable for any indirect, consequential, special, or punitive damages</li>
+      </ul>
+      <p>Nothing in these Terms excludes or limits liability for death or personal injury caused by negligence, fraud or fraudulent misrepresentation, or any liability that cannot be excluded under applicable law.</p>
+
+      <h3>Consumer Rights</h3>
+      <p>If you are a consumer based in the UK or EU, you have statutory rights that cannot be excluded or limited by these Terms. Nothing in this section affects those statutory rights.</p>
+    </div>
+
+    <!-- 12. TERMINATION -->
+    <div class="section" id="termination">
+      <span class="section-number">Section 12</span>
+      <h2>Termination</h2>
+
+      <h3>Termination by You</h3>
+      <p>You may cancel your membership at any time through your dashboard. Your access continues until the end of the current billing period.</p>
+
+      <h3>Termination by REAL</h3>
+      <p>We reserve the right to suspend or terminate your account immediately, without notice, if:</p>
+      <ul>
+        <li>You breach any material term of these Terms</li>
+        <li>You provide false identity information</li>
+        <li>You link accounts you do not own</li>
+        <li>Your use of the platform poses a security or reputational risk to REAL or other members</li>
+        <li>We are required to do so by law</li>
+      </ul>
+
+      <h3>Effect of Termination</h3>
+      <p>Upon termination, your access to the Service ceases, your REAL ID number is permanently retired, and your public profile is removed or marked as inactive. Financial records will be retained for the period required by law. You may request erasure of personal data under GDPR — see our Privacy Policy.</p>
+    </div>
+
+    <!-- 13. GOVERNING LAW -->
+    <div class="section" id="governing-law">
+      <span class="section-number">Section 13</span>
+      <h2>Governing Law and Disputes</h2>
+      <p>These Terms are governed by the laws of <strong>England and Wales</strong>. Any disputes arising from these Terms or your use of REAL will be subject to the exclusive jurisdiction of the courts of England and Wales, unless applicable consumer law in your country of residence grants you additional protections.</p>
+
+      <h3>Dispute Resolution</h3>
+      <p>Before initiating formal legal proceedings, we ask that you contact us at <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a> to allow us to resolve the matter informally. We are committed to resolving disputes fairly and promptly.</p>
+
+      <h3>EU and UK Consumers</h3>
+      <p>If you are a consumer in the EU, you may also have the right to use the EU Online Dispute Resolution platform at <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>. UK consumers may also refer disputes to relevant alternative dispute resolution (ADR) schemes.</p>
+    </div>
+
+    <!-- 14. CHANGES -->
+    <div class="section" id="changes">
+      <span class="section-number">Section 14</span>
+      <h2>Changes to These Terms</h2>
+      <p>We may update these Terms from time to time as the Service evolves or as required by law. When we make material changes:</p>
+      <ul>
+        <li>We will update the "Last updated" date at the top of this page</li>
+        <li>We will notify active members by email at least 30 days before changes take effect</li>
+        <li>We will clearly describe what has changed</li>
+      </ul>
+      <p>If you do not agree with updated Terms, you may cancel your membership before they take effect. Continued use of the Service after changes take effect constitutes your acceptance of the updated Terms.</p>
+      <p>For waitlist members, updates will be communicated by email.</p>
+    </div>
+
+    <!-- 15. CONTACT -->
+    <div class="section" id="contact">
+      <span class="section-number">Section 15</span>
+      <h2>Contact</h2>
+      <p>For any questions about these Terms, please get in touch.</p>
+
+      <div class="contact-box">
+        <p>General enquiries</p>
+        <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a>
+        <p style="margin-top:1rem;">
+          <a href="mailto:info@realverified.co.uk" style="font-size:0.85rem; color:rgba(255,255,255,0.55);">Privacy enquiries: info@realverified.co.uk</a>
+        </p>
+        <p style="margin-top:0.5rem; font-size:0.82rem;">We aim to respond to all enquiries within 5 business days.</p>
+      </div>
+    </div>
+
+  </div><!-- /wrapper -->
+
+  <!-- FOOTER -->
+  <footer>
+    <p>REAL™ — Identity Infrastructure for the Internet</p>
+    <p>
+      <a href="/">Home</a>
+      <a href="/what-is-real.html">What is REAL?</a>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+    </p>
+    <p style="margin-top:1rem;">© 2026 REAL. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

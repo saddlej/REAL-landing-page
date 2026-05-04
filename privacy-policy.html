@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — REAL™</title>
+  <meta name="description" content="REAL Privacy Policy — how we collect, use and protect your personal data." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2044;
+      --gold: #FFD007;
+      --white: #FFFFFF;
+      --navy-light: #1a3366;
+      --text-body: #1a1a2e;
+      --text-muted: #4a5568;
+      --border: #e2e8f0;
+      --bg: #f8f9fc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-body);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo svg { height: 32px; width: auto; }
+
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-links .btn-outline {
+      border: 1px solid rgba(255,208,7,0.5);
+      border-radius: 4px;
+      padding: 6px 16px;
+      color: var(--gold);
+    }
+
+    .nav-links .btn-outline:hover {
+      background: rgba(255,208,7,0.1);
+      border-color: var(--gold);
+    }
+
+    /* ── HERO BAND ── */
+    .page-hero {
+      background: var(--navy);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .page-hero .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .page-hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .page-hero .updated {
+      margin-top: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── LAYOUT ── */
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── TABLE OF CONTENTS ── */
+    .toc {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .toc ol {
+      padding-left: 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem 2rem;
+    }
+
+    @media (max-width: 580px) { .toc ol { grid-template-columns: 1fr; } }
+
+    .toc ol li { font-size: 0.88rem; }
+
+    .toc ol li a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .toc ol li a:hover { color: var(--gold); text-decoration: underline; }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-of-type { border-bottom: none; }
+
+    .section-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      line-height: 1.3;
+    }
+
+    .section h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 1.6rem 0 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.88rem;
+    }
+
+    .section p { margin-bottom: 1rem; color: var(--text-body); font-size: 0.95rem; }
+
+    .section ul, .section ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .section li {
+      font-size: 0.95rem;
+      color: var(--text-body);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.gold { border-left-color: var(--gold); background: #fffdf0; }
+    .callout.navy { border-left-color: var(--navy); background: #f0f3fa; }
+
+    .callout strong { display: block; margin-bottom: 0.3rem; color: var(--navy); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── DATA TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.88rem;
+      background: var(--white);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .data-table th {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:nth-child(even) td { background: #f8f9fc; }
+
+    /* ── RIGHTS GRID ── */
+    .rights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .right-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem;
+    }
+
+    .right-card .right-icon {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .right-card h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .right-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* ── CONTACT BOX ── */
+    .contact-box {
+      background: var(--navy);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .contact-box p { color: rgba(255,255,255,0.75); margin-bottom: 0.5rem; }
+
+    .contact-box a {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .contact-box a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    footer p {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.78rem;
+      margin-bottom: 0.5rem;
+    }
+
+    footer a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      margin: 0 0.75rem;
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/><path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/><g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g></svg>
+      <span class="nav-logo-text">REAL™</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/what-is-real.html" class="btn-outline">What is REAL?</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="label">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p>We believe in radical transparency. This document explains everything about how your data is handled — in plain English.</p>
+    <div class="updated">Last updated: 3 May 2026 &nbsp;·&nbsp; Version 1.0</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="wrapper">
+
+    <div class="callout gold">
+      <strong>Plain English Summary</strong>
+      We collect only what we need, store it securely, never sell it, and you can ask us to delete it at any time. The full details are below.
+    </div>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <ol>
+        <li><a href="#who-we-are">Who We Are</a></li>
+        <li><a href="#data-we-collect">Data We Collect</a></li>
+        <li><a href="#how-we-use">How We Use Your Data</a></li>
+        <li><a href="#legal-basis">Legal Basis</a></li>
+        <li><a href="#third-parties">Third Parties</a></li>
+        <li><a href="#international">International Transfers</a></li>
+        <li><a href="#retention">Data Retention</a></li>
+        <li><a href="#your-rights">Your Rights</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#cookies">Cookies</a></li>
+        <li><a href="#children">Children</a></li>
+        <li><a href="#california">California Residents</a></li>
+        <li><a href="#changes">Changes to This Policy</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <!-- 1. WHO WE ARE -->
+    <div class="section" id="who-we-are">
+      <span class="section-number">Section 01</span>
+      <h2>Who We Are</h2>
+      <p>REAL (trading name, hereinafter "REAL", "we", "us", "our") operates the website <strong>realverified.co.uk</strong>. REAL is a cross-platform identity verification platform that enables individuals to prove ownership of their online accounts and social media profiles.</p>
+      <p>For the purposes of UK GDPR and EU GDPR, REAL is the <strong>data controller</strong> — meaning we are responsible for deciding how and why your personal data is processed.</p>
+      <div class="callout navy">
+        <strong>Data Controller Contact</strong>
+        All privacy enquiries should be sent to: <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a><br/>
+        Postal address available on request.
+      </div>
+    </div>
+
+    <!-- 2. DATA WE COLLECT -->
+    <div class="section" id="data-we-collect">
+      <span class="section-number">Section 02</span>
+      <h2>Data We Collect</h2>
+      <p>We collect different categories of data at different stages of your relationship with REAL.</p>
+
+      <h3>Waitlist Signups</h3>
+      <p>When you join our waitlist, we collect:</p>
+      <ul>
+        <li>Full name</li>
+        <li>Email address</li>
+        <li>Social media handle (optional)</li>
+        <li>Platform of interest (optional)</li>
+        <li>Date and time of signup</li>
+      </ul>
+
+      <h3>Verified Members (when the service launches)</h3>
+      <p>When you become a verified member, we will additionally collect:</p>
+      <ul>
+        <li>Billing information (processed and stored by Stripe — we do not store card details)</li>
+        <li>Social media handles and platform links you choose to verify</li>
+        <li>Verification timestamps for each linked account</li>
+        <li>Your unique REAL ID number</li>
+      </ul>
+
+      <h3>Identity Verification</h3>
+      <div class="callout gold">
+        <strong>Important — Government ID</strong>
+        Government-issued identity documents and biometric data are processed exclusively by Stripe Identity, our verification partner. REAL never receives, stores, or has access to your actual ID document. Stripe confirms to us only that verification was successful. Stripe's own privacy policy governs the handling of that data.
+      </div>
+
+      <h3>Automatically Collected Data</h3>
+      <p>When you visit our website, we may automatically collect:</p>
+      <ul>
+        <li>IP address</li>
+        <li>Browser type and version</li>
+        <li>Pages visited and time spent</li>
+        <li>Referring website</li>
+        <li>Device type</li>
+      </ul>
+      <p>This data is used solely for security, performance monitoring, and improving the service. It is not used to identify you individually.</p>
+    </div>
+
+    <!-- 3. HOW WE USE YOUR DATA -->
+    <div class="section" id="how-we-use">
+      <span class="section-number">Section 03</span>
+      <h2>How We Use Your Data</h2>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Purpose</th>
+            <th>Data Used</th>
+            <th>Legal Basis</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Managing your waitlist position</td>
+            <td>Name, email, handle, platform</td>
+            <td>Legitimate interests</td>
+          </tr>
+          <tr>
+            <td>Sending waitlist updates and launch notifications</td>
+            <td>Name, email</td>
+            <td>Consent</td>
+          </tr>
+          <tr>
+            <td>Providing the REAL verification service</td>
+            <td>All member data</td>
+            <td>Contract performance</td>
+          </tr>
+          <tr>
+            <td>Processing subscription payments</td>
+            <td>Billing data (via Stripe)</td>
+            <td>Contract performance</td>
+          </tr>
+          <tr>
+            <td>Identity verification</td>
+            <td>Handled entirely by Stripe Identity</td>
+            <td>Contract performance / Legal obligation</td>
+          </tr>
+          <tr>
+            <td>Sending transactional emails (receipts, alerts)</td>
+            <td>Name, email</td>
+            <td>Contract performance</td>
+          </tr>
+          <tr>
+            <td>Fraud prevention and platform security</td>
+            <td>IP address, usage data</td>
+            <td>Legitimate interests</td>
+          </tr>
+          <tr>
+            <td>Complying with legal obligations</td>
+            <td>As required by law</td>
+            <td>Legal obligation</td>
+          </tr>
+          <tr>
+            <td>Improving the service</td>
+            <td>Anonymised usage data only</td>
+            <td>Legitimate interests</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>We will never sell your personal data.</strong> We will never use your data for advertising profiling. We will never share it with third parties for their own marketing purposes.</p>
+    </div>
+
+    <!-- 4. LEGAL BASIS -->
+    <div class="section" id="legal-basis">
+      <span class="section-number">Section 04</span>
+      <h2>Legal Basis for Processing</h2>
+      <p>Under UK GDPR and EU GDPR, we are required to have a lawful basis for processing your personal data. We rely on the following:</p>
+
+      <h3>Consent</h3>
+      <p>Where you have actively agreed to receive communications from us — for example, by joining the waitlist and opting in to updates. You may withdraw consent at any time by contacting us or clicking unsubscribe in any email.</p>
+
+      <h3>Contract Performance</h3>
+      <p>Processing necessary to deliver the REAL service to you — including verification, billing, account management, and member communications.</p>
+
+      <h3>Legitimate Interests</h3>
+      <p>Processing that is in our legitimate business interests, provided it does not override your rights — including maintaining the security of our platform, fraud prevention, and improving the service using anonymised data.</p>
+
+      <h3>Legal Obligation</h3>
+      <p>Where we are required by law to process or retain certain data — for example, financial records under UK tax law.</p>
+    </div>
+
+    <!-- 5. THIRD PARTIES -->
+    <div class="section" id="third-parties">
+      <span class="section-number">Section 05</span>
+      <h2>Third Parties We Work With</h2>
+      <p>We use a small number of trusted third-party services to operate REAL. Each has been chosen for their security standards and compliance with data protection law.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Purpose</th>
+            <th>Data Shared</th>
+            <th>Privacy Policy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Supabase</strong></td>
+            <td>Database and backend infrastructure</td>
+            <td>All member data (stored securely, encrypted at rest)</td>
+            <td>supabase.com/privacy</td>
+          </tr>
+          <tr>
+            <td><strong>Stripe</strong></td>
+            <td>Payment processing and identity verification</td>
+            <td>Billing data, identity verification (Stripe only)</td>
+            <td>stripe.com/privacy</td>
+          </tr>
+          <tr>
+            <td><strong>Resend</strong></td>
+            <td>Transactional email delivery</td>
+            <td>Name and email address</td>
+            <td>resend.com/privacy</td>
+          </tr>
+          <tr>
+            <td><strong>Vercel</strong></td>
+            <td>Website hosting</td>
+            <td>IP address, access logs</td>
+            <td>vercel.com/legal/privacy-policy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>All third-party providers are contractually required to process your data only for the purposes we specify, and to maintain appropriate security standards. We do not share your data with any other third parties without your explicit consent, except where required by law.</p>
+
+      <h3>Law Enforcement and Legal Requests</h3>
+      <p>We may be required to disclose personal data to law enforcement or regulatory bodies where required by law. We will only do so to the minimum extent required, and where legally permissible, we will notify you.</p>
+    </div>
+
+    <!-- 6. INTERNATIONAL TRANSFERS -->
+    <div class="section" id="international">
+      <span class="section-number">Section 06</span>
+      <h2>International Data Transfers</h2>
+      <p>REAL is based in the United Kingdom. Our primary database (Supabase) is hosted in the <strong>EU West (Ireland)</strong> region, keeping your data within the European Economic Area.</p>
+      <p>Some of our third-party providers (including Stripe and Vercel) may process data in the United States and other countries. Where this occurs, we ensure appropriate safeguards are in place, including:</p>
+      <ul>
+        <li>Standard Contractual Clauses (SCCs) approved by the UK ICO or European Commission</li>
+        <li>Adequacy decisions where applicable</li>
+        <li>Providers' adherence to the EU-US Data Privacy Framework where relevant</li>
+      </ul>
+      <p>By using REAL from any country, you acknowledge that your data may be transferred to and processed in countries other than your own. We take all reasonable steps to ensure your data remains protected to the standards described in this policy.</p>
+    </div>
+
+    <!-- 7. RETENTION -->
+    <div class="section" id="retention">
+      <span class="section-number">Section 07</span>
+      <h2>Data Retention</h2>
+      <p>We do not keep your data longer than necessary.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data Type</th>
+            <th>Retention Period</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Waitlist data (name, email, handle)</td>
+            <td>Until the service launches and you are onboarded, or until you request removal</td>
+          </tr>
+          <tr>
+            <td>Active member data</td>
+            <td>For the duration of your membership</td>
+          </tr>
+          <tr>
+            <td>Billing and financial records</td>
+            <td>7 years (required by UK tax law)</td>
+          </tr>
+          <tr>
+            <td>Verification records</td>
+            <td>For the duration of your membership, then deleted unless legally required to retain</td>
+          </tr>
+          <tr>
+            <td>Data following membership cancellation</td>
+            <td>Deleted within 90 days of cancellation, except financial records retained as above</td>
+          </tr>
+          <tr>
+            <td>GDPR erasure requests</td>
+            <td>All personal data deleted within 30 days of verified request. REAL ID number permanently retired with no data attached.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 8. YOUR RIGHTS -->
+    <div class="section" id="your-rights">
+      <span class="section-number">Section 08</span>
+      <h2>Your Rights</h2>
+      <p>Under UK GDPR and EU GDPR, you have the following rights regarding your personal data. These rights apply regardless of where in the world you are based — we honour them globally.</p>
+
+      <div class="rights-grid">
+        <div class="right-card">
+          <div class="right-icon">👁</div>
+          <h4>Right of Access</h4>
+          <p>You can request a copy of all personal data we hold about you.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">✏️</div>
+          <h4>Right to Rectification</h4>
+          <p>You can ask us to correct any inaccurate or incomplete data.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">🗑</div>
+          <h4>Right to Erasure</h4>
+          <p>You can ask us to delete your personal data ("right to be forgotten").</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">⏸</div>
+          <h4>Right to Restriction</h4>
+          <p>You can ask us to pause processing your data in certain circumstances.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">📦</div>
+          <h4>Right to Portability</h4>
+          <p>You can request your data in a portable, machine-readable format.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">🚫</div>
+          <h4>Right to Object</h4>
+          <p>You can object to processing based on legitimate interests, including direct marketing.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">🤖</div>
+          <h4>Automated Decisions</h4>
+          <p>You have rights regarding any automated decision-making that significantly affects you.</p>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">↩️</div>
+          <h4>Withdraw Consent</h4>
+          <p>Where processing is based on consent, you can withdraw it at any time.</p>
+        </div>
+      </div>
+
+      <p>To exercise any of these rights, contact us at <a href="mailto:info@realverified.co.uk"><strong>info@realverified.co.uk</strong></a>. We will respond within <strong>30 days</strong>. We may need to verify your identity before processing your request.</p>
+
+      <h3>Right to Complain</h3>
+      <p>If you believe we have not handled your data correctly, you have the right to lodge a complaint with the relevant supervisory authority:</p>
+      <ul>
+        <li><strong>UK:</strong> Information Commissioner's Office (ICO) — <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a></li>
+        <li><strong>EU:</strong> Your local Data Protection Authority (DPA)</li>
+        <li><strong>Other countries:</strong> Your national data protection regulator</li>
+      </ul>
+      <p>We would always prefer to resolve concerns directly — please contact us first and we will do our best to put things right.</p>
+    </div>
+
+    <!-- 9. SECURITY -->
+    <div class="section" id="security">
+      <span class="section-number">Section 09</span>
+      <h2>Security</h2>
+      <p>We take the security of your personal data seriously. Measures we have in place include:</p>
+      <ul>
+        <li>All data stored in Supabase with Row Level Security (RLS) enabled</li>
+        <li>Data encrypted at rest and in transit using TLS</li>
+        <li>Government ID documents processed solely by Stripe Identity — we never receive or store them</li>
+        <li>Payment card data processed solely by Stripe — we never receive or store card numbers</li>
+        <li>Access to data limited to authorised personnel only</li>
+        <li>Regular review of security practices as the platform scales</li>
+      </ul>
+      <p>No system is perfectly secure. In the event of a data breach that is likely to result in risk to your rights and freedoms, we will notify the ICO within 72 hours and affected individuals without undue delay, as required by UK GDPR.</p>
+    </div>
+
+    <!-- 10. COOKIES -->
+    <div class="section" id="cookies">
+      <span class="section-number">Section 10</span>
+      <h2>Cookies</h2>
+      <p>Our website uses a minimal number of cookies — only those strictly necessary for the site to function. We do not use advertising cookies, tracking cookies, or third-party analytics cookies that profile you.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cookie Type</th>
+            <th>Purpose</th>
+            <th>Can be disabled?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Strictly necessary</td>
+            <td>Core site functionality (e.g. session management)</td>
+            <td>No — required for the site to work</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td>Not currently used</td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td>Advertising / tracking</td>
+            <td>Not used — ever</td>
+            <td>N/A</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>You can manage cookies through your browser settings. Disabling strictly necessary cookies may affect your ability to use parts of the site.</p>
+    </div>
+
+    <!-- 11. CHILDREN -->
+    <div class="section" id="children">
+      <span class="section-number">Section 11</span>
+      <h2>Children</h2>
+      <p>REAL is not intended for use by anyone under the age of 18. We do not knowingly collect personal data from children. If you believe a child under 18 has provided us with personal data, please contact us immediately at <a href="mailto:info@realverified.co.uk"><strong>info@realverified.co.uk</strong></a> and we will delete it promptly.</p>
+    </div>
+
+    <!-- 12. CALIFORNIA -->
+    <div class="section" id="california">
+      <span class="section-number">Section 12</span>
+      <h2>California Residents (CCPA)</h2>
+      <p>If you are a resident of California, the California Consumer Privacy Act (CCPA) grants you additional rights in relation to your personal information.</p>
+      <p><strong>We do not sell personal information.</strong> We have not sold personal information in the preceding 12 months and do not intend to do so.</p>
+      <p>California residents have the right to:</p>
+      <ul>
+        <li>Know what personal information is collected about them</li>
+        <li>Know whether their personal information is sold or disclosed, and to whom</li>
+        <li>Opt out of the sale of personal information (not applicable — we do not sell data)</li>
+        <li>Access their personal information</li>
+        <li>Request deletion of their personal information</li>
+        <li>Not be discriminated against for exercising these rights</li>
+      </ul>
+      <p>To exercise your California rights, contact us at <a href="mailto:info@realverified.co.uk"><strong>info@realverified.co.uk</strong></a>.</p>
+    </div>
+
+    <!-- 13. CHANGES -->
+    <div class="section" id="changes">
+      <span class="section-number">Section 13</span>
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time as our service evolves or as required by law. When we make material changes, we will:</p>
+      <ul>
+        <li>Update the "Last updated" date at the top of this page</li>
+        <li>Notify existing members by email where the changes are significant</li>
+        <li>Give you reasonable notice before changes take effect</li>
+      </ul>
+      <p>Continued use of REAL after changes take effect constitutes acceptance of the updated policy.</p>
+    </div>
+
+    <!-- 14. CONTACT -->
+    <div class="section" id="contact">
+      <span class="section-number">Section 14</span>
+      <h2>Contact Us</h2>
+      <p>For any questions, requests, or concerns about your personal data, please get in touch. We are committed to responding promptly and thoroughly.</p>
+
+      <div class="contact-box">
+        <p>Privacy enquiries</p>
+        <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a>
+        <p style="margin-top:1rem; font-size:0.82rem;">We aim to respond to all privacy requests within 5 business days, and will always act within the 30-day statutory deadline.</p>
+      </div>
+    </div>
+
+  </div><!-- /wrapper -->
+
+  <!-- FOOTER -->
+  <footer>
+    <p>REAL™ — Identity Infrastructure for the Internet</p>
+    <p>
+      <a href="/">Home</a>
+      <a href="/what-is-real.html">What is REAL?</a>
+      <a href="/privacy-policy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+    </p>
+    <p style="margin-top:1rem;">© 2026 REAL. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
