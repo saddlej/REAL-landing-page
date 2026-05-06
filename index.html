@@ -420,8 +420,8 @@
   </div>
   <span class="footer-right">realverified.co.uk — Identity Infrastructure for the Internet</span>
   <span class="footer-right" style="display:flex;gap:24px;flex-wrap:wrap;">
-    <a href="/privacy-policy.html" style="color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFD007'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Privacy Policy</a>
-    <a href="/terms.html" style="color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFD007'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Terms of Service</a>
+    <a href="privacy-policy.html" style="color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFD007'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Privacy Policy</a>
+    <a href="terms.html" style="color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#FFD007'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Terms of Service</a>
   </span>
 </footer>
 <script>
@@ -435,7 +435,7 @@
     const platform_request = document.getElementById('platformInput').value.trim();
 
     if (!name || !email) { alert('Please enter your name and email to join the waitlist.'); return; }
-    if (!email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
 
     const response = await fetch(`${SUPABASE_URL}/rest/v1/Waitlist`, {
       method: 'POST',
@@ -458,12 +458,18 @@
   const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
   document.querySelectorAll('.step, .problem-card, .perk').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.6s ease, transform 0.6s ease'; observer.observe(el); });
 
-  // Detect email confirmation and redirect to dashboard
+  // Handle email confirmation — extract and persist tokens before redirecting
   (function() {
     const hash = window.location.hash;
-    const params = new URLSearchParams(window.location.search);
-    if (hash.includes('access_token') || hash.includes('type=signup') || params.get('type') === 'signup') {
-      window.location.href = '/dashboard.html';
+    if (hash.includes('access_token')) {
+      const hp = new URLSearchParams(hash.substring(1));
+      const at = hp.get('access_token');
+      const rt = hp.get('refresh_token');
+      if (at) {
+        localStorage.setItem('real_access_token', at);
+        if (rt) localStorage.setItem('real_refresh_token', rt);
+        window.location.href = 'dashboard.html';
+      }
     }
   })();
 </script>

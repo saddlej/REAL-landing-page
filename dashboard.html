@@ -663,9 +663,24 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
 
   // ─── AUTH CHECK ───
+  // Extract and persist tokens if arriving from Supabase email confirmation redirect
+  const _h = window.location.hash;
+  if (_h.includes('access_token')) {
+    const _hp = new URLSearchParams(_h.substring(1));
+    const _at = _hp.get('access_token');
+    const _rt = _hp.get('refresh_token');
+    if (_at) {
+      localStorage.setItem('real_access_token', _at);
+      if (_rt) localStorage.setItem('real_refresh_token', _rt);
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+
   const params = new URLSearchParams(window.location.search);
   const isLocalFile = window.location.protocol === 'file:';
-  const isPreview = params.get('preview') === 'true' || isLocalFile;
+  // Preview mode is only permitted on localhost/file:// — never on the live site
+  const isPreview = params.get('preview') === 'true' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || isLocalFile);
 
   let currentUser = null;
   let accessToken = null;
@@ -748,6 +763,16 @@
   }
 
   // ─── RENDER PLATFORMS ───
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;');
+  }
+
   function renderPlatforms() {
     const grid = document.getElementById('platformsGrid');
     const empty = document.getElementById('platformEmptyState');
@@ -767,17 +792,17 @@
 
     grid.innerHTML = userPlatforms.map(p => {
       const icon = icons[p.platform] || '🔗';
-      const dotClass = p.status === 'verified' ? 'green' : p.status === 'failed' ? 'red' : p.status === 'pending' ? 'gold' : 'empty';
-      const tagClass = p.status;
+      const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
+      const dotClass = safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold';
       return `
         <div class="platform-row">
           <div class="platform-status-dot ${dotClass}"></div>
-          <div class="platform-icon">${icon}</div>
+          <div class="platform-icon">${escapeHtml(icon)}</div>
           <div class="platform-info">
-            <div class="platform-name">${p.platform}</div>
-            <div class="platform-handle">${p.handle || '—'}</div>
+            <div class="platform-name">${escapeHtml(p.platform)}</div>
+            <div class="platform-handle">${escapeHtml(p.handle) || '—'}</div>
           </div>
-          <div class="platform-tag ${tagClass}">${p.status}</div>
+          <div class="platform-tag ${safeStatus}">${safeStatus}</div>
         </div>
       `;
     }).join('');
@@ -814,7 +839,10 @@
       return;
     }
     document.getElementById('modalError').classList.remove('visible');
-    generatedCode = 'REAL-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    const _b = new Uint8Array(6);
+    crypto.getRandomValues(_b);
+    const _chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    generatedCode = 'REAL-' + Array.from(_b).map(b => _chars[b % _chars.length]).join('');
     document.getElementById('verificationCode').textContent = generatedCode;
     document.getElementById('platformNameC').textContent = selectedPlatform;
     showStep('modalStepC');
@@ -845,6 +873,9 @@
       return;
     }
 
+    const errC = document.getElementById('modalErrorC');
+    errC.textContent = '';
+    errC.classList.remove('visible');
     const btn = document.getElementById('submitPlatformBtn');
     btn.disabled = true;
     btn.textContent = 'Submitting...';

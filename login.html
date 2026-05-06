@@ -202,7 +202,7 @@
     const password = document.getElementById('password').value;
     const btn = document.getElementById('submitBtn');
 
-    if (!email || !email.includes('@')) { showError('errorMsg', 'Please enter a valid email address.'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('errorMsg', 'Please enter a valid email address.'); return; }
     if (!password) { showError('errorMsg', 'Please enter your password.'); return; }
 
     btn.disabled = true;
@@ -241,7 +241,7 @@
     const email = document.getElementById('resetEmail').value.trim();
     const btn = document.getElementById('resetBtn');
 
-    if (!email || !email.includes('@')) { showError('resetErrorMsg', 'Please enter a valid email address.'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('resetErrorMsg', 'Please enter a valid email address.'); return; }
 
     btn.disabled = true;
     btn.textContent = 'Sending...';

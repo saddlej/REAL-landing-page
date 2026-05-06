@@ -162,6 +162,7 @@
 
         <div class="divider"></div>
         <p class="form-note">By creating an account you agree to REAL's <a href="terms.html">Terms of Service</a> and <a href="privacy-policy.html">Privacy Policy</a>.</p>
+        <p class="form-note">Already have an account? <a href="login.html">Sign in →</a></p>
       </div>
     </div>
 
@@ -205,7 +206,7 @@
     const btn = document.getElementById('submitBtn');
 
     if (!firstName || !lastName) { showError('Please enter your full name.'); return; }
-    if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); return; }
     if (!password || password.length < 8) { showError('Password must be at least 8 characters.'); return; }
     if (password !== passwordConfirm) { showError('Passwords do not match.'); return; }
 
