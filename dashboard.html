@@ -505,7 +505,7 @@
           <div class="id-verify-title">Verify your identity once, forever</div>
           <div class="id-verify-desc">We use Stripe Identity — the same technology trusted by banks globally — to verify your government ID and confirm it matches your face. REAL never sees or stores your ID document.</div>
         </div>
-        <button class="btn-primary" onclick="handleIdVerify()">Start verification →</button>
+        <button class="btn-primary" id="idVerifyBtn" onclick="handleIdVerify()">Start verification →</button>
       </div>
       <div class="stripe-note">🔒 Secured by Stripe Identity · Your document is verified and immediately discarded · REAL only receives a confirmation</div>
     </div>
@@ -556,7 +556,7 @@
           <div class="subscription-price" id="subPrice">£15.00 / month — locked for life</div>
           <div class="subscription-note">Your founding member rate is permanently protected. It will never increase.</div>
         </div>
-        <button class="btn-secondary" onclick="handleBilling()">Manage billing →</button>
+        <button class="btn-secondary" id="billingBtn" onclick="handleBilling()">Manage billing →</button>
       </div>
     </div>
   </div>
@@ -917,11 +917,19 @@
 
   // ─── HANDLERS ───
   function handleIdVerify() {
-    alert('Government ID verification via Stripe Identity will be activated in a future build step. This button will launch the Stripe verification flow.');
+    const btn = document.getElementById('idVerifyBtn');
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Coming soon — stay tuned';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
   }
 
   function handleBilling() {
-    alert('The Stripe billing portal will be connected in a future build step. This button will take you to manage your subscription and payment details.');
+    const btn = document.getElementById('billingBtn');
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Coming soon — stay tuned';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
   }
 
   function handleSignOut() {

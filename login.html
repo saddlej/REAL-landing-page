@@ -98,14 +98,13 @@
     </svg>
     <span class="nav-brand">REAL</span>
   </a>
-  <span></span>
 </nav>
 
 <div class="page-wrap">
   <div class="card">
 
     <!-- LOGIN FORM -->
-    <div id="loginState">
+    <div id="loginState" class="form-state">
       <div class="card-shield">
         <!-- LIGHT BG: navy shield, white REAL text, gold tick -->
         <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
@@ -189,8 +188,8 @@
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
 
-  function showReset(e) { e.preventDefault(); document.getElementById('loginState').style.display = 'none'; document.getElementById('resetState').classList.add('visible'); }
-  function showLogin(e) { e.preventDefault(); document.getElementById('loginState').style.display = 'block'; document.getElementById('resetState').classList.remove('visible'); }
+  function showReset(e) { e.preventDefault(); document.getElementById('loginState').classList.add('hidden'); document.getElementById('resetState').classList.add('visible'); }
+  function showLogin(e) { e.preventDefault(); document.getElementById('loginState').classList.remove('hidden'); document.getElementById('resetState').classList.remove('visible'); }
 
   function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
   function showSuccess(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
