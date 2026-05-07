@@ -217,7 +217,11 @@
       const data = await response.json();
 
       if (!response.ok) {
-        showError('errorMsg', 'Incorrect email or password. Please try again.');
+        const errMsg = (data.message || data.error_description || '').toLowerCase();
+        const display = errMsg.includes('confirm')
+          ? 'Please confirm your email before signing in. Check your inbox.'
+          : 'Incorrect email or password. Please try again.';
+        showError('errorMsg', display);
         btn.disabled = false;
         btn.textContent = 'Sign in to REAL →';
         return;

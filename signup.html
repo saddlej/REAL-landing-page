@@ -229,7 +229,7 @@
       const data = await response.json();
 
       if (!response.ok) {
-        showError(data.msg || data.error_description || 'Something went wrong. Please try again.');
+        showError(data.message || data.error_description || 'Something went wrong. Please try again.');
         btn.disabled = false;
         btn.textContent = 'Create my account →';
         return;
