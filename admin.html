@@ -222,7 +222,13 @@
       container.innerHTML = `<div class="state-card"><div class="spinner"></div><div class="state-text">Loading pending verifications…</div></div>`;
 
       try {
-        const rows = await supabaseFetch('platform_verifications?status=eq.pending&order=submitted_at.asc&select=id,user_id,platform,handle,profile_url,verification_code,submitted_at,notes');
+        const apiRes = await fetch('/api/admin-verifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: sessionPassword })
+        });
+        if (!apiRes.ok) throw new Error(await apiRes.text());
+        const { rows } = await apiRes.json();
 
         if (!rows || rows.length === 0) {
           container.innerHTML = `<div class="state-card"><div class="state-icon">✅</div><div class="state-title">Queue is clear</div><div class="state-text">No pending verifications. All caught up.</div><button class="refresh-btn" onclick="loadVerifications()">Refresh</button></div>`;
