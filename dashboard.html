@@ -705,6 +705,7 @@
   let selectedPlatformIcon = '';
   let generatedCode = '';
   let currentRowId = null;
+  let resubmitPlatformName = null;
   let userPlatforms = [];
   let idVerified = false;
 
@@ -990,11 +991,13 @@
     const profileUrl = document.getElementById('urlInput').value.trim() || null;
 
     try {
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&platform=eq.${encodeURIComponent(selectedPlatform)}`,
+        { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('real_access_token')}`, 'apikey': SUPABASE_KEY } }
+      );
+      resubmitPlatformName = null;
+
       if (selectedPlatform === 'YouTube') {
-        await fetch(
-          `${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&platform=eq.YouTube`,
-          { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('real_access_token')}`, 'apikey': SUPABASE_KEY } }
-        );
         const r = await fetch('/api/youtube-verify', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
@@ -1019,10 +1022,6 @@
           document.getElementById('modalTitle').textContent = 'Your Verification Code';
         }
       } else {
-        await fetch(
-          `${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&platform=eq.${encodeURIComponent(selectedPlatform)}`,
-          { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('real_access_token')}`, 'apikey': SUPABASE_KEY } }
-        );
         const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications`, {
           method: 'POST',
           headers: {
@@ -1186,29 +1185,13 @@
     });
   }
 
-  async function resubmitPlatform(btn) {
+  function resubmitPlatform(btn) {
     const row = btn.closest('.platform-row');
-    const rowId = row.dataset.rowId;
     const platform = row.dataset.platform;
     const icon = row.dataset.icon;
-
-    btn.disabled = true;
-    btn.textContent = 'Removing…';
-
-    try {
-      const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&platform=eq.${encodeURIComponent(platform)}`,
-        { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('real_access_token')}`, 'apikey': SUPABASE_KEY } }
-      );
-      if (!r.ok) throw new Error('Delete failed');
-      await loadPlatforms(accessToken);
-      document.getElementById('modalOverlay').classList.add('visible');
-      selectPlatform(platform, icon);
-    } catch (e) {
-      console.error('Resubmit error:', e.message);
-      btn.disabled = false;
-      btn.textContent = 'Re-submit';
-    }
+    resubmitPlatformName = platform;
+    document.getElementById('modalOverlay').classList.add('visible');
+    selectPlatform(platform, icon);
   }
 
   // ─── HANDLERS ───

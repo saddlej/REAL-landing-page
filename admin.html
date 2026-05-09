@@ -342,6 +342,7 @@
     function showRejectForm(rowId, userId, btn) {
       const rowEl = document.getElementById(`row-${rowId}`);
       if (rowEl.querySelector('.reject-form')) return;
+      stopAutoRefresh();
       btn.disabled = true;
       const form = document.createElement('div');
       form.className = 'reject-form';
@@ -365,6 +366,7 @@
       const form = rowEl.querySelector('.reject-form');
       if (form) form.remove();
       btn.disabled = false;
+      startAutoRefresh();
     }
 
     async function confirmReject(rowId, userId) {
@@ -376,6 +378,7 @@
         input.focus();
         return;
       }
+      startAutoRefresh();
       await updateRow(rowId, userId, 'failed', 'Rejected', reason);
     }
 
