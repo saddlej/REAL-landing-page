@@ -10,7 +10,6 @@
   <style>
     :root {
       --navy: #0F2044;
-      --navy-light: #162d5e;
       --gold: #FFD007;
       --gold-dim: rgba(255, 208, 7, 0.15);
       --white: #FFFFFF;
@@ -22,427 +21,88 @@
       --text-dim: rgba(255,255,255,0.45);
       --text-mid: rgba(255,255,255,0.7);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--navy);
-      color: var(--white);
-      min-height: 100vh;
-    }
-
-    /* ── LOCK SCREEN ── */
-    #lock-screen {
-      position: fixed;
-      inset: 0;
-      background: var(--navy);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      flex-direction: column;
-      gap: 32px;
-    }
-
-    .lock-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: var(--white);
-    }
+    /* LOCK */
+    #lock-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 999; flex-direction: column; gap: 32px; }
+    .lock-logo { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; letter-spacing: 0.12em; }
     .lock-logo span { color: var(--gold); }
-
-    .lock-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 40px 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 340px;
-    }
-
-    .lock-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
-
-    .lock-input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: var(--white);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.95rem;
-      width: 100%;
-      outline: none;
-      letter-spacing: 0.1em;
-      transition: border-color 0.2s;
-    }
+    .lock-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 40px 48px; display: flex; flex-direction: column; gap: 20px; width: 340px; }
+    .lock-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; }
+    .lock-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--white); font-family: 'DM Mono', monospace; font-size: 0.95rem; width: 100%; outline: none; letter-spacing: 0.1em; transition: border-color 0.2s; }
     .lock-input:focus { border-color: var(--gold); }
-
-    .lock-btn {
-      background: var(--gold);
-      color: var(--navy);
-      border: none;
-      border-radius: 8px;
-      padding: 13px 20px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: opacity 0.2s;
-    }
+    .lock-btn { background: var(--gold); color: var(--navy); border: none; border-radius: 8px; padding: 13px 20px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; transition: opacity 0.2s; }
     .lock-btn:hover { opacity: 0.88; }
+    .lock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .lock-error { font-size: 0.82rem; color: var(--red); text-align: center; min-height: 18px; }
 
-    .lock-error {
-      font-size: 0.82rem;
-      color: var(--red);
-      text-align: center;
-      min-height: 18px;
-    }
-
-    /* ── ADMIN SHELL ── */
+    /* SHELL */
     #admin-shell { display: none; }
-
-    .topbar {
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(10px);
-    }
-
-    .topbar-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-    }
+    .topbar { background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); }
+    .topbar-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.12em; }
     .topbar-logo span { color: var(--gold); }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .topbar-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      background: var(--gold-dim);
-      border: 1px solid rgba(255,208,7,0.25);
-      border-radius: 4px;
-      padding: 4px 10px;
-      text-transform: uppercase;
-    }
-
-    .lock-out-btn {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px 14px;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s;
-    }
+    .topbar-right { display: flex; align-items: center; gap: 20px; }
+    .topbar-badge { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(255,208,7,0.25); border-radius: 4px; padding: 4px 10px; text-transform: uppercase; }
+    .lock-out-btn { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
     .lock-out-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
 
-    /* ── MAIN ── */
-    .main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-    }
+    /* MAIN */
+    .main { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+    .page-header { margin-bottom: 40px; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; margin-bottom: 8px; }
+    .page-subtitle { font-size: 0.875rem; color: var(--text-mid); }
+    .stats-row { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
+    .stat-pill { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; min-width: 130px; }
+    .stat-number { font-family: 'DM Mono', monospace; font-size: 1.4rem; font-weight: 500; color: var(--gold); }
+    .stat-label { font-size: 0.75rem; color: var(--text-dim); }
 
-    .page-header {
-      margin-bottom: 40px;
-    }
+    /* USER GROUP */
+    .user-group { margin-bottom: 28px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .user-group-header { background: rgba(255,255,255,0.04); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .user-email { font-family: 'DM Mono', monospace; font-size: 0.85rem; }
+    .pending-count { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(255,208,7,0.2); border-radius: 4px; padding: 3px 9px; }
 
-    .page-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .page-subtitle {
-      font-size: 0.875rem;
-      color: var(--text-mid);
-    }
-
-    /* Stats row */
-    .stats-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-
-    .stat-pill {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 130px;
-    }
-
-    .stat-number {
-      font-family: 'DM Mono', monospace;
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--gold);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-    }
-
-    /* ── USER GROUP ── */
-    .user-group {
-      margin-bottom: 28px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .user-group-header {
-      background: rgba(255,255,255,0.04);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .user-email {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--white);
-    }
-
-    .pending-count {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gold);
-      background: var(--gold-dim);
-      border: 1px solid rgba(255,208,7,0.2);
-      border-radius: 4px;
-      padding: 3px 9px;
-    }
-
-    /* ── VERIFICATION ROW ── */
-    .verification-row {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 110px 1fr 160px 120px;
-      gap: 16px;
-      align-items: center;
-      transition: background 0.15s;
-    }
+    /* VERIFICATION ROW */
+    .verification-row { padding: 20px 24px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 110px 1fr 160px 120px; gap: 16px; align-items: center; transition: background 0.15s; }
     .verification-row:last-child { border-bottom: none; }
     .verification-row:hover { background: rgba(255,255,255,0.02); }
-
-    .platform-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      color: var(--text-mid);
-      text-transform: uppercase;
-      background: rgba(255,255,255,0.06);
-      border-radius: 5px;
-      padding: 5px 10px;
-      display: inline-block;
-    }
-
-    .handle-col {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .handle-text {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.9rem;
-      color: var(--white);
-    }
-
-    .profile-link {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      text-decoration: none;
-      transition: color 0.15s;
-      word-break: break-all;
-    }
+    .platform-tag { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--text-mid); text-transform: uppercase; background: rgba(255,255,255,0.06); border-radius: 5px; padding: 5px 10px; display: inline-block; }
+    .handle-col { display: flex; flex-direction: column; gap: 4px; }
+    .handle-text { font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+    .profile-link { font-size: 0.75rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; word-break: break-all; }
     .profile-link:hover { color: var(--gold); }
-
-    .code-col {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .code-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
-
-    .code-value {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--gold);
-      letter-spacing: 0.05em;
-    }
-
-    .action-col {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-
-    .approve-btn, .reject-btn {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 14px;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-    .approve-btn:hover, .reject-btn:hover { opacity: 0.85; }
+    .code-col { display: flex; flex-direction: column; gap: 3px; }
+    .code-label { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+    .code-value { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--gold); letter-spacing: 0.05em; }
+    .action-col { display: flex; gap: 8px; justify-content: flex-end; }
+    .approve-btn, .reject-btn { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+    .approve-btn { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .approve-btn:hover { background: rgba(34,197,94,0.2); }
+    .reject-btn { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .reject-btn:hover { background: rgba(239,68,68,0.2); }
     .approve-btn:active, .reject-btn:active { transform: scale(0.97); }
 
-    .approve-btn {
-      background: var(--green-dim);
-      color: var(--green);
-      border: 1px solid rgba(34,197,94,0.25);
-    }
-    .approve-btn:hover { background: rgba(34,197,94,0.2); }
-
-    .reject-btn {
-      background: var(--red-dim);
-      color: var(--red);
-      border: 1px solid rgba(239,68,68,0.2);
-    }
-    .reject-btn:hover { background: rgba(239,68,68,0.2); }
-
-    /* ── EMPTY / LOADING / ERROR STATES ── */
-    .state-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 64px 32px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .state-icon {
-      font-size: 2.5rem;
-      margin-bottom: 8px;
-    }
-
-    .state-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    .state-text {
-      font-size: 0.875rem;
-      color: var(--text-dim);
-      max-width: 320px;
-      line-height: 1.6;
-    }
-
-    .refresh-btn {
-      margin-top: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--gold);
-      background: var(--gold-dim);
-      border: 1px solid rgba(255,208,7,0.2);
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    /* STATES */
+    .state-card { border: 1px solid var(--border); border-radius: 12px; padding: 64px 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .state-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .state-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; }
+    .state-text { font-size: 0.875rem; color: var(--text-dim); max-width: 320px; line-height: 1.6; }
+    .refresh-btn { margin-top: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(255,208,7,0.2); border-radius: 8px; padding: 10px 20px; cursor: pointer; }
     .refresh-btn:hover { opacity: 0.8; }
+    .notes-text { font-size: 0.75rem; color: var(--text-dim); font-style: italic; margin-top: 2px; }
 
-    /* Toast notification */
-    #toast {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      padding: 14px 22px;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.25s, transform 0.25s;
-      pointer-events: none;
-      z-index: 100;
-      font-family: 'DM Sans', sans-serif;
-    }
+    /* TOAST */
+    #toast { position: fixed; bottom: 32px; right: 32px; padding: 14px 22px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 100; }
     #toast.show { opacity: 1; transform: translateY(0); }
     #toast.success { background: var(--green); color: #0f2044; }
     #toast.error { background: var(--red); color: #fff; }
 
-    /* Spinner */
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-bottom: 8px;
-    }
+    .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Notes tooltip */
-    .notes-text {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      font-style: italic;
-      margin-top: 2px;
-    }
-
     @media (max-width: 680px) {
-      .verification-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
+      .verification-row { grid-template-columns: 1fr; gap: 12px; }
       .action-col { justify-content: flex-start; }
       .topbar { padding: 0 20px; }
       .main { padding: 32px 16px 60px; }
@@ -452,24 +112,16 @@
 </head>
 <body>
 
-  <!-- LOCK SCREEN -->
   <div id="lock-screen">
     <div class="lock-logo">REAL<span>™</span></div>
     <div class="lock-card">
       <div class="lock-label">Admin access</div>
-      <input
-        type="password"
-        id="password-input"
-        class="lock-input"
-        placeholder="Enter admin password"
-        autocomplete="current-password"
-      />
-      <button class="lock-btn" onclick="checkPassword()">Enter</button>
+      <input type="password" id="password-input" class="lock-input" placeholder="Enter admin password" autocomplete="current-password" />
+      <button class="lock-btn" id="enter-btn" onclick="checkPassword()">Enter</button>
       <div class="lock-error" id="lock-error"></div>
     </div>
   </div>
 
-  <!-- ADMIN SHELL -->
   <div id="admin-shell">
     <nav class="topbar">
       <div class="topbar-logo">REAL<span>™</span></div>
@@ -478,201 +130,136 @@
         <button class="lock-out-btn" onclick="lockOut()">Lock</button>
       </div>
     </nav>
-
     <main class="main">
       <div class="page-header">
         <h1 class="page-title">Pending Verifications</h1>
         <p class="page-subtitle">Review and approve platform verification submissions. Grouped by member.</p>
       </div>
-
-      <div class="stats-row" id="stats-row">
-        <div class="stat-pill">
-          <div class="stat-number" id="stat-pending">—</div>
-          <div class="stat-label">Pending</div>
-        </div>
-        <div class="stat-pill">
-          <div class="stat-number" id="stat-members">—</div>
-          <div class="stat-label">Members waiting</div>
-        </div>
+      <div class="stats-row">
+        <div class="stat-pill"><div class="stat-number" id="stat-pending">—</div><div class="stat-label">Pending</div></div>
+        <div class="stat-pill"><div class="stat-number" id="stat-members">—</div><div class="stat-label">Members waiting</div></div>
       </div>
-
-      <div id="queue-container">
-        <!-- Populated by JS -->
-      </div>
+      <div id="queue-container"></div>
     </main>
   </div>
 
   <div id="toast"></div>
 
   <script>
-    // ─────────────────────────────────────────────
-    // CONFIG — swap in your real values
-    // ─────────────────────────────────────────────
-    const ADMIN_PASSWORD = 'REAL_password_2026!';
-
     const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
-    const SUPABASE_ANON_KEY = document.querySelector('script[data-anon]')?.dataset.anon || '';
+    const ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
 
-    // Supabase anon key — paste it below between the quotes
-    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
+    let sessionPassword = null;
 
-    // ─────────────────────────────────────────────
-    // LOCK / UNLOCK
-    // ─────────────────────────────────────────────
     document.getElementById('password-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') checkPassword();
     });
 
-    function checkPassword() {
+    async function checkPassword() {
       const val = document.getElementById('password-input').value;
-      if (val === ADMIN_PASSWORD) {
-        document.getElementById('lock-screen').style.display = 'none';
-        document.getElementById('admin-shell').style.display = 'block';
-        loadVerifications();
-      } else {
-        document.getElementById('lock-error').textContent = 'Incorrect password.';
-        document.getElementById('password-input').value = '';
-        document.getElementById('password-input').focus();
+      if (!val) return;
+      const btn = document.getElementById('enter-btn');
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      document.getElementById('lock-error').textContent = '';
+
+      try {
+        const res = await fetch('/api/admin-check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: val })
+        });
+        if (res.ok) {
+          sessionPassword = val;
+          document.getElementById('lock-screen').style.display = 'none';
+          document.getElementById('admin-shell').style.display = 'block';
+          loadVerifications();
+        } else {
+          document.getElementById('lock-error').textContent = 'Incorrect password.';
+          document.getElementById('password-input').value = '';
+          document.getElementById('password-input').focus();
+        }
+      } catch (_) {
+        document.getElementById('lock-error').textContent = 'Connection error — try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enter';
       }
     }
 
     function lockOut() {
+      sessionPassword = null;
       document.getElementById('lock-screen').style.display = 'flex';
       document.getElementById('admin-shell').style.display = 'none';
       document.getElementById('password-input').value = '';
       document.getElementById('lock-error').textContent = '';
     }
 
-    // ─────────────────────────────────────────────
-    // SUPABASE HELPERS
-    // ─────────────────────────────────────────────
     async function supabaseFetch(path, options = {}) {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-        headers: {
-          'apikey': ANON_KEY,
-          'Authorization': `Bearer ${ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation',
-          ...options.headers
-        },
+        headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...options.headers },
         ...options
       });
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err);
-      }
+      if (!res.ok) throw new Error(await res.text());
       return res.status === 204 ? null : res.json();
     }
 
-    // ─────────────────────────────────────────────
-    // LOAD PENDING VERIFICATIONS
-    // ─────────────────────────────────────────────
+    async function fetchUserEmails(userIds) {
+      try {
+        const res = await fetch('/api/admin-users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: sessionPassword, userIds })
+        });
+        if (!res.ok) return {};
+        const data = await res.json();
+        return data.emailMap || {};
+      } catch (_) { return {}; }
+    }
+
     async function loadVerifications() {
       const container = document.getElementById('queue-container');
-      container.innerHTML = `
-        <div class="state-card">
-          <div class="spinner"></div>
-          <div class="state-text">Loading pending verifications…</div>
-        </div>`;
+      container.innerHTML = `<div class="state-card"><div class="spinner"></div><div class="state-text">Loading pending verifications…</div></div>`;
 
       try {
-        // Fetch all pending rows
-        const rows = await supabaseFetch(
-          'platform_verifications?status=eq.pending&order=submitted_at.asc&select=id,user_id,platform,handle,profile_url,verification_code,submitted_at,notes'
-        );
+        const rows = await supabaseFetch('platform_verifications?status=eq.pending&order=submitted_at.asc&select=id,user_id,platform,handle,profile_url,verification_code,submitted_at,notes');
 
         if (!rows || rows.length === 0) {
-          container.innerHTML = `
-            <div class="state-card">
-              <div class="state-icon">✅</div>
-              <div class="state-title">Queue is clear</div>
-              <div class="state-text">No pending verifications. All caught up.</div>
-              <button class="refresh-btn" onclick="loadVerifications()">Refresh</button>
-            </div>`;
+          container.innerHTML = `<div class="state-card"><div class="state-icon">✅</div><div class="state-title">Queue is clear</div><div class="state-text">No pending verifications. All caught up.</div><button class="refresh-btn" onclick="loadVerifications()">Refresh</button></div>`;
           document.getElementById('stat-pending').textContent = '0';
           document.getElementById('stat-members').textContent = '0';
           return;
         }
 
-        // Fetch user emails for all unique user_ids
         const userIds = [...new Set(rows.map(r => r.user_id))];
         const emailMap = await fetchUserEmails(userIds);
 
-        // Update stats
         document.getElementById('stat-pending').textContent = rows.length;
         document.getElementById('stat-members').textContent = userIds.length;
 
-        // Group rows by user_id
         const groups = {};
         for (const row of rows) {
           if (!groups[row.user_id]) groups[row.user_id] = [];
           groups[row.user_id].push(row);
         }
 
-        // Render
         container.innerHTML = '';
         for (const [userId, userRows] of Object.entries(groups)) {
-          const email = emailMap[userId] || userId;
+          const email = emailMap[userId] || `user:${userId.slice(0,8)}…`;
           container.appendChild(renderUserGroup(email, userId, userRows));
         }
 
       } catch (err) {
-        console.error(err);
-        container.innerHTML = `
-          <div class="state-card">
-            <div class="state-icon">⚠️</div>
-            <div class="state-title">Could not load data</div>
-            <div class="state-text">${err.message}</div>
-            <button class="refresh-btn" onclick="loadVerifications()">Try again</button>
-          </div>`;
+        container.innerHTML = `<div class="state-card"><div class="state-icon">⚠️</div><div class="state-title">Could not load data</div><div class="state-text">${err.message}</div><button class="refresh-btn" onclick="loadVerifications()">Try again</button></div>`;
       }
     }
 
-    // Fetch emails for a list of user IDs via auth.users view (service role needed for full access)
-    // Since we only have anon key here, we use a fallback: show user_id shortened
-    // For full email lookup you'd need a Supabase Edge Function — see note below
-    async function fetchUserEmails(userIds) {
-      const map = {};
-      // Attempt to read from a profiles or users table if one exists
-      // If not — fall back to shortened user_id
-      try {
-        // Try fetching from a 'profiles' table if it exists
-        const profiles = await supabaseFetch(
-          `profiles?id=in.(${userIds.map(id => `"${id}"`).join(',')})&select=id,email`
-        );
-        if (profiles && profiles.length) {
-          for (const p of profiles) map[p.id] = p.email;
-        }
-      } catch (_) {
-        // profiles table doesn't exist — that's fine
-      }
-
-      // Fill in any missing with shortened UUID
-      for (const id of userIds) {
-        if (!map[id]) map[id] = `user:${id.slice(0, 8)}…`;
-      }
-      return map;
-    }
-
-    // ─────────────────────────────────────────────
-    // RENDER USER GROUP
-    // ─────────────────────────────────────────────
     function renderUserGroup(email, userId, rows) {
       const group = document.createElement('div');
       group.className = 'user-group';
       group.id = `group-${userId}`;
-
-      const header = document.createElement('div');
-      header.className = 'user-group-header';
-      header.innerHTML = `
-        <div class="user-email">${escapeHtml(email)}</div>
-        <div class="pending-count" id="count-${userId}">${rows.length} pending</div>`;
-      group.appendChild(header);
-
-      for (const row of rows) {
-        group.appendChild(renderVerificationRow(row, userId));
-      }
-
+      group.innerHTML = `<div class="user-group-header"><div class="user-email">${escapeHtml(email)}</div><div class="pending-count" id="count-${userId}">${rows.length} pending</div></div>`;
+      for (const row of rows) group.appendChild(renderVerificationRow(row, userId));
       return group;
     }
 
@@ -680,21 +267,12 @@
       const el = document.createElement('div');
       el.className = 'verification-row';
       el.id = `row-${row.id}`;
-
-      const submittedDate = new Date(row.submitted_at).toLocaleDateString('en-GB', {
-        day: '2-digit', month: 'short', year: 'numeric'
-      });
-
+      const submittedDate = new Date(row.submitted_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       el.innerHTML = `
-        <div>
-          <div class="platform-tag">${escapeHtml(row.platform)}</div>
-        </div>
+        <div><div class="platform-tag">${escapeHtml(row.platform)}</div></div>
         <div class="handle-col">
           <div class="handle-text">${escapeHtml(row.handle)}</div>
-          ${row.profile_url
-            ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener noreferrer" class="profile-link">↗ Open profile</a>`
-            : '<span class="notes-text">No profile URL submitted</span>'
-          }
+          ${row.profile_url ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener noreferrer" class="profile-link">↗ Open profile</a>` : '<span class="notes-text">No profile URL submitted</span>'}
           <div class="notes-text">Submitted ${submittedDate}</div>
           ${row.notes ? `<div class="notes-text">Note: ${escapeHtml(row.notes)}</div>` : ''}
         </div>
@@ -706,113 +284,63 @@
           <button class="approve-btn" onclick="approve(${row.id}, '${userId}')">Approve</button>
           <button class="reject-btn" onclick="reject(${row.id}, '${userId}')">Reject</button>
         </div>`;
-
       return el;
     }
 
-    // ─────────────────────────────────────────────
-    // APPROVE / REJECT
-    // ─────────────────────────────────────────────
-    async function approve(rowId, userId) {
-      await updateRow(rowId, userId, 'verified', 'Approved ✓');
-    }
-
-    async function reject(rowId, userId) {
-      await updateRow(rowId, userId, 'failed', 'Rejected');
-    }
+    async function approve(rowId, userId) { await updateRow(rowId, userId, 'verified', 'Approved ✓'); }
+    async function reject(rowId, userId) { await updateRow(rowId, userId, 'failed', 'Rejected'); }
 
     async function updateRow(rowId, userId, newStatus, toastMsg) {
       const rowEl = document.getElementById(`row-${rowId}`);
-
-      // Disable buttons immediately
-      rowEl.querySelectorAll('button').forEach(b => {
-        b.disabled = true;
-        b.style.opacity = '0.4';
-      });
+      rowEl.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
 
       try {
         const body = { status: newStatus };
-        if (newStatus === 'verified') {
-          body.verified_at = new Date().toISOString();
-        }
+        if (newStatus === 'verified') body.verified_at = new Date().toISOString();
+        await supabaseFetch(`platform_verifications?id=eq.${rowId}`, { method: 'PATCH', body: JSON.stringify(body) });
 
-        await supabaseFetch(`platform_verifications?id=eq.${rowId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(body)
-        });
-
-        // Remove row with animation
         rowEl.style.transition = 'opacity 0.3s, transform 0.3s';
         rowEl.style.opacity = '0';
         rowEl.style.transform = 'translateX(12px)';
-        setTimeout(() => {
-          rowEl.remove();
-          updateGroupCount(userId);
-        }, 300);
-
+        setTimeout(() => { rowEl.remove(); updateGroupCount(userId); }, 300);
         showToast(toastMsg, 'success');
 
       } catch (err) {
-        console.error(err);
         showToast('Error — try again', 'error');
-        rowEl.querySelectorAll('button').forEach(b => {
-          b.disabled = false;
-          b.style.opacity = '';
-        });
+        rowEl.querySelectorAll('button').forEach(b => { b.disabled = false; b.style.opacity = ''; });
       }
     }
 
     function updateGroupCount(userId) {
       const group = document.getElementById(`group-${userId}`);
       if (!group) return;
-
       const remaining = group.querySelectorAll('.verification-row').length;
-
       if (remaining === 0) {
-        // Fade out the whole group
         group.style.transition = 'opacity 0.4s';
         group.style.opacity = '0';
         setTimeout(() => group.remove(), 400);
       } else {
-        const countEl = document.getElementById(`count-${userId}`);
-        if (countEl) countEl.textContent = `${remaining} pending`;
+        const c = document.getElementById(`count-${userId}`);
+        if (c) c.textContent = `${remaining} pending`;
       }
-
-      // Update stats
       const allRows = document.querySelectorAll('.verification-row').length;
-      const allGroups = document.querySelectorAll('.user-group').length;
       document.getElementById('stat-pending').textContent = allRows || 0;
-      document.getElementById('stat-members').textContent = allGroups || 0;
-
-      // If nothing left
+      document.getElementById('stat-members').textContent = document.querySelectorAll('.user-group').length || 0;
       if (allRows === 0) {
         setTimeout(() => {
-          document.getElementById('queue-container').innerHTML = `
-            <div class="state-card">
-              <div class="state-icon">✅</div>
-              <div class="state-title">Queue is clear</div>
-              <div class="state-text">No pending verifications. All caught up.</div>
-              <button class="refresh-btn" onclick="loadVerifications()">Refresh</button>
-            </div>`;
+          document.getElementById('queue-container').innerHTML = `<div class="state-card"><div class="state-icon">✅</div><div class="state-title">Queue is clear</div><div class="state-text">No pending verifications. All caught up.</div><button class="refresh-btn" onclick="loadVerifications()">Refresh</button></div>`;
         }, 500);
       }
     }
 
-    // ─────────────────────────────────────────────
-    // TOAST
-    // ─────────────────────────────────────────────
     let toastTimer;
     function showToast(msg, type) {
       const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className = `show ${type}`;
+      t.textContent = msg; t.className = `show ${type}`;
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { t.className = ''; }, 2800);
     }
 
-    // ─────────────────────────────────────────────
-    // HELPERS
-    // ─────────────────────────────────────────────
     function escapeHtml(str) {
       if (!str) return '';
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
