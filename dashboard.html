@@ -652,9 +652,9 @@
       <div class="modal-step" id="modalStepC">
         <div class="msg error" id="modalErrorC"></div>
         <p class="code-instructions">Your unique verification code has been generated. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span>, then click Submit below.</p>
-        <div class="code-box">
-          <div class="code-label">Your unique REAL verification code</div>
-          <div class="code-value" id="verificationCode">REAL-XXXXXX</div>
+        <div class="code-copy-block" onclick="copyCode(this)" style="margin-bottom:20px;">
+          <span class="code-copy-text" id="verificationCode">REAL-XXXXXX</span>
+          <span class="code-copy-hint">Copy</span>
         </div>
         <p class="code-instructions" style="font-size:12px; color:var(--gray-light);">Once we can see the code in your bio, your verification request will be reviewed and approved — usually within 24 hours. You can remove the code from your bio after you're verified.</p>
         <div class="modal-actions">
