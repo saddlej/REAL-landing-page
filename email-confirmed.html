@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Confirmed — REAL™</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --navy: #0F2044; --navy-mid: #122459; --gold: #FFD007; --white: #ffffff; }
+    body { background: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: var(--navy-mid); border: 1px solid rgba(255,208,7,0.15); border-radius: 16px; padding: 48px 40px; max-width: 480px; width: 100%; text-align: center; animation: fadeUp 0.5s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .logo { font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0.15em; color: var(--white); margin-bottom: 32px; display: block; text-decoration: none; }
+    .logo span { color: var(--gold); font-size: 13px; vertical-align: super; }
+    .icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 28px; }
+    .icon.success { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); }
+    .icon.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); }
+    .icon.warning { background: rgba(255,208,7,0.15); border: 1px solid rgba(255,208,7,0.3); }
+    .label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--white); margin-bottom: 16px; line-height: 1.2; }
+    p { font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.65); margin-bottom: 32px; }
+    .btn { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <a href="/" class="logo">REAL<span>™</span></a>
+  <div id="content"></div>
+</div>
+<script>
+  const status = new URLSearchParams(window.location.search).get('status') || 'invalid';
+  const states = {
+    success: { icon: '✓', iconClass: 'success', label: 'Verification Complete', title: 'Email confirmed', message: 'Your email address has been verified and added to your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard.html' },
+    already: { icon: '✓', iconClass: 'success', label: 'Already Verified', title: 'Already confirmed', message: 'This email address has already been verified on your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard.html' },
+    expired: { icon: '⏱', iconClass: 'warning', label: 'Link Expired', title: 'This link has expired', message: 'Confirmation links are valid for 24 hours. Head back to your dashboard and request a new one.', btn: 'Go to dashboard →', href: '/dashboard.html' },
+    error: { icon: '!', iconClass: 'error', label: 'Something went wrong', title: 'Verification failed', message: 'Something went wrong. Please try again from your dashboard or contact info@realverified.co.uk.', btn: 'Go to dashboard →', href: '/dashboard.html' },
+    invalid: { icon: '!', iconClass: 'error', label: 'Invalid Link', title: 'This link is not valid', message: 'This confirmation link is invalid or has already been used.', btn: 'Go to dashboard →', href: '/dashboard.html' }
+  };
+  const s = states[status] || states.invalid;
+  document.getElementById('content').innerHTML = `<div class="icon ${s.iconClass}">${s.icon}</div><div class="label">${s.label}</div><h1>${s.title}</h1><p>${s.message}</p><a href="${s.href}" class="btn">${s.btn}</a>`;
+</script>
+</body>
+</html>
