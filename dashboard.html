@@ -792,6 +792,12 @@
       renderPlatforms();
     } else {
       loadPlatforms(token);
+      // Refresh platform statuses every 15 seconds
+      setInterval(() => loadPlatforms(token), 15000);
+      // Refresh immediately when the member returns to this tab
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) loadPlatforms(token);
+      });
     }
   }
 
