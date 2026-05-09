@@ -650,16 +650,14 @@
 
       <!-- Step C: Show code & instructions -->
       <div class="modal-step" id="modalStepC">
-        <div class="msg error" id="modalErrorC"></div>
-        <p class="code-instructions">Your unique verification code has been generated. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span>, then click Submit below.</p>
+        <p class="code-instructions">Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.</p>
         <div class="code-copy-block" onclick="copyCode(this)" style="margin-bottom:20px;">
           <span class="code-copy-text" id="verificationCode">REAL-XXXXXX</span>
           <span class="code-copy-hint">Copy</span>
         </div>
         <p class="code-instructions" style="font-size:12px; color:var(--gray-light);">Once we can see the code in your bio, your verification request will be reviewed and approved — usually within 24 hours. You can remove the code from your bio after you're verified.</p>
         <div class="modal-actions">
-          <button class="btn-secondary" onclick="goToStepB()">← Back</button>
-          <button class="btn-primary" id="submitPlatformBtn" onclick="submitPlatform()">Submit for verification →</button>
+          <button class="btn-primary" onclick="closeModal()">Done</button>
         </div>
       </div>
 
@@ -936,7 +934,7 @@
 
   function goToStepA() { showStep('modalStepA'); document.getElementById('modalTitle').textContent = 'Add a Platform'; }
   function goToStepB() { showStep('modalStepB'); document.getElementById('modalTitle').textContent = selectedPlatform || 'Add a Platform'; }
-  function goToStepC() {
+  async function goToStepC() {
     const handle = document.getElementById('handleInput').value.trim();
     if (!handle) {
       document.getElementById('modalError').textContent = 'Please enter your handle or username.';
@@ -944,14 +942,87 @@
       return;
     }
     document.getElementById('modalError').classList.remove('visible');
+
     const _b = new Uint8Array(6);
     crypto.getRandomValues(_b);
     const _chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     generatedCode = 'REAL-' + Array.from(_b).map(b => _chars[b % _chars.length]).join('');
-    document.getElementById('verificationCode').textContent = generatedCode;
-    document.getElementById('platformNameC').textContent = selectedPlatform;
-    showStep('modalStepC');
-    document.getElementById('modalTitle').textContent = 'Your Verification Code';
+
+    if (isPreview) {
+      document.getElementById('verificationCode').textContent = generatedCode;
+      document.getElementById('platformNameC').textContent = selectedPlatform;
+      showStep('modalStepC');
+      document.getElementById('modalTitle').textContent = 'Your Verification Code';
+      return;
+    }
+
+    const btn = document.querySelector('#modalStepB .btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const profileUrl = document.getElementById('urlInput').value.trim() || null;
+
+    try {
+      if (selectedPlatform === 'YouTube') {
+        const r = await fetch('/api/youtube-verify', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ handle, verification_code: generatedCode })
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || 'Failed');
+
+        await loadPlatforms(accessToken);
+
+        if (data.success) {
+          document.getElementById('platformNameD').textContent = 'YouTube';
+          document.getElementById('stepDTitle').textContent = 'Verified!';
+          document.getElementById('stepDMsg').innerHTML = 'Your YouTube channel is now <strong>verified</strong> and showing on your REAL profile.';
+          showStep('modalStepD');
+          document.getElementById('modalTitle').textContent = 'Verified!';
+        } else {
+          document.getElementById('verificationCode').textContent = generatedCode;
+          document.getElementById('platformNameC').textContent = selectedPlatform;
+          showStep('modalStepC');
+          document.getElementById('modalTitle').textContent = 'Your Verification Code';
+        }
+      } else {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'apikey': SUPABASE_KEY,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            user_id: currentUser.id,
+            platform: selectedPlatform,
+            handle,
+            profile_url: profileUrl,
+            verification_code: generatedCode,
+            status: 'pending'
+          })
+        });
+        if (!r.ok) {
+          const errBody = await r.json().catch(() => ({}));
+          throw new Error(errBody.message || errBody.hint || errBody.code || 'Failed');
+        }
+
+        await loadPlatforms(accessToken);
+
+        document.getElementById('verificationCode').textContent = generatedCode;
+        document.getElementById('platformNameC').textContent = selectedPlatform;
+        showStep('modalStepC');
+        document.getElementById('modalTitle').textContent = 'Your Verification Code';
+      }
+    } catch (e) {
+      document.getElementById('modalError').textContent = 'Something went wrong: ' + e.message;
+      document.getElementById('modalError').classList.add('visible');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Generate code →';
   }
 
   function selectPlatform(name, icon) {
@@ -970,101 +1041,7 @@
     goToStepB();
   }
 
-  async function submitPlatform() {
-    if (isPreview) {
-      document.getElementById('platformNameD').textContent = selectedPlatform;
-      showStep('modalStepD');
-      document.getElementById('modalTitle').textContent = 'Submitted';
-      return;
-    }
-
-    if (selectedPlatform === 'YouTube') { await submitYouTube(); return; }
-
-    const errC = document.getElementById('modalErrorC');
-    errC.textContent = '';
-    errC.classList.remove('visible');
-    const btn = document.getElementById('submitPlatformBtn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-
-    const handle = document.getElementById('handleInput').value.trim();
-    const profileUrl = document.getElementById('urlInput').value.trim() || null;
-
-    try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-          'apikey': SUPABASE_KEY,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          user_id: currentUser.id,
-          platform: selectedPlatform,
-          handle: handle,
-          profile_url: profileUrl,
-          verification_code: generatedCode,
-          status: 'pending'
-        })
-      });
-
-      if (!r.ok) {
-        const errBody = await r.json().catch(() => ({}));
-        throw new Error(errBody.message || errBody.hint || errBody.code || 'Failed');
-      }
-
-      document.getElementById('platformNameD').textContent = selectedPlatform;
-      showStep('modalStepD');
-      document.getElementById('modalTitle').textContent = 'Submitted';
-    } catch(e) {
-      document.getElementById('modalErrorC').textContent = 'Something went wrong: ' + e.message;
-      document.getElementById('modalErrorC').classList.add('visible');
-      btn.disabled = false;
-      btn.textContent = 'Submit for verification →';
-    }
-  }
-
   // ─── YOUTUBE INSTANT VERIFY ───
-  async function submitYouTube() {
-    const errC = document.getElementById('modalErrorC');
-    errC.textContent = '';
-    errC.classList.remove('visible');
-    const btn = document.getElementById('submitPlatformBtn');
-    btn.disabled = true;
-    btn.textContent = 'Checking your channel…';
-
-    const handle = document.getElementById('handleInput').value.trim();
-
-    try {
-      const r = await fetch('/api/youtube-verify', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handle, verification_code: generatedCode })
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || 'Failed');
-
-      await loadPlatforms(accessToken);
-
-      document.getElementById('platformNameD').textContent = 'YouTube';
-      if (data.success) {
-        document.getElementById('stepDTitle').textContent = 'Verified!';
-        document.getElementById('stepDMsg').innerHTML = 'Your YouTube channel is now <strong>verified</strong> and showing on your REAL profile.';
-      } else {
-        document.getElementById('stepDTitle').textContent = 'Submitted';
-        document.getElementById('stepDMsg').innerHTML = 'Your channel has been added. Once the code appears in your description, use the <strong>Check again</strong> button to verify instantly.';
-      }
-      showStep('modalStepD');
-      document.getElementById('modalTitle').textContent = data.success ? 'Verified!' : 'Submitted';
-    } catch (e) {
-      errC.textContent = 'Something went wrong: ' + e.message;
-      errC.classList.add('visible');
-      btn.disabled = false;
-      btn.textContent = 'Submit for verification →';
-    }
-  }
-
   async function recheckYouTube(btn) {
     const row = btn.closest('.platform-row');
     const rowId = row.dataset.rowId;
