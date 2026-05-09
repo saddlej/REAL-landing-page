@@ -165,7 +165,8 @@
     let refreshInterval = null;
 
     function startAutoRefresh() {
-      if (refreshInterval) clearInterval(refreshInterval);
+      clearInterval(refreshInterval);
+      document.removeEventListener('visibilitychange', onAdminVisibility);
       refreshInterval = setInterval(() => loadVerifications(true), 30000);
       document.addEventListener('visibilitychange', onAdminVisibility);
     }
@@ -330,8 +331,8 @@
           <div class="code-value">${escapeHtml(row.verification_code)}</div>
         </div>
         <div class="action-col">
-          <button class="approve-btn" onclick="approve(${row.id}, '${userId}')">Approve</button>
-          <button class="reject-btn" onclick="showRejectForm(${row.id}, '${userId}', this)">Reject</button>
+          <button class="approve-btn" onclick="approve('${row.id}', '${userId}')">Approve</button>
+          <button class="reject-btn" onclick="showRejectForm('${row.id}', '${userId}', this)">Reject</button>
         </div>`;
       return el;
     }
