@@ -287,6 +287,9 @@
   .btn-add-platform:hover { border-color: var(--navy); color: var(--navy); border-style: solid; }
   .platform-empty-state { text-align: center; padding: 12px 0 4px; }
   .platform-empty-state p { font-size: 13px; color: var(--gray-light); line-height: 1.6; margin-bottom: 16px; }
+  .platform-lock-msg { text-align: center; font-size: 12px; color: var(--gray-light); font-style: italic; margin-top: 10px; display: none; }
+  .platform-lock-msg.visible { display: block; }
+  #step2Card.step-locked .section-body { opacity: 0.45; pointer-events: none; user-select: none; }
 
   /* ─── SUBSCRIPTION ─── */
   .subscription-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -512,7 +515,7 @@
   </div>
 
   <!-- STEP 2: PLATFORMS -->
-  <div class="section-card">
+  <div class="section-card" id="step2Card">
     <div class="section-header">
       <div class="section-header-left">
         <div class="step-badge">2</div>
@@ -531,10 +534,11 @@
       <div id="platformEmptyState" class="platform-empty-state" style="display:none;">
         <p>No platforms added yet. Add your first account below to start building your verified identity.</p>
       </div>
-      <button class="btn-add-platform" onclick="openModal()">
+      <button class="btn-add-platform" id="addPlatformBtn" onclick="openModal()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add a platform
       </button>
+      <p class="platform-lock-msg" id="platformLockMsg">Complete identity verification above before linking your platforms.</p>
     </div>
   </div>
 
@@ -688,6 +692,7 @@
   let selectedPlatformIcon = '';
   let generatedCode = '';
   let userPlatforms = [];
+  let idVerified = false;
 
   if (isPreview) {
     // PREVIEW MODE — show dummy data
@@ -724,6 +729,21 @@
     }
   }
 
+  function updatePlatformSectionLock() {
+    const card = document.getElementById('step2Card');
+    const btn = document.getElementById('addPlatformBtn');
+    const msg = document.getElementById('platformLockMsg');
+    if (idVerified) {
+      card.classList.remove('step-locked');
+      btn.disabled = false;
+      msg.classList.remove('visible');
+    } else {
+      card.classList.add('step-locked');
+      btn.disabled = true;
+      msg.classList.add('visible');
+    }
+  }
+
   function initDashboard(user, token, preview) {
     // Set email in nav
     document.getElementById('navEmail').textContent = user.email || '';
@@ -735,6 +755,10 @@
     // Set member since
     const since = new Date(user.created_at);
     document.getElementById('memberSince').textContent = 'Member since ' + since.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+    // Lock Step 2 until government ID is verified (stored in user_metadata.id_verified by Stripe webhook)
+    idVerified = preview ? true : (user.user_metadata?.id_verified === true);
+    updatePlatformSectionLock();
 
     if (preview) {
       // Dummy platforms for preview
@@ -817,6 +841,7 @@
 
   // ─── MODAL ───
   function openModal() {
+    if (!idVerified) return;
     document.getElementById('modalOverlay').classList.add('visible');
     goToStepA();
   }
