@@ -657,7 +657,7 @@
         </div>
         <p class="code-instructions" style="font-size:12px; color:var(--gray-light);">Once we can see the code in your bio, your verification request will be reviewed and approved — usually within 24 hours. You can remove the code from your bio after you're verified.</p>
         <div class="modal-actions">
-          <button class="btn-primary" onclick="closeModal()">Done</button>
+          <button class="btn-primary" onclick="confirmPlatform()">I've added the code →</button>
         </div>
       </div>
 
@@ -704,6 +704,7 @@
   let selectedPlatform = '';
   let selectedPlatformIcon = '';
   let generatedCode = '';
+  let currentRowId = null;
   let userPlatforms = [];
   let idVerified = false;
 
@@ -872,21 +873,40 @@
 
       let notice = '';
       if (safeStatus === 'pending') {
-        const label = p.platform === 'YouTube'
-          ? 'Add this code to your YouTube channel description:'
-          : 'Add this code to the first line of your bio:';
-        const recheckBtn = p.platform === 'YouTube'
-          ? `<button class="notice-action-btn" onclick="recheckYouTube(this)">Check again</button>`
-          : '';
-        notice = `
-          <div class="platform-notice">
-            <span class="notice-label">${label}</span>
-            <div class="code-copy-block" onclick="copyCode(this)">
-              <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
-              <span class="code-copy-hint">Copy</span>
-            </div>
-            ${recheckBtn}
-          </div>`;
+        const confirmed = p.member_confirmed === true;
+        if (!confirmed) {
+          const label = p.platform === 'YouTube'
+            ? 'Add this code to your YouTube channel description, then confirm below:'
+            : 'Add this code to the first line of your bio, then confirm below:';
+          notice = `
+            <div class="platform-notice">
+              <span class="notice-label">${label}</span>
+              <div class="code-copy-block" onclick="copyCode(this)">
+                <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                <span class="code-copy-hint">Copy</span>
+              </div>
+              <button class="notice-action-btn" onclick="confirmFromCard(this)">I've added it — check my bio</button>
+            </div>`;
+        } else if (p.platform === 'YouTube') {
+          notice = `
+            <div class="platform-notice">
+              <span class="notice-label">Add this code to your YouTube channel description:</span>
+              <div class="code-copy-block" onclick="copyCode(this)">
+                <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                <span class="code-copy-hint">Copy</span>
+              </div>
+              <button class="notice-action-btn" onclick="recheckYouTube(this)">Check again</button>
+            </div>`;
+        } else {
+          notice = `
+            <div class="platform-notice">
+              <span class="notice-label">Under review — we'll verify your bio within 24 hours.</span>
+              <div class="code-copy-block" onclick="copyCode(this)">
+                <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                <span class="code-copy-hint">Copy</span>
+              </div>
+            </div>`;
+        }
       } else if (safeStatus === 'failed') {
         notice = `
           <div class="platform-notice">
@@ -972,6 +992,7 @@
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || 'Failed');
 
+        currentRowId = data.row_id || null;
         await loadPlatforms(accessToken);
 
         if (data.success) {
@@ -993,7 +1014,7 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
             'apikey': SUPABASE_KEY,
-            'Prefer': 'return=minimal'
+            'Prefer': 'return=representation'
           },
           body: JSON.stringify({
             user_id: currentUser.id,
@@ -1001,13 +1022,16 @@
             handle,
             profile_url: profileUrl,
             verification_code: generatedCode,
+            member_confirmed: false,
             status: 'pending'
           })
         });
+        const responseData = await r.json().catch(() => null);
         if (!r.ok) {
-          const errBody = await r.json().catch(() => ({}));
+          const errBody = responseData || {};
           throw new Error(errBody.message || errBody.hint || errBody.code || 'Failed');
         }
+        currentRowId = Array.isArray(responseData) ? (responseData[0]?.id || null) : null;
 
         await loadPlatforms(accessToken);
 
@@ -1039,6 +1063,65 @@
     document.getElementById('urlField').style.display = showUrl ? 'block' : 'none';
     document.getElementById('urlInput').value = '';
     goToStepB();
+  }
+
+  // ─── CONFIRM PLATFORM ───
+  async function confirmPlatform() {
+    if (isPreview || !currentRowId) { closeModal(); return; }
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${currentRowId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ member_confirmed: true })
+      });
+      await loadPlatforms(accessToken);
+    } catch (e) {
+      console.error('confirmPlatform error:', e);
+    }
+    closeModal();
+  }
+
+  async function confirmFromCard(btn) {
+    const row = btn.closest('.platform-row');
+    const rowId = row.dataset.rowId;
+    const platform = row.dataset.platform;
+    const handle = row.dataset.handle;
+    const code = row.dataset.code;
+
+    btn.disabled = true;
+    btn.textContent = 'Confirming…';
+
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${rowId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ member_confirmed: true })
+      });
+
+      if (platform === 'YouTube') {
+        await fetch('/api/youtube-verify', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ handle, verification_code: code, row_id: rowId })
+        });
+      }
+
+      await loadPlatforms(accessToken);
+    } catch (e) {
+      console.error('confirmFromCard error:', e);
+      btn.disabled = false;
+      btn.textContent = "I've added it — check my bio";
+    }
   }
 
   // ─── YOUTUBE INSTANT VERIFY ───

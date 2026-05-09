@@ -115,6 +115,7 @@ module.exports = async function handler(req, res) {
         platform: 'YouTube',
         handle,
         verification_code,
+        member_confirmed: false,
         status: found ? 'verified' : 'pending',
         ...(found ? { verified_at: now } : {})
       };

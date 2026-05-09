@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   try {
     const r = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/platform_verifications` +
-      `?status=eq.pending&order=submitted_at.asc` +
+      `?status=eq.pending&member_confirmed=eq.true&order=submitted_at.asc` +
       `&select=id,user_id,platform,handle,profile_url,verification_code,submitted_at,notes`,
       {
         headers: {
