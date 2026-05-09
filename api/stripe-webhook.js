@@ -51,7 +51,7 @@ async function handler(req, res) {
             'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
             'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY
           },
-          body: JSON.stringify({ data: { id_verified: true } })
+          body: JSON.stringify({ user_metadata: { id_verified: true } })
         }
       );
 
