@@ -150,6 +150,21 @@
     const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
 
     let sessionPassword = null;
+    let refreshInterval = null;
+
+    function startAutoRefresh() {
+      if (refreshInterval) clearInterval(refreshInterval);
+      refreshInterval = setInterval(() => loadVerifications(true), 30000);
+      document.addEventListener('visibilitychange', onAdminVisibility);
+    }
+    function stopAutoRefresh() {
+      clearInterval(refreshInterval);
+      refreshInterval = null;
+      document.removeEventListener('visibilitychange', onAdminVisibility);
+    }
+    function onAdminVisibility() {
+      if (!document.hidden && sessionPassword) loadVerifications(true);
+    }
 
     // Skip lock screen if a valid session is already saved
     (function () {
@@ -159,6 +174,7 @@
         document.getElementById('lock-screen').style.display = 'none';
         document.getElementById('admin-shell').style.display = 'block';
         loadVerifications();
+        startAutoRefresh();
       }
     })();
 
@@ -186,6 +202,7 @@
           document.getElementById('lock-screen').style.display = 'none';
           document.getElementById('admin-shell').style.display = 'block';
           loadVerifications();
+          startAutoRefresh();
         } else {
           document.getElementById('lock-error').textContent = 'Incorrect password.';
           document.getElementById('password-input').value = '';
@@ -200,6 +217,7 @@
     }
 
     function lockOut() {
+      stopAutoRefresh();
       sessionPassword = null;
       sessionStorage.removeItem('adminPassword');
       document.getElementById('lock-screen').style.display = 'flex';
@@ -230,9 +248,9 @@
       } catch (_) { return {}; }
     }
 
-    async function loadVerifications() {
+    async function loadVerifications(silent = false) {
       const container = document.getElementById('queue-container');
-      container.innerHTML = `<div class="state-card"><div class="spinner"></div><div class="state-text">Loading pending verifications…</div></div>`;
+      if (!silent) container.innerHTML = `<div class="state-card"><div class="spinner"></div><div class="state-text">Loading pending verifications…</div></div>`;
 
       try {
         const apiRes = await fetch('/api/admin-verifications', {
