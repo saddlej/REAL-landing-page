@@ -290,6 +290,12 @@
   .platform-lock-msg { text-align: center; font-size: 12px; color: var(--gray-light); font-style: italic; margin-top: 10px; display: none; }
   .platform-lock-msg.visible { display: block; }
   #step2Card.step-locked .section-body { opacity: 0.45; pointer-events: none; user-select: none; }
+  .platform-row.has-recheck { flex-wrap: wrap; }
+  .recheck-notice { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; margin-top: 6px; border-top: 1px solid var(--border); }
+  .recheck-msg { font-size: 11px; color: var(--gray); line-height: 1.5; }
+  .recheck-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; background: transparent; color: var(--navy); border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; transition: border-color 0.2s; white-space: nowrap; }
+  .recheck-btn:hover { border-color: var(--navy); }
+  .recheck-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* ─── SUBSCRIPTION ─── */
   .subscription-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -654,8 +660,8 @@
       <div class="modal-step" id="modalStepD">
         <div style="text-align:center; padding: 20px 0;">
           <div style="font-size:48px; margin-bottom:16px;">✓</div>
-          <div style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; color:var(--navy); margin-bottom:8px;">Submitted</div>
-          <p style="font-size:13px; color:var(--gray); line-height:1.7; max-width:340px; margin:0 auto 24px;">Your <span id="platformNameD"></span> account has been submitted for verification. We'll review it and update your status — usually within 24 hours.</p>
+          <div id="stepDTitle" style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; color:var(--navy); margin-bottom:8px;">Submitted</div>
+          <p id="stepDMsg" style="font-size:13px; color:var(--gray); line-height:1.7; max-width:340px; margin:0 auto 24px;">Your <span id="platformNameD"></span> account has been submitted for verification. We'll review it and update your status — usually within 24 hours.</p>
           <button class="btn-primary" onclick="closeModal()">Done</button>
         </div>
       </div>
@@ -854,8 +860,9 @@
       const icon = icons[p.platform] || '🔗';
       const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
       const dotClass = safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold';
+      const ytPending = p.platform === 'YouTube' && safeStatus === 'pending';
       return `
-        <div class="platform-row">
+        <div class="platform-row${ytPending ? ' has-recheck' : ''}"${ytPending ? ` data-row-id="${p.id}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"` : ''}>
           <div class="platform-status-dot ${dotClass}"></div>
           <div class="platform-icon">${escapeHtml(icon)}</div>
           <div class="platform-info">
@@ -863,6 +870,7 @@
             <div class="platform-handle">${escapeHtml(p.handle) || '—'}</div>
           </div>
           <div class="platform-tag ${safeStatus}">${safeStatus}</div>
+          ${ytPending ? `<div class="recheck-notice"><span class="recheck-msg">Code not found in your channel description yet. Added it? Click Check again.</span><button class="recheck-btn" onclick="recheckYouTube(this)">Check again</button></div>` : ''}
         </div>
       `;
     }).join('');
@@ -934,6 +942,8 @@
       return;
     }
 
+    if (selectedPlatform === 'YouTube') { await submitYouTube(); return; }
+
     const errC = document.getElementById('modalErrorC');
     errC.textContent = '';
     errC.classList.remove('visible');
@@ -976,6 +986,74 @@
       document.getElementById('modalErrorC').classList.add('visible');
       btn.disabled = false;
       btn.textContent = 'Submit for verification →';
+    }
+  }
+
+  // ─── YOUTUBE INSTANT VERIFY ───
+  async function submitYouTube() {
+    const errC = document.getElementById('modalErrorC');
+    errC.textContent = '';
+    errC.classList.remove('visible');
+    const btn = document.getElementById('submitPlatformBtn');
+    btn.disabled = true;
+    btn.textContent = 'Checking your channel…';
+
+    const handle = document.getElementById('handleInput').value.trim();
+
+    try {
+      const r = await fetch('/api/youtube-verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handle, verification_code: generatedCode })
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Failed');
+
+      await loadPlatforms(accessToken);
+
+      document.getElementById('platformNameD').textContent = 'YouTube';
+      if (data.success) {
+        document.getElementById('stepDTitle').textContent = 'Verified!';
+        document.getElementById('stepDMsg').innerHTML = 'Your YouTube channel is now <strong>verified</strong> and showing on your REAL profile.';
+      } else {
+        document.getElementById('stepDTitle').textContent = 'Submitted';
+        document.getElementById('stepDMsg').innerHTML = 'Your channel has been added. Once the code appears in your description, use the <strong>Check again</strong> button to verify instantly.';
+      }
+      showStep('modalStepD');
+      document.getElementById('modalTitle').textContent = data.success ? 'Verified!' : 'Submitted';
+    } catch (e) {
+      errC.textContent = 'Something went wrong: ' + e.message;
+      errC.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Submit for verification →';
+    }
+  }
+
+  async function recheckYouTube(btn) {
+    const row = btn.closest('.platform-row');
+    const rowId = row.dataset.rowId;
+    const handle = row.dataset.handle;
+    const code = row.dataset.code;
+
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+
+    try {
+      const r = await fetch('/api/youtube-verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handle, verification_code: code, row_id: rowId })
+      });
+      const data = await r.json();
+      if (data.success) {
+        await loadPlatforms(accessToken);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Check again';
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Check again';
     }
   }
 
