@@ -511,6 +511,8 @@
         <button class="btn-primary" id="idVerifyBtn" onclick="handleIdVerify()">Start verification →</button>
       </div>
       <div class="stripe-note">🔒 Secured by Stripe Identity · Your document is verified and immediately discarded · REAL only receives a confirmation</div>
+      <div class="msg error" id="idVerifyError"></div>
+      <div class="msg success" id="idVerifyConfirm">Your verification has been submitted. We'll update your status within a few minutes — you can close this tab and come back.</div>
     </div>
   </div>
 
@@ -756,6 +758,17 @@
     const since = new Date(user.created_at);
     document.getElementById('memberSince').textContent = 'Member since ' + since.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
+    // Show confirmation banner if returning from Stripe after completing verification
+    if (params.get('verification') === 'complete') {
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('idVerifyConfirm').classList.add('visible');
+      const idPill = document.getElementById('idVerifyStatus');
+      idPill.className = 'status-pill pending';
+      idPill.innerHTML = '<span class="dot"></span><span>Under review</span>';
+      document.getElementById('idVerifyBtn').disabled = true;
+      document.getElementById('idVerifyBtn').textContent = 'Verification submitted';
+    }
+
     // Lock Step 2 until government ID is verified (stored in user_metadata.id_verified by Stripe webhook)
     idVerified = preview ? true : (user.user_metadata?.id_verified === true);
     updatePlatformSectionLock();
@@ -951,12 +964,28 @@
   }
 
   // ─── HANDLERS ───
-  function handleIdVerify() {
+  async function handleIdVerify() {
     const btn = document.getElementById('idVerifyBtn');
-    const orig = btn.textContent;
+    const errEl = document.getElementById('idVerifyError');
+    errEl.classList.remove('visible');
     btn.disabled = true;
-    btn.textContent = 'Coming soon — stay tuned';
-    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
+    btn.textContent = 'Starting verification…';
+
+    try {
+      const r = await fetch('/api/create-verification-session', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      const data = await r.json();
+      if (!r.ok || !data.url) throw new Error(data.error || 'Failed to create session');
+      window.location.href = data.url;
+    } catch (e) {
+      console.error('Verification session error:', e.message);
+      errEl.textContent = 'Could not start verification: ' + e.message;
+      errEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Start verification →';
+    }
   }
 
   function handleBilling() {
