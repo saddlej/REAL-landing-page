@@ -1054,6 +1054,18 @@
         document.getElementById('platformNameC').textContent = selectedPlatform;
         showStep('modalStepC');
         document.getElementById('modalTitle').textContent = 'Your Verification Code';
+
+        const _stepCBtn = document.querySelector('#modalStepC .modal-actions .btn-primary');
+        if (selectedPlatform === 'Email') {
+          document.querySelector('#modalStepC .code-instructions').textContent = "We'll send a confirmation link to this address. Click it to verify you own it. Check your inbox after clicking the button below.";
+          _stepCBtn.textContent = 'Send confirmation email →';
+          _stepCBtn.onclick = sendEmailConfirmation;
+        } else {
+          document.querySelector('#modalStepC .code-instructions').innerHTML = 'Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.';
+          document.getElementById('platformNameC').textContent = selectedPlatform;
+          _stepCBtn.textContent = "I've added the code →";
+          _stepCBtn.onclick = confirmPlatform;
+        }
       }
     } catch (e) {
       document.getElementById('modalError').textContent = 'Something went wrong: ' + e.message;
@@ -1138,6 +1150,33 @@
       console.error('confirmFromCard error:', e);
       btn.disabled = false;
       btn.textContent = "I've added it — check my bio";
+    }
+  }
+
+  async function sendEmailConfirmation() {
+    const btn = document.querySelector('#modalStepC .modal-actions .btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const r = await fetch('/api/email-verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: document.getElementById('handleInput').value.trim(), row_id: currentRowId })
+      });
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to send email');
+      }
+      document.getElementById('platformNameD').textContent = 'Email';
+      document.getElementById('stepDTitle').textContent = 'Email sent!';
+      document.getElementById('stepDMsg').textContent = 'Check your inbox for a confirmation link. Click it to verify your email address.';
+      showStep('modalStepD');
+      document.getElementById('modalTitle').textContent = 'Email sent!';
+    } catch (e) {
+      console.error('sendEmailConfirmation error:', e.message);
+      btn.disabled = false;
+      btn.textContent = 'Send confirmation email →';
     }
   }
 
