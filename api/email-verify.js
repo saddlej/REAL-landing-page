@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid session' });
   }
 
-  const { email, verificationId } = req.body;
+  const { email, row_id: verificationId } = req.body;
 
   if (!email || !verificationId) {
     return res.status(400).json({ error: 'Missing email or verificationId' });
