@@ -902,13 +902,16 @@
         })
       });
 
-      if (!r.ok) throw new Error('Failed');
+      if (!r.ok) {
+        const errBody = await r.json().catch(() => ({}));
+        throw new Error(errBody.message || errBody.hint || errBody.code || 'Failed');
+      }
 
       document.getElementById('platformNameD').textContent = selectedPlatform;
       showStep('modalStepD');
       document.getElementById('modalTitle').textContent = 'Submitted';
     } catch(e) {
-      document.getElementById('modalErrorC').textContent = 'Something went wrong. Please try again.';
+      document.getElementById('modalErrorC').textContent = 'Something went wrong: ' + e.message;
       document.getElementById('modalErrorC').classList.add('visible');
       btn.disabled = false;
       btn.textContent = 'Submit for verification →';
