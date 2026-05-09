@@ -3,7 +3,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { password, rowId, status } = req.body || {};
+  const { password, rowId, status, rejection_reason } = req.body || {};
 
   if (!password || password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -15,6 +15,7 @@ module.exports = async function handler(req, res) {
 
   const patch = { status };
   if (status === 'verified') patch.verified_at = new Date().toISOString();
+  if (status === 'failed' && rejection_reason) patch.rejection_reason = rejection_reason;
 
   try {
     const r = await fetch(

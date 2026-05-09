@@ -92,6 +92,18 @@
     .refresh-btn:hover { opacity: 0.8; }
     .notes-text { font-size: 0.75rem; color: var(--text-dim); font-style: italic; margin-top: 2px; }
 
+    /* REJECT FORM */
+    .reject-form { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px; }
+    .reject-form-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
+    .reject-reason-input { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none; transition: border-color 0.2s; width: 100%; }
+    .reject-reason-input:focus { border-color: var(--gold); }
+    .reject-reason-input.invalid { border-color: var(--red); }
+    .reject-form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .reject-cancel-btn { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--text-dim); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 7px 14px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+    .reject-cancel-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+    .reject-confirm-btn { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); border-radius: 6px; padding: 7px 14px; cursor: pointer; transition: background 0.15s; }
+    .reject-confirm-btn:hover { background: rgba(239,68,68,0.2); }
+
     /* TOAST */
     #toast { position: fixed; bottom: 32px; right: 32px; padding: 14px 22px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 100; }
     #toast.show { opacity: 1; transform: translateY(0); }
@@ -319,15 +331,54 @@
         </div>
         <div class="action-col">
           <button class="approve-btn" onclick="approve(${row.id}, '${userId}')">Approve</button>
-          <button class="reject-btn" onclick="reject(${row.id}, '${userId}')">Reject</button>
+          <button class="reject-btn" onclick="showRejectForm(${row.id}, '${userId}', this)">Reject</button>
         </div>`;
       return el;
     }
 
     async function approve(rowId, userId) { await updateRow(rowId, userId, 'verified', 'Approved ✓'); }
-    async function reject(rowId, userId) { await updateRow(rowId, userId, 'failed', 'Rejected'); }
 
-    async function updateRow(rowId, userId, newStatus, toastMsg) {
+    function showRejectForm(rowId, userId, btn) {
+      const rowEl = document.getElementById(`row-${rowId}`);
+      if (rowEl.querySelector('.reject-form')) return;
+      btn.disabled = true;
+      const form = document.createElement('div');
+      form.className = 'reject-form';
+      form.innerHTML = `
+        <label class="reject-form-label">Rejection reason (required)</label>
+        <input type="text" class="reject-reason-input" placeholder="e.g. Code not found in bio" />
+        <div class="reject-form-actions">
+          <button class="reject-cancel-btn">Cancel</button>
+          <button class="reject-confirm-btn">Confirm rejection</button>
+        </div>`;
+      rowEl.appendChild(form);
+      const input = form.querySelector('.reject-reason-input');
+      form.querySelector('.reject-cancel-btn').addEventListener('click', () => cancelReject(rowId, btn));
+      form.querySelector('.reject-confirm-btn').addEventListener('click', () => confirmReject(rowId, userId));
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') confirmReject(rowId, userId); });
+      input.focus();
+    }
+
+    function cancelReject(rowId, btn) {
+      const rowEl = document.getElementById(`row-${rowId}`);
+      const form = rowEl.querySelector('.reject-form');
+      if (form) form.remove();
+      btn.disabled = false;
+    }
+
+    async function confirmReject(rowId, userId) {
+      const rowEl = document.getElementById(`row-${rowId}`);
+      const input = rowEl.querySelector('.reject-reason-input');
+      const reason = input.value.trim();
+      if (!reason) {
+        input.classList.add('invalid');
+        input.focus();
+        return;
+      }
+      await updateRow(rowId, userId, 'failed', 'Rejected', reason);
+    }
+
+    async function updateRow(rowId, userId, newStatus, toastMsg, rejectionReason = null) {
       const rowEl = document.getElementById(`row-${rowId}`);
       rowEl.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
 
@@ -335,7 +386,7 @@
         const apiRes = await fetch('/api/admin-update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: sessionPassword, rowId, status: newStatus })
+          body: JSON.stringify({ password: sessionPassword, rowId, status: newStatus, ...(rejectionReason ? { rejection_reason: rejectionReason } : {}) })
         });
         if (!apiRes.ok) throw new Error(await apiRes.text());
 

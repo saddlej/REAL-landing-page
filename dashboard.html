@@ -908,9 +908,16 @@
             </div>`;
         }
       } else if (safeStatus === 'failed') {
+        const reasonHtml = p.rejection_reason
+          ? `<span class="notice-label notice-label--error" style="font-style:italic;">"${escapeHtml(p.rejection_reason)}"</span>`
+          : '';
+        const failLabel = p.rejection_reason
+          ? 'Verification failed:'
+          : 'Verification failed. Remove the old code from your bio and resubmit.';
         notice = `
           <div class="platform-notice">
-            <span class="notice-label notice-label--error">Verification failed. Remove the old code from your bio and resubmit.</span>
+            <span class="notice-label notice-label--error">${failLabel}</span>
+            ${reasonHtml}
             <button class="notice-action-btn notice-action-btn--error" onclick="resubmitPlatform(this)">Re-submit</button>
           </div>`;
       }
