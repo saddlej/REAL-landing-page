@@ -290,12 +290,19 @@
   .platform-lock-msg { text-align: center; font-size: 12px; color: var(--gray-light); font-style: italic; margin-top: 10px; display: none; }
   .platform-lock-msg.visible { display: block; }
   #step2Card.step-locked .section-body { opacity: 0.45; pointer-events: none; user-select: none; }
-  .platform-row.has-recheck { flex-wrap: wrap; }
-  .recheck-notice { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; margin-top: 6px; border-top: 1px solid var(--border); }
-  .recheck-msg { font-size: 11px; color: var(--gray); line-height: 1.5; }
-  .recheck-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; background: transparent; color: var(--navy); border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; transition: border-color 0.2s; white-space: nowrap; }
-  .recheck-btn:hover { border-color: var(--navy); }
-  .recheck-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .platform-row.has-notice { flex-wrap: wrap; }
+  .platform-notice { width: 100%; padding-top: 10px; margin-top: 6px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .notice-label { font-size: 11px; color: var(--gray); line-height: 1.5; }
+  .notice-label--error { color: var(--error); }
+  .code-copy-block { display: flex; align-items: center; justify-content: space-between; background: var(--navy); padding: 8px 12px; cursor: pointer; gap: 8px; user-select: none; }
+  .code-copy-block:hover { background: var(--navy-mid); }
+  .code-copy-text { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gold); letter-spacing: 0.06em; }
+  .code-copy-hint { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0; }
+  .notice-action-btn { align-self: flex-start; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; background: transparent; color: var(--navy); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s, opacity 0.2s; white-space: nowrap; }
+  .notice-action-btn:hover { border-color: var(--navy); }
+  .notice-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .notice-action-btn--error { color: var(--error); border-color: var(--error); }
+  .notice-action-btn--error:hover { opacity: 0.75; }
 
   /* ─── SUBSCRIPTION ─── */
   .subscription-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -860,9 +867,38 @@
       const icon = icons[p.platform] || '🔗';
       const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
       const dotClass = safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold';
-      const ytPending = p.platform === 'YouTube' && safeStatus === 'pending';
+      const hasNotice = safeStatus === 'pending' || safeStatus === 'failed';
+      const rowAttrs = hasNotice
+        ? `data-row-id="${p.id}" data-platform="${escapeHtml(p.platform)}" data-icon="${escapeHtml(icon)}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"`
+        : '';
+
+      let notice = '';
+      if (safeStatus === 'pending') {
+        const label = p.platform === 'YouTube'
+          ? 'Add this code to your YouTube channel description:'
+          : 'Add this code to the first line of your bio:';
+        const recheckBtn = p.platform === 'YouTube'
+          ? `<button class="notice-action-btn" onclick="recheckYouTube(this)">Check again</button>`
+          : '';
+        notice = `
+          <div class="platform-notice">
+            <span class="notice-label">${label}</span>
+            <div class="code-copy-block" onclick="copyCode(this)">
+              <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+              <span class="code-copy-hint">Copy</span>
+            </div>
+            ${recheckBtn}
+          </div>`;
+      } else if (safeStatus === 'failed') {
+        notice = `
+          <div class="platform-notice">
+            <span class="notice-label notice-label--error">Verification failed. Remove the old code from your bio and resubmit.</span>
+            <button class="notice-action-btn notice-action-btn--error" onclick="resubmitPlatform(this)">Re-submit</button>
+          </div>`;
+      }
+
       return `
-        <div class="platform-row${ytPending ? ' has-recheck' : ''}"${ytPending ? ` data-row-id="${p.id}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"` : ''}>
+        <div class="platform-row${hasNotice ? ' has-notice' : ''}" ${rowAttrs}>
           <div class="platform-status-dot ${dotClass}"></div>
           <div class="platform-icon">${escapeHtml(icon)}</div>
           <div class="platform-info">
@@ -870,7 +906,7 @@
             <div class="platform-handle">${escapeHtml(p.handle) || '—'}</div>
           </div>
           <div class="platform-tag ${safeStatus}">${safeStatus}</div>
-          ${ytPending ? `<div class="recheck-notice"><span class="recheck-msg">Code not found in your channel description yet. Added it? Click Check again.</span><button class="recheck-btn" onclick="recheckYouTube(this)">Check again</button></div>` : ''}
+          ${notice}
         </div>
       `;
     }).join('');
@@ -1054,6 +1090,47 @@
     } catch (e) {
       btn.disabled = false;
       btn.textContent = 'Check again';
+    }
+  }
+
+  function copyCode(block) {
+    const text = block.querySelector('.code-copy-text').textContent;
+    const hint = block.querySelector('.code-copy-hint');
+    navigator.clipboard.writeText(text).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }).finally(() => {
+      hint.textContent = 'Copied!';
+      setTimeout(() => { hint.textContent = 'Copy'; }, 2000);
+    });
+  }
+
+  async function resubmitPlatform(btn) {
+    const row = btn.closest('.platform-row');
+    const rowId = row.dataset.rowId;
+    const platform = row.dataset.platform;
+    const icon = row.dataset.icon;
+
+    btn.disabled = true;
+    btn.textContent = 'Removing…';
+
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${rowId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY }
+      });
+      if (!r.ok) throw new Error('Delete failed');
+      await loadPlatforms(accessToken);
+      document.getElementById('modalOverlay').classList.add('visible');
+      selectPlatform(platform, icon);
+    } catch (e) {
+      console.error('Resubmit error:', e.message);
+      btn.disabled = false;
+      btn.textContent = 'Re-submit';
     }
   }
 
