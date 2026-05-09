@@ -751,12 +751,19 @@
   // ─── LOAD PLATFORMS ───
   async function loadPlatforms(token) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&order=submitted_at.asc`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?user_id=eq.${currentUser.id}&order=created_at.asc`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
-      userPlatforms = await r.json();
+      const data = await r.json();
+      if (!r.ok) {
+        console.error('loadPlatforms error:', data);
+        userPlatforms = [];
+      } else {
+        userPlatforms = Array.isArray(data) ? data : [];
+      }
       renderPlatforms();
     } catch(e) {
+      console.error('loadPlatforms exception:', e);
       userPlatforms = [];
       renderPlatforms();
     }
@@ -779,7 +786,7 @@
     const statusEl = document.getElementById('platformsStatusText');
     const icons = { Instagram:'📸', TikTok:'🎵', 'X / Twitter':'🐦', Facebook:'📘', LinkedIn:'💼', YouTube:'▶️', Email:'✉️', 'Website':'🌐', 'Website / Domain':'🌐' };
 
-    if (!userPlatforms || userPlatforms.length === 0) {
+    if (!Array.isArray(userPlatforms) || userPlatforms.length === 0) {
       grid.innerHTML = '';
       empty.style.display = 'block';
       statusEl.textContent = '0 verified';
