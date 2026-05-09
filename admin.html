@@ -301,9 +301,12 @@
       rowEl.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
 
       try {
-        const body = { status: newStatus };
-        if (newStatus === 'verified') body.verified_at = new Date().toISOString();
-        await supabaseFetch(`platform_verifications?id=eq.${rowId}`, { method: 'PATCH', body: JSON.stringify(body) });
+        const apiRes = await fetch('/api/admin-update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: sessionPassword, rowId, status: newStatus })
+        });
+        if (!apiRes.ok) throw new Error(await apiRes.text());
 
         rowEl.style.transition = 'opacity 0.3s, transform 0.3s';
         rowEl.style.opacity = '0';
