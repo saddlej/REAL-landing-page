@@ -773,6 +773,16 @@
     idVerified = preview ? true : (user.user_metadata?.id_verified === true);
     updatePlatformSectionLock();
 
+    // Reflect ID verification status in Step 1 UI
+    if (idVerified) {
+      const pill = document.getElementById('idVerifyStatus');
+      pill.className = 'status-pill verified';
+      pill.innerHTML = '<span class="dot"></span><span>ID Verified</span>';
+      const btn = document.getElementById('idVerifyBtn');
+      btn.disabled = true;
+      btn.textContent = 'Verification complete';
+    }
+
     if (preview) {
       // Dummy platforms for preview
       userPlatforms = [
