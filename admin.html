@@ -151,6 +151,17 @@
 
     let sessionPassword = null;
 
+    // Skip lock screen if a valid session is already saved
+    (function () {
+      const saved = sessionStorage.getItem('adminPassword');
+      if (saved) {
+        sessionPassword = saved;
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('admin-shell').style.display = 'block';
+        loadVerifications();
+      }
+    })();
+
     document.getElementById('password-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') checkPassword();
     });
@@ -171,6 +182,7 @@
         });
         if (res.ok) {
           sessionPassword = val;
+          sessionStorage.setItem('adminPassword', val);
           document.getElementById('lock-screen').style.display = 'none';
           document.getElementById('admin-shell').style.display = 'block';
           loadVerifications();
@@ -189,6 +201,7 @@
 
     function lockOut() {
       sessionPassword = null;
+      sessionStorage.removeItem('adminPassword');
       document.getElementById('lock-screen').style.display = 'flex';
       document.getElementById('admin-shell').style.display = 'none';
       document.getElementById('password-input').value = '';
@@ -336,6 +349,8 @@
       document.getElementById('stat-pending').textContent = allRows || 0;
       document.getElementById('stat-members').textContent = document.querySelectorAll('.user-group').length || 0;
       if (allRows === 0) {
+        document.getElementById('stat-pending').textContent = '0';
+        document.getElementById('stat-members').textContent = '0';
         setTimeout(() => {
           document.getElementById('queue-container').innerHTML = `<div class="state-card"><div class="state-icon">✅</div><div class="state-title">Queue is clear</div><div class="state-text">No pending verifications. All caught up.</div><button class="refresh-btn" onclick="loadVerifications()">Refresh</button></div>`;
         }, 500);
@@ -347,7 +362,7 @@
       const t = document.getElementById('toast');
       t.textContent = msg; t.className = `show ${type}`;
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { t.className = ''; }, 2800);
+      toastTimer = setTimeout(() => { t.className = ''; }, 5000);
     }
 
     function escapeHtml(str) {
