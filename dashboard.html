@@ -1060,6 +1060,10 @@
           document.querySelector('#modalStepC .code-instructions').textContent = "We'll send a confirmation link to this address. Click it to verify you own it. Check your inbox after clicking the button below.";
           _stepCBtn.textContent = 'Send confirmation email →';
           _stepCBtn.onclick = sendEmailConfirmation;
+        } else if (selectedPlatform === 'Website') {
+          document.querySelector('#modalStepC .code-instructions').textContent = "Add this TXT record to your domain's DNS settings. Your domain registrar (e.g. Namecheap, GoDaddy) will have an Advanced DNS section where you can add it. It can take up to 30 minutes to update.";
+          _stepCBtn.textContent = 'Check my DNS →';
+          _stepCBtn.onclick = checkDomainVerification;
         } else {
           document.querySelector('#modalStepC .code-instructions').innerHTML = 'Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.';
           document.getElementById('platformNameC').textContent = selectedPlatform;
@@ -1081,12 +1085,12 @@
     selectedPlatformIcon = icon;
     // Adjust label
     const isEmail = name === 'Email';
-    const isWebsite = name === 'Website / Domain';
+    const isWebsite = name === 'Website';
     document.getElementById('handleLabel').textContent = isEmail ? 'Your email address' : isWebsite ? 'Your domain (e.g. yoursite.com)' : 'Your handle or username';
     document.getElementById('handleInput').placeholder = isEmail ? 'you@yourdomain.com' : isWebsite ? 'yoursite.com' : '@yourhandle';
     document.getElementById('handleInput').value = '';
     // Show URL field for manual platforms
-    const showUrl = !['YouTube','Email','Website / Domain'].includes(name);
+    const showUrl = !['YouTube','Email','Website'].includes(name);
     document.getElementById('urlField').style.display = showUrl ? 'block' : 'none';
     document.getElementById('urlInput').value = '';
     goToStepB();
@@ -1177,6 +1181,39 @@
       console.error('sendEmailConfirmation error:', e.message);
       btn.disabled = false;
       btn.textContent = 'Send confirmation email →';
+    }
+  }
+
+  async function checkDomainVerification() {
+    const btn = document.querySelector('#modalStepC .modal-actions .btn-primary');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+
+    try {
+      const r = await fetch('/api/domain-verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentRowId,
+          domain: document.getElementById('handleInput').value.trim(),
+          verification_code: generatedCode
+        })
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'Failed');
+      if (data.verified) {
+        alert('Domain verified!');
+        closeModal();
+        loadPlatforms(accessToken);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Check my DNS →';
+        alert(data.message || 'DNS record not found yet.');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Check my DNS →';
+      alert('Something went wrong. Please try again.');
     }
   }
 
