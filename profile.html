@@ -368,7 +368,7 @@
 <script>
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3RubmpsenR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MzY0NjUsImV4cCI6MjA2MjIxMjQ2NX0.H6-dBCJGv_7dHFt-BRohcNSwGWpFt6vD0oQMNEmPvLA';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const PLATFORM_ICONS = {
     'Instagram': '📷',
@@ -471,7 +471,7 @@
     const realId = rawId.toUpperCase();
     document.title = `${realId} · REAL`;
 
-    const { data: member, error } = await supabase
+    const { data: member, error } = await supabaseClient
       .from('members')
       .select('*')
       .eq('real_id', realId)
@@ -483,7 +483,7 @@
       return;
     }
 
-    const { data: platforms } = await supabase
+    const { data: platforms } = await supabaseClient
       .from('platform_verifications')
       .select('platform, handle, verified_at')
       .eq('user_id', member.user_id)
@@ -504,14 +504,14 @@
     let results = [];
 
     if (query.toUpperCase().startsWith('RL-')) {
-      const { data } = await supabase
+      const { data } = await supabaseClient
         .from('members')
         .select('real_id, display_name, verified_since, membership_tier')
         .eq('real_id', query.toUpperCase())
         .eq('is_active', true);
       results = data || [];
     } else {
-      const { data } = await supabase
+      const { data } = await supabaseClient
         .from('members')
         .select('real_id, display_name, verified_since, membership_tier')
         .ilike('display_name', `%${query}%`)
