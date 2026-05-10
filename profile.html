@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REAL Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2044;
+      --gold: #FFD007;
+      --white: #FFFFFF;
+    }
+
+    body {
+      background: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--navy);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo { width: 28px; height: 28px; }
+
+    .nav-brand-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-search input {
+      background: rgba(255,255,255,0.07);
+      border: 0.5px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      width: 220px;
+      outline: none;
+    }
+
+    .nav-search input::placeholder { color: rgba(255,255,255,0.35); }
+    .nav-search input:focus { border-color: rgba(255,208,7,0.4); }
+
+    .nav-search button {
+      background: var(--gold);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* PAGE */
+    .page {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* TAGLINE */
+    .page-tagline {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,208,7,0.45);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    /* WHITE CARD */
+    .profile-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 32px 28px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+    }
+
+    .real-id {
+      font-family: 'DM Mono', monospace;
+      font-size: 32px;
+      color: var(--navy);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .real-id .id-number { color: var(--gold); }
+
+    .display-name {
+      font-size: 24px;
+      color: var(--navy);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .verified-since {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 22px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .badge-id { background: #FFF8D6; color: #9A7800; border: 0.5px solid #FFD007; }
+    .badge-founding { background: #EEF2FF; color: #3730A3; border: 0.5px solid #C7D2FE; }
+    .badge-standard { background: #F3F4F6; color: #374151; border: 0.5px solid #D1D5DB; }
+    .badge-score { background: #F0FDF4; color: #166534; border: 0.5px solid #BBF7D0; }
+
+    .divider {
+      border: none;
+      border-top: 0.5px solid #e5e7eb;
+      margin: 20px 0;
+    }
+
+    .section-label {
+      font-size: 10px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 14px;
+    }
+
+    /* PLATFORMS */
+    .platform-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .platform-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .platform-icon img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .platform-icon-text {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .platform-name {
+      font-size: 12px;
+      color: #9ca3af;
+      width: 72px;
+      flex-shrink: 0;
+    }
+
+    .platform-handle {
+      font-size: 13px;
+      color: var(--navy);
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .platform-date {
+      font-size: 11px;
+      color: #d1d5db;
+      flex-shrink: 0;
+    }
+
+    .platform-tick {
+      color: #16a34a;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    /* IMPERSONATION */
+    .impersonation-box {
+      margin-top: 4px;
+      padding: 11px 14px;
+      background: #fafafa;
+      border-radius: 8px;
+      border: 0.5px solid #f3f4f6;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    /* NOT FOUND */
+    .not-found {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .not-found .nf-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .not-found h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .not-found p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+
+    /* FOOTER */
+    .not-you {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 20px;
+    }
+
+    .not-you a {
+      color: var(--gold);
+      text-decoration: none;
+      opacity: 0.8;
+    }
+
+    .not-you a:hover { opacity: 1; }
+
+    .page-footer {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    /* SEARCH RESULTS */
+    .search-results {
+      margin-top: 12px;
+    }
+
+    .search-result-item {
+      background: rgba(255,255,255,0.05);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .search-result-item:hover { background: rgba(255,255,255,0.09); }
+
+    .sri-id {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    .sri-name {
+      font-size: 15px;
+      color: white;
+      font-weight: 500;
+    }
+
+    .sri-since {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    .search-none {
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <svg class="nav-logo" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2L4 7v9c0 7 5.4 13.5 12 15 6.6-1.5 12-8 12-15V7L16 2z" fill="#FFD007"/>
+      <path d="M12 16l3 3 5-6" stroke="#0F2044" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="nav-brand-text">REAL™</span>
+  </a>
+  <div class="nav-search">
+    <input type="text" id="searchInput" placeholder="Search by REAL ID or name..." />
+    <button onclick="doSearch()">Search</button>
+  </div>
+</nav>
+
+<div class="page">
+  <p class="page-tagline">Identity Infrastructure for the Internet</p>
+  <div id="content"><div class="loading">Loading profile...</div></div>
+  <div id="searchResults" class="search-results" style="display:none;"></div>
+  <p class="not-you">Not who you were looking for? <a href="#" onclick="focusSearch()">Search REAL</a></p>
+  <p class="page-footer">realverified.co.uk · Independent Identity Verification</p>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3RubmpsenR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MzY0NjUsImV4cCI6MjA2MjIxMjQ2NX0.H6-dBCJGv_7dHFt-BRohcNSwGWpFt6vD0oQMNEmPvLA';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const PLATFORM_ICONS = {
+    'Instagram': '📷',
+    'TikTok': '♪',
+    'X': '𝕏',
+    'Facebook': 'f',
+    'LinkedIn': 'in',
+    'YouTube': '▶',
+    'Email': '✉',
+    'Website': '🌐'
+  };
+
+  function formatDate(ts) {
+    if (!ts) return '';
+    return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function formatDateFull(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + d.toISOString().slice(11,16) + ' UTC';
+  }
+
+  function getScoreLabel(score) {
+    if (score >= 70) return 'Verified Authority';
+    if (score >= 40) return 'Verified Established';
+    return 'Verified Foundation';
+  }
+
+  function renderProfile(member, platforms) {
+    const tierBadge = member.membership_tier === 'founding'
+      ? '<span class="badge badge-founding">Founding Member</span>'
+      : '<span class="badge badge-standard">Standard Member</span>';
+
+    const scoreLabel = getScoreLabel(member.real_score || 0);
+
+    let platformsHTML = '';
+    if (platforms && platforms.length > 0) {
+      platforms.forEach(p => {
+        const icon = PLATFORM_ICONS[p.platform] || '●';
+        platformsHTML += `
+          <div class="platform-row">
+            <div class="platform-icon"><span class="platform-icon-text">${icon}</span></div>
+            <span class="platform-name">${p.platform}</span>
+            <span class="platform-handle">${p.handle}</span>
+            <span class="platform-date">${formatDate(p.verified_at)}</span>
+            <span class="platform-tick">✓</span>
+          </div>`;
+      });
+    } else {
+      platformsHTML = '<p style="font-size:13px;color:#9ca3af;">No platforms verified yet.</p>';
+    }
+
+    const impersonationLine = member.impersonation_count > 0
+      ? `<div class="impersonation-box">${member.impersonation_count} impersonation attempt${member.impersonation_count === 1 ? '' : 's'} documented by REAL</div>`
+      : '';
+
+    document.getElementById('content').innerHTML = `
+      <div class="profile-card">
+        <div class="real-id">RL-<span class="id-number">${member.real_id.replace('RL-','')}</span></div>
+        <div class="display-name">${member.display_name || 'REAL Member'}</div>
+        <div class="verified-since">Verified since ${formatDateFull(member.verified_since)}</div>
+        <div class="badges">
+          <span class="badge badge-id">✓ Gov ID Confirmed</span>
+          ${tierBadge}
+          <span class="badge badge-score">${scoreLabel}</span>
+        </div>
+        <hr class="divider">
+        <div class="section-label">Verified Platforms</div>
+        ${platformsHTML}
+        <hr class="divider">
+        ${impersonationLine}
+      </div>`;
+  }
+
+  function renderNotFound(realId) {
+    document.getElementById('content').innerHTML = `
+      <div class="not-found">
+        <div class="nf-icon">🔍</div>
+        <h2>No profile found</h2>
+        <p>No verified profile exists for <strong style="color:rgba(255,255,255,0.6);">${realId}</strong>.<br>If you're looking to verify someone's identity, ask them for their REAL profile link directly.</p>
+      </div>`;
+  }
+
+  async function loadProfile() {
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(Boolean);
+    const rawId = segments[segments.length - 1];
+
+    if (!rawId || !rawId.toUpperCase().startsWith('RL-')) {
+      document.getElementById('content').innerHTML = `
+        <div class="not-found">
+          <div class="nf-icon">🔍</div>
+          <h2>No profile found</h2>
+          <p>Search by REAL ID number or name above to find a verified profile.</p>
+        </div>`;
+      return;
+    }
+
+    const realId = rawId.toUpperCase();
+    document.title = `${realId} · REAL`;
+
+    const { data: member, error } = await supabase
+      .from('members')
+      .select('*')
+      .eq('real_id', realId)
+      .eq('is_active', true)
+      .single();
+
+    if (error || !member) {
+      renderNotFound(realId);
+      return;
+    }
+
+    const { data: platforms } = await supabase
+      .from('platform_verifications')
+      .select('platform, handle, verified_at')
+      .eq('user_id', member.user_id)
+      .eq('status', 'verified')
+      .order('verified_at', { ascending: true });
+
+    renderProfile(member, platforms);
+  }
+
+  async function doSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+
+    const resultsDiv = document.getElementById('searchResults');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<div class="search-none">Searching...</div>';
+
+    let results = [];
+
+    if (query.toUpperCase().startsWith('RL-')) {
+      const { data } = await supabase
+        .from('members')
+        .select('real_id, display_name, verified_since, membership_tier')
+        .eq('real_id', query.toUpperCase())
+        .eq('is_active', true);
+      results = data || [];
+    } else {
+      const { data } = await supabase
+        .from('members')
+        .select('real_id, display_name, verified_since, membership_tier')
+        .ilike('display_name', `%${query}%`)
+        .eq('is_active', true)
+        .limit(10);
+      results = data || [];
+    }
+
+    if (results.length === 0) {
+      resultsDiv.innerHTML = '<div class="search-none">No verified profiles found for that search.</div>';
+      return;
+    }
+
+    resultsDiv.innerHTML = results.map(r => `
+      <a href="/profile/${r.real_id}" class="search-result-item">
+        <div class="sri-id">${r.real_id}</div>
+        <div class="sri-name">${r.display_name || 'REAL Member'}</div>
+        <div class="sri-since">Verified since ${formatDate(r.verified_since)}</div>
+      </a>`).join('');
+  }
+
+  function focusSearch() {
+    document.getElementById('searchInput').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  loadProfile();
+</script>
+</body>
+</html>

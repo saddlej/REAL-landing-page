@@ -1,4 +1,7 @@
 {
   "outputDirectory": ".",
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/RL-:id", "destination": "/profile.html" }
+  ]
 }
