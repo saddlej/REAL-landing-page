@@ -405,6 +405,8 @@
   .msg.error { background: #fdf0ef; border-left: 3px solid var(--error); color: var(--error); }
   .msg.success { background: #f0faf5; border-left: 3px solid var(--success); color: #1a6b45; }
   .msg.visible { display: block; }
+  .handle-helper { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-light); margin-top: 7px; line-height: 1.5; display: none; }
+  .handle-helper.visible { display: block; }
 
   /* ─── FOOTER ─── */
   footer {
@@ -637,6 +639,7 @@
         <div class="modal-field">
           <label class="modal-label" id="handleLabel">Your handle</label>
           <input type="text" class="modal-input" id="handleInput" placeholder="@yourhandle">
+          <p class="handle-helper" id="handleHelper"></p>
         </div>
         <div class="modal-field" id="urlField" style="display:none;">
           <label class="modal-label">Profile URL (optional)</label>
@@ -1080,19 +1083,50 @@
     btn.textContent = 'Generate code →';
   }
 
+  function getHandleHelper(platform, handle) {
+    const h = (handle || '').replace(/^@/, '');
+    switch (platform) {
+      case 'Instagram':   return 'Your profile URL will be: instagram.com/' + (h || 'yourhandle');
+      case 'TikTok':      return 'Your profile URL will be: tiktok.com/@' + (h || 'yourhandle');
+      case 'X / Twitter': return 'Your profile URL will be: x.com/' + (h || 'yourhandle');
+      case 'Facebook':    return 'Your profile URL will be: facebook.com/' + (h || 'yourpagename');
+      case 'LinkedIn':    return 'Your profile URL will be: linkedin.com/in/' + (h || 'yourprofileslug');
+      case 'YouTube':     return 'Your profile URL will be: youtube.com/@' + (h || 'yourhandle');
+      case 'Website':     return 'Your domain e.g: mybusiness.com';
+      default:            return '';
+    }
+  }
+
+  function updateHandleHelper() {
+    const helperEl = document.getElementById('handleHelper');
+    const text = getHandleHelper(selectedPlatform, document.getElementById('handleInput').value.trim());
+    if (text) {
+      helperEl.textContent = text;
+      helperEl.classList.add('visible');
+    } else {
+      helperEl.classList.remove('visible');
+    }
+  }
+
   function selectPlatform(name, icon) {
     selectedPlatform = name;
     selectedPlatformIcon = icon;
     // Adjust label
     const isEmail = name === 'Email';
-    const isWebsite = name === 'Website';
+    const isWebsite = name === 'Website' || name === 'Website / Domain';
     document.getElementById('handleLabel').textContent = isEmail ? 'Your email address' : isWebsite ? 'Your domain (e.g. yoursite.com)' : 'Your handle or username';
     document.getElementById('handleInput').placeholder = isEmail ? 'you@yourdomain.com' : isWebsite ? 'yoursite.com' : '@yourhandle';
     document.getElementById('handleInput').value = '';
     // Show URL field for manual platforms
-    const showUrl = !['YouTube','Email','Website'].includes(name);
+    const showUrl = !['YouTube','Email','Website','Website / Domain'].includes(name);
     document.getElementById('urlField').style.display = showUrl ? 'block' : 'none';
     document.getElementById('urlInput').value = '';
+    // Seed helper text for this platform
+    updateHandleHelper();
+    // Wire live update (remove old listener first to avoid duplicates)
+    const input = document.getElementById('handleInput');
+    input.removeEventListener('input', updateHandleHelper);
+    input.addEventListener('input', updateHandleHelper);
     goToStepB();
   }
 
