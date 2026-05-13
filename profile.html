@@ -235,6 +235,11 @@
       color: #9ca3af;
     }
 
+    /* PROFILE AVATAR */
+    .profile-avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--navy); border: 3px solid rgba(255,208,7,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 20px; flex-shrink: 0; }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 50%; }
+    .profile-avatar-initials { font-family: 'DM Mono', monospace; font-size: 28px; color: var(--gold); user-select: none; line-height: 1; }
+
     /* NOT FOUND */
     .not-found {
       text-align: center;
@@ -398,6 +403,13 @@
     return 'Verified Foundation';
   }
 
+  function getProfileInitials(name) {
+    const n = (name || '').trim();
+    const parts = n.split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return n.slice(0, 2).toUpperCase() || '?';
+  }
+
   function renderProfile(member, platforms) {
     const tierBadge = member.membership_tier === 'founding'
       ? '<span class="badge badge-founding">Founding Member</span>'
@@ -426,8 +438,17 @@
       ? `<div class="impersonation-box">${member.impersonation_count} impersonation attempt${member.impersonation_count === 1 ? '' : 's'} documented by REAL</div>`
       : '';
 
+    const avatarUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${member.user_id}`;
+    const initials = getProfileInitials(member.display_name || 'REAL Member');
+
     document.getElementById('content').innerHTML = `
       <div class="profile-card">
+        <div class="profile-avatar">
+          <img src="${avatarUrl}" alt="Profile picture"
+               onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+               onerror="this.style.display='none';">
+          <span class="profile-avatar-initials">${initials}</span>
+        </div>
         <div class="real-id">RL-<span class="id-number">${member.real_id.replace('RL-','')}</span></div>
         <div class="display-name">${member.display_name || 'REAL Member'}</div>
         <div class="verified-since">Verified since ${formatDateFull(member.verified_since)}</div>

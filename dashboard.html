@@ -94,7 +94,16 @@
     pointer-events: none;
   }
   .identity-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-  .identity-left {}
+  .identity-left { display: flex; flex-direction: column; }
+
+  /* ─── AVATAR ─── */
+  .avatar-wrap { position: relative; width: 72px; height: 72px; cursor: pointer; margin-bottom: 14px; align-self: flex-start; }
+  .avatar-circle { width: 72px; height: 72px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,208,7,0.3); display: flex; align-items: center; justify-content: center; }
+  .avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .avatar-initials { font-family: 'DM Mono', monospace; font-size: 20px; color: var(--gold); user-select: none; line-height: 1; }
+  .avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.52); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+  .avatar-wrap:hover .avatar-overlay { opacity: 1; }
+  .avatar-overlay-text { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.12em; text-transform: uppercase; color: white; text-align: center; line-height: 1.5; }
   .identity-name {
     font-family: 'Cormorant Garamond', serif;
     font-size: 32px;
@@ -476,6 +485,14 @@
   <div class="identity-card">
     <div class="identity-top">
       <div class="identity-left">
+        <div class="avatar-wrap" id="avatarWrap" onclick="document.getElementById('avatarFileInput').click()">
+          <div class="avatar-circle">
+            <img id="avatarImg" alt="">
+            <span class="avatar-initials" id="avatarInitials">—</span>
+          </div>
+          <div class="avatar-overlay"><span class="avatar-overlay-text">Change<br>photo</span></div>
+        </div>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarFile(this)">
         <div class="identity-name" id="memberName">—</div>
         <div class="identity-since" id="memberSince">Member since —</div>
       </div>
@@ -712,6 +729,75 @@
   let userPlatforms = [];
   let idVerified = false;
 
+  // ─── AVATAR ───
+  const AVATAR_BUCKET = 'avatars';
+
+  function getInitials(name) {
+    const n = (name || '').trim();
+    const parts = n.split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return n.slice(0, 2).toUpperCase() || '?';
+  }
+
+  function loadAvatar(userId, bust) {
+    const img = document.getElementById('avatarImg');
+    const ini = document.getElementById('avatarInitials');
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${userId}${bust ? '?t=' + Date.now() : ''}`;
+    img.onload = () => { img.style.display = 'block'; ini.style.display = 'none'; };
+    img.onerror = () => { img.style.display = 'none'; ini.style.display = ''; };
+    img.src = url;
+  }
+
+  function handleAvatarFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+    const reader = new FileReader();
+    reader.onload = e => cropAndUpload(e.target.result);
+    reader.readAsDataURL(file);
+  }
+
+  function cropAndUpload(dataUrl) {
+    const image = new Image();
+    image.onload = () => {
+      const size = Math.min(image.width, image.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = 400; canvas.height = 400;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, (image.width - size) / 2, (image.height - size) / 2, size, size, 0, 0, 400, 400);
+      canvas.toBlob(blob => uploadAvatar(blob), 'image/jpeg', 0.88);
+    };
+    image.src = dataUrl;
+  }
+
+  async function uploadAvatar(blob) {
+    const wrap = document.getElementById('avatarWrap');
+    wrap.style.opacity = '0.45';
+    wrap.style.pointerEvents = 'none';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${AVATAR_BUCKET}/${currentUser.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'image/jpeg',
+          'x-upsert': 'true'
+        },
+        body: blob
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Upload failed');
+      }
+      loadAvatar(currentUser.id, true);
+    } catch (e) {
+      console.error('Avatar upload error:', e);
+      alert('Failed to upload photo: ' + e.message);
+    } finally {
+      wrap.style.opacity = '';
+      wrap.style.pointerEvents = '';
+    }
+  }
+
   if (isPreview) {
     // PREVIEW MODE — show dummy data
     document.getElementById('previewBanner').classList.add('visible');
@@ -769,6 +855,8 @@
     // Set member name (use email prefix until we have a name field)
     const nameDisplay = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Member';
     document.getElementById('memberName').textContent = nameDisplay;
+    document.getElementById('avatarInitials').textContent = getInitials(nameDisplay);
+    if (!preview) loadAvatar(user.id);
 
     // Set member since
     const since = new Date(user.created_at);
