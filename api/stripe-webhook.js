@@ -31,6 +31,69 @@ async function handler(req, res) {
     return res.status(400).json({ error: `Webhook error: ${e.message}` });
   }
 
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const userId = session.client_reference_id;
+
+    if (!userId) {
+      console.error('checkout.session.completed: no client_reference_id — cannot create member');
+      return res.status(200).json({ received: true });
+    }
+
+    try {
+      // Expand line_items to read the price nickname for tier determination
+      const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+        expand: ['line_items.data.price'],
+      });
+
+      const nickname = fullSession.line_items?.data?.[0]?.price?.nickname ?? '';
+      const tier = nickname.toLowerCase().includes('founding') ? 'founding' : 'standard';
+
+      const supabaseHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+      };
+
+      // Get the highest existing REAL ID to determine the next one
+      const lastRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?select=real_id&order=real_id.desc&limit=1`,
+        { headers: supabaseHeaders }
+      );
+      const lastRows = await lastRes.json();
+      const lastNum = lastRows.length > 0
+        ? parseInt(lastRows[0].real_id.replace('RL-', ''), 10)
+        : 0;
+      const nextNum = lastNum + 1;
+      const realId = 'RL-' + String(nextNum).padStart(6, '0');
+
+      // Insert the new member row
+      const insertRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members`,
+        {
+          method: 'POST',
+          headers: { ...supabaseHeaders, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({
+            user_id: userId,
+            real_id: realId,
+            membership_tier: tier,
+            verified_since: new Date().toISOString(),
+            is_active: true,
+          }),
+        }
+      );
+
+      if (!insertRes.ok) {
+        const err = await insertRes.json().catch(() => ({}));
+        console.error('Failed to insert member row:', err);
+      } else {
+        console.log(`Member created: ${realId} (${tier}) for user ${userId}`);
+      }
+    } catch (e) {
+      console.error('checkout.session.completed handler error:', e.message);
+    }
+  }
+
   // Only act on successful verification
   if (event.type === 'identity.verification_session.verified') {
     const session = event.data.object;
