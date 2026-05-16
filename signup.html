@@ -213,7 +213,8 @@
     btn.textContent = 'Creating account...';
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      const redirectTo = `${window.location.origin}/payment-redirect.html`;
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/signup?redirect_to=${encodeURIComponent(redirectTo)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
