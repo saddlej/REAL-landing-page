@@ -290,17 +290,17 @@
       <p style="font-size: 16px;">Anyone — a customer, a follower, a journalist — can visit a person's direct profile link at realverified.co.uk and instantly see their verified profile. No account needed. No friction. Just instant confirmation that the person they're dealing with is genuinely who they say they are.</p>
     </div>
     <div style="flex-shrink: 0;">
-      <div style="background: white; border: 1px solid var(--border); padding: 24px 28px; min-width: 280px;">
-        <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--gray-light); text-transform: uppercase; margin-bottom: 12px;">Search a REAL ID</div>
+      <div style="background: white; border: 1px solid var(--border); padding: 24px 28px; min-width: 300px; max-width: 380px;">
+        <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--gray-light); text-transform: uppercase; margin-bottom: 12px;">Search a REAL ID or name</div>
         <div style="display: flex; gap: 0; border: 1px solid var(--border);">
-          <div style="padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 14px; color: var(--navy); flex: 1; background: var(--warm-white);">RL-000001</div>
-          <div style="padding: 12px 16px; background: var(--navy); color: white; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap;">Search →</div>
+          <input id="realSearchInput" type="text" placeholder="RL-000001 or display name" autocomplete="off"
+            style="padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 14px; color: var(--navy); flex: 1; background: var(--warm-white); border: none; outline: none; min-width: 0;">
+          <button onclick="doRealSearch()" id="realSearchBtn"
+            style="padding: 12px 16px; background: var(--navy); color: white; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;">
+            Search →
+          </button>
         </div>
-        <div style="margin-top: 16px; padding: 14px; background: var(--cream); border-left: 3px solid var(--gold);">
-          <div style="font-size: 12px; color: var(--gray-light); font-family: 'DM Mono', monospace; margin-bottom: 4px;">VERIFIED IDENTITY</div>
-          <div style="font-size: 15px; font-weight: 600; color: var(--navy);">Your Name</div>
-          <div style="font-size: 12px; color: var(--gray); margin-top: 2px;">@yourhandle · @yourhandle · @yourhandle</div>
-        </div>
+        <div id="realSearchResults" style="margin-top: 12px;"></div>
       </div>
     </div>
   </div>
@@ -459,6 +459,56 @@
 
   const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
   document.querySelectorAll('.step, .problem-card, .perk').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.6s ease, transform 0.6s ease'; observer.observe(el); });
+
+  async function doRealSearch() {
+    const query = document.getElementById('realSearchInput').value.trim();
+    const resultsEl = document.getElementById('realSearchResults');
+    const btn = document.getElementById('realSearchBtn');
+    if (!query) return;
+
+    btn.textContent = '...';
+    btn.disabled = true;
+    resultsEl.innerHTML = '';
+
+    const isId = /^RL-/i.test(query);
+    let url;
+    if (isId) {
+      url = `${SUPABASE_URL}/rest/v1/members?real_id=eq.${encodeURIComponent(query.toUpperCase())}&select=real_id,display_name,created_at&limit=5`;
+    } else {
+      url = `${SUPABASE_URL}/rest/v1/members?display_name=ilike.*${encodeURIComponent(query)}*&select=real_id,display_name,created_at&limit=5`;
+    }
+
+    try {
+      const res = await fetch(url, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      const data = await res.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        resultsEl.innerHTML = `<div style="padding:14px;font-size:13px;color:var(--gray);font-family:'DM Mono',monospace;">No verified member found.</div>`;
+      } else {
+        resultsEl.innerHTML = data.map(m => {
+          const date = m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+          return `<a href="https://realverified.co.uk/${m.real_id}" target="_blank" rel="noopener"
+            style="display:block;padding:14px;background:var(--cream);border-left:3px solid var(--gold);margin-bottom:8px;text-decoration:none;transition:background 0.15s;"
+            onmouseover="this.style.background='#ede9e0'" onmouseout="this.style.background='var(--cream)'">
+            <div style="font-size:11px;color:var(--gray-light);font-family:'DM Mono',monospace;margin-bottom:4px;letter-spacing:0.1em;">VERIFIED IDENTITY · ${m.real_id}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--navy);">${m.display_name || '—'}</div>
+            ${date ? `<div style="font-size:12px;color:var(--gray);margin-top:2px;">Verified since ${date}</div>` : ''}
+          </a>`;
+        }).join('');
+      }
+    } catch (e) {
+      resultsEl.innerHTML = `<div style="padding:14px;font-size:13px;color:var(--gray);font-family:'DM Mono',monospace;">Search unavailable. Please try again.</div>`;
+    }
+
+    btn.textContent = 'Search →';
+    btn.disabled = false;
+  }
+
+  document.getElementById('realSearchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doRealSearch();
+  });
 
   // Handle email confirmation — extract and persist tokens before redirecting
   (function() {
