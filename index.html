@@ -32,6 +32,22 @@
   .nav-cta:hover { background: var(--navy-mid); }
   .nav-cta-outline { background: transparent; color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; padding: 10px 22px; border: 1.5px solid var(--navy); cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; }
   .nav-cta-outline:hover { background: var(--navy); color: white; }
+  .nav-search-wrap { position: relative; display: flex; align-items: center; }
+  .nav-search-btn { background: none; border: none; cursor: pointer; padding: 6px; display: flex; align-items: center; color: var(--gray); transition: color 0.2s; }
+  .nav-search-btn:hover { color: var(--navy); }
+  .nav-search-input { width: 0; opacity: 0; border: none; border-bottom: 1.5px solid var(--border); background: transparent; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--navy); padding: 4px 8px; outline: none; transition: width 0.25s ease, opacity 0.25s ease; }
+  .nav-search-input::placeholder { color: var(--gray-light); }
+  .nav-search-wrap.open .nav-search-input { width: 200px; opacity: 1; }
+  .nav-search-wrap.open .nav-search-btn { color: var(--navy); }
+  .nav-search-dropdown { display: none; position: absolute; top: calc(100% + 12px); right: 0; min-width: 300px; background: white; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(15,32,68,0.1); z-index: 200; }
+  .nav-search-wrap.open .nav-search-dropdown { display: block; }
+  .nav-search-result { display: block; padding: 12px 16px; border-bottom: 1px solid var(--border); text-decoration: none; transition: background 0.15s; }
+  .nav-search-result:last-child { border-bottom: none; }
+  .nav-search-result:hover { background: var(--cream); }
+  .nav-search-result-id { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--gray-light); margin-bottom: 2px; }
+  .nav-search-result-name { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .nav-search-result-date { font-size: 12px; color: var(--gray); margin-top: 1px; }
+  .nav-search-msg { padding: 14px 16px; font-size: 13px; color: var(--gray); font-family: 'DM Mono', monospace; }
   .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; position: relative; overflow: hidden; background: var(--navy); }
   .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,53,112,0.8) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(255,208,7,0.06) 0%, transparent 60%); pointer-events: none; }
   .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
@@ -195,6 +211,13 @@
     <span class="nav-brand">REAL</span>
   </a>
   <div class="nav-links">
+    <div class="nav-search-wrap" id="navSearchWrap">
+      <input class="nav-search-input" id="navSearchInput" type="text" placeholder="REAL ID or name" autocomplete="off">
+      <button class="nav-search-btn" id="navSearchBtn" aria-label="Search" onclick="navSearchToggle()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <div class="nav-search-dropdown" id="navSearchDropdown"></div>
+    </div>
     <a href="what-is-real.html" class="nav-cta-outline">What is REAL?</a>
     <a href="#waitlist" class="nav-cta">Join the waitlist</a>
   </div>
@@ -459,6 +482,64 @@
 
   const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
   document.querySelectorAll('.step, .problem-card, .perk').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.6s ease, transform 0.6s ease'; observer.observe(el); });
+
+  function navSearchToggle() {
+    const wrap = document.getElementById('navSearchWrap');
+    const input = document.getElementById('navSearchInput');
+    const isOpen = wrap.classList.toggle('open');
+    if (isOpen) {
+      input.focus();
+    } else {
+      input.value = '';
+      document.getElementById('navSearchDropdown').innerHTML = '';
+    }
+  }
+
+  async function navSearch() {
+    const query = document.getElementById('navSearchInput').value.trim();
+    const dropdown = document.getElementById('navSearchDropdown');
+    if (!query) { dropdown.innerHTML = ''; return; }
+
+    dropdown.innerHTML = `<div class="nav-search-msg">Searching…</div>`;
+
+    const isId = /^RL-/i.test(query);
+    const url = isId
+      ? `${SUPABASE_URL}/rest/v1/members?real_id=eq.${encodeURIComponent(query.toUpperCase())}&select=real_id,display_name,created_at&limit=5`
+      : `${SUPABASE_URL}/rest/v1/members?display_name=ilike.*${encodeURIComponent(query)}*&select=real_id,display_name,created_at&limit=5`;
+
+    try {
+      const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        dropdown.innerHTML = `<div class="nav-search-msg">No verified member found.</div>`;
+      } else {
+        dropdown.innerHTML = data.map(m => {
+          const date = m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+          return `<a class="nav-search-result" href="https://realverified.co.uk/${m.real_id}" target="_blank" rel="noopener">
+            <div class="nav-search-result-id">${m.real_id}</div>
+            <div class="nav-search-result-name">${m.display_name || '—'}</div>
+            ${date ? `<div class="nav-search-result-date">Verified since ${date}</div>` : ''}
+          </a>`;
+        }).join('');
+      }
+    } catch {
+      dropdown.innerHTML = `<div class="nav-search-msg">Search unavailable. Please try again.</div>`;
+    }
+  }
+
+  document.getElementById('navSearchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') navSearch();
+    if (e.key === 'Escape') navSearchToggle();
+  });
+
+  document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('navSearchWrap');
+    if (!wrap.contains(e.target)) {
+      wrap.classList.remove('open');
+      document.getElementById('navSearchInput').value = '';
+      document.getElementById('navSearchDropdown').innerHTML = '';
+    }
+  });
 
   async function doRealSearch() {
     const query = document.getElementById('realSearchInput').value.trim();
