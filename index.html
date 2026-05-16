@@ -601,7 +601,12 @@
       if (at) {
         localStorage.setItem('real_access_token', at);
         if (rt) localStorage.setItem('real_refresh_token', rt);
-        window.location.href = 'dashboard.html';
+        try {
+          const userId = JSON.parse(atob(at.split('.')[1])).sub;
+          window.location.href = 'https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00?client_reference_id=' + userId;
+        } catch {
+          window.location.href = 'https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00';
+        }
       }
     }
   })();
