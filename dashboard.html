@@ -137,6 +137,41 @@
     border: 1px solid var(--gold);
     color: var(--gold);
   }
+  .real-score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  .real-score-level {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .real-score-bar-track {
+    width: 100px;
+    height: 2px;
+    background: rgba(255,208,7,0.18);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .real-score-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+  .real-score-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: rgba(255,255,255,0.28);
+    letter-spacing: 0.07em;
+    text-align: right;
+    max-width: 160px;
+  }
   .identity-status-row {
     margin-top: 24px;
     padding-top: 24px;
@@ -499,6 +534,11 @@
       <div class="identity-right">
         <div class="real-id-badge" id="realId">RL-PENDING</div>
         <div class="tier-pill" id="tierPill">Founding Member</div>
+        <div class="real-score-block" id="realScoreBlock">
+          <div class="real-score-level" id="realScoreLevel">—</div>
+          <div class="real-score-bar-track"><div class="real-score-bar-fill" id="realScoreBarFill" style="width:0%"></div></div>
+          <div class="real-score-hint">Add more verified platforms to increase your score.</div>
+        </div>
       </div>
     </div>
     <div class="identity-status-row">
@@ -728,6 +768,8 @@
   let resubmitPlatformName = null;
   let userPlatforms = [];
   let idVerified = false;
+  let memberTier = null;
+  let memberVerifiedSince = null;
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -906,15 +948,48 @@
     }
   }
 
+  // ─── REAL SCORE ───
+  function calculateRealScore() {
+    let score = 0;
+    if (idVerified) score += 40;
+    const verifiedCount = userPlatforms.filter(p => p.status === 'verified').length;
+    score += Math.min(verifiedCount * 8, 30);
+    if (memberTier === 'founding') score += 10;
+    if (memberVerifiedSince) {
+      const days = (Date.now() - new Date(memberVerifiedSince)) / 86400000;
+      if (days > 180) score += 20;
+      else if (days > 90) score += 10;
+      else if (days > 30) score += 5;
+    }
+    return Math.min(score, 100);
+  }
+
+  function getScoreLevel(score) {
+    if (score >= 70) return 'Verified Authority';
+    if (score >= 40) return 'Verified Established';
+    return 'Verified Foundation';
+  }
+
+  function updateRealScore() {
+    const score = calculateRealScore();
+    const levelEl = document.getElementById('realScoreLevel');
+    const barEl = document.getElementById('realScoreBarFill');
+    if (levelEl) levelEl.textContent = getScoreLevel(score);
+    if (barEl) barEl.style.width = score + '%';
+  }
+
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
-      if (r.ok && Array.isArray(data) && data.length > 0 && data[0].real_id) {
-        document.getElementById('realId').textContent = data[0].real_id;
+      if (r.ok && Array.isArray(data) && data.length > 0) {
+        if (data[0].real_id) document.getElementById('realId').textContent = data[0].real_id;
+        memberTier = data[0].membership_tier || null;
+        memberVerifiedSince = data[0].verified_since || null;
+        updateRealScore();
       }
     } catch (e) {
       console.error('loadMemberData error:', e);
@@ -963,12 +1038,14 @@
       grid.innerHTML = '';
       empty.style.display = 'block';
       statusEl.textContent = '0 verified';
+      updateRealScore();
       return;
     }
 
     empty.style.display = 'none';
     const verifiedCount = userPlatforms.filter(p => p.status === 'verified').length;
     statusEl.textContent = `${verifiedCount} verified`;
+    updateRealScore();
 
     grid.innerHTML = userPlatforms.map(p => {
       const icon = icons[p.platform] || '🔗';

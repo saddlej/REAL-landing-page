@@ -150,7 +150,7 @@
     .badge-id { background: #FFF8D6; color: #9A7800; border: 0.5px solid #FFD007; }
     .badge-founding { background: #EEF2FF; color: #3730A3; border: 0.5px solid #C7D2FE; }
     .badge-standard { background: #F3F4F6; color: #374151; border: 0.5px solid #D1D5DB; }
-    .badge-score { background: #F0FDF4; color: #166534; border: 0.5px solid #BBF7D0; }
+    .badge-score { background: rgba(255,208,7,0.12); color: #FFD007; border: 0.5px solid rgba(255,208,7,0.4); }
 
     .divider {
       border: none;
@@ -397,6 +397,19 @@
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + d.toISOString().slice(11,16) + ' UTC';
   }
 
+  function calculateRealScore(verifiedPlatformsCount, isFoundingMember, verifiedSince) {
+    let score = 40; // all active profiles have gov ID confirmed
+    score += Math.min(verifiedPlatformsCount * 8, 30);
+    if (isFoundingMember) score += 10;
+    if (verifiedSince) {
+      const days = (Date.now() - new Date(verifiedSince)) / 86400000;
+      if (days > 180) score += 20;
+      else if (days > 90) score += 10;
+      else if (days > 30) score += 5;
+    }
+    return Math.min(score, 100);
+  }
+
   function getScoreLabel(score) {
     if (score >= 70) return 'Verified Authority';
     if (score >= 40) return 'Verified Established';
@@ -415,7 +428,9 @@
       ? '<span class="badge badge-founding">Founding Member</span>'
       : '<span class="badge badge-standard">Standard Member</span>';
 
-    const scoreLabel = getScoreLabel(member.real_score || 0);
+    const verifiedPlatformsCount = (platforms || []).length;
+    const score = calculateRealScore(verifiedPlatformsCount, member.membership_tier === 'founding', member.verified_since);
+    const scoreLabel = getScoreLabel(score);
 
     let platformsHTML = '';
     if (platforms && platforms.length > 0) {
