@@ -862,16 +862,17 @@ Step 3 — COMPLETE ✅
 Step 4 — COMPLETE ✅
 Step 5 — COMPLETE ✅
 Step 6 — COMPLETE ✅
+Step 7 — REAL Score — COMPLETE ✅
 Step 12 — COMPLETE ✅
 Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. Investigate ID verification launching in test mode for founder account — api/create-verification-session.js suspected — real members signing up fresh may not be affected — needs investigation next session
-2. Once ID verification confirmed working in live mode — test full flow end to end: signup → email confirm → pay (use FOUNDER coupon) → dashboard → ID verification → platform link
-3. Once confirmed working — manually assign RL-000001 to info@realverified.co.uk in Supabase members table if not already assigned by webhook
-4. Test email sending — trigger a real platform verification email via Resend
-5. Move to Step 7 — REAL Score
+1. Fix dashboard "Verification Pending" badge — should read from members table id_verified
+2. Fix id_verified webhook — ensure Stripe Identity webhook updates members table automatically
+3. Fix profile avatar placeholder — show REAL shield not initials
+4. Add TikTok once username can be changed (30 days from 17 May 2026)
+5. Move to Step 8 — Trust Timeline
 
 \---
 
@@ -881,6 +882,9 @@ Step 16 — COMPLETE ✅
 * Improve Website/Domain verification instructions — need plain English step by step for non-developers
 * Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
 * Admin page Reject button and auto-refresh — confirm still working correctly after dropdown update.
+* Profile page avatar placeholder shows initials instead of REAL shield logo — fix placeholder to show REAL shield when no photo uploaded
+* "Verification Pending" badge on dashboard needs investigating — should show "REAL ID Active" once id_verified is true in members table
+* id_verified not being set automatically by Stripe Identity webhook — needs investigating and fixing so it updates automatically when identity.verification_session.verified fires
 
 \---
 
@@ -962,6 +966,15 @@ Step 16 — COMPLETE ✅
 74. Stripe payment link after-payment redirect fixed — redirects directly to https://realverified.co.uk/dashboard.html — no broken confirmation page ✅
 75. FOUNDER coupon created in Stripe live account — 100% off forever — promotion code: FOUNDER — for founder use only ✅
 76. Stripe Founding Member payment link — Allow promotion codes enabled ✅
+77. Stripe Identity activated on live account ✅
+78. Government ID verified on live account — RL-000001 fully verified ✅
+79. REAL Score system built — calculates live from Supabase — displays on dashboard and public profile ✅
+80. Display name field added to dashboard — saves to members table — button shows Save/Update correctly ✅
+81. Public profile page fully working — loads as soon as real_id exists ✅
+82. Platform verifications display on public profile — RLS policy added for anon reads of verified platforms ✅
+83. Admin profile link URL fix — always prepends https:// ✅
+84. Supabase anon key fixed in profile.html — was using mismatched key causing 401 errors ✅
+85. id_verified now read from members table not user metadata — dashboard and profile both updated ✅
 
 \---
 
