@@ -869,10 +869,11 @@ Step 16 — COMPLETE ✅
 **Immediate next actions — START HERE**
 
 1. Fix id_verified webhook — Stripe Identity webhook should automatically update id_verified in members table when identity.verification_session.verified fires
-2. Add TikTok once username can be changed — diary reminder set for 17 June 2026
-3. Move to Step 8 — Trust Timeline
-4. Plan shared stylesheet across all pages for brand consistency
-5. Consider profile customisation section on dashboard — theme choice (white card or full navy), profile picture upload already done
+2. Redesign dashboard flow — new order: Your REAL Identity (hero) → Build Your Profile (display name, picture, theme — all mirrors to public profile) → Government ID Verification → Link Your Platforms → Subscription. Every action feeds the public profile in real time.
+3. Build the Your Profile section properly — profile customisation, REAL Score breakdown with points explanation, "View my public profile" button
+4. Add TikTok once username can be changed — diary reminder 17 June 2026
+5. Move to Step 8 — Trust Timeline
+6. Plan shared stylesheet across all pages for brand consistency
 
 \---
 
@@ -983,6 +984,8 @@ Step 16 — COMPLETE ✅
 91. Public profile redesigned to two-column layout — avatar left, all info right ✅
 92. REAL Score removed from public profile — stays on dashboard only — decision made: score measures commitment to REAL not personal trustworthiness ✅
 93. Profile picture crop tool added to dashboard — mobile and desktop ✅
+94. REAL Score badge moved to sit inline with REAL ID ACTIVE badge on dashboard ✅
+95. Hover tooltip added to REAL Score badge explaining what the score means ✅
 
 \---
 
@@ -995,6 +998,7 @@ Step 16 — COMPLETE ✅
 * **Profile theme toggle** — navy dark or navy/white hybrid — selectable from member dashboard
 * **/yourname redirect** — username-based URLs redirect to RL-number profile — both work — future build when ready
 * **Landing page search bar** — already built mid-page and in nav — future enhancement: add to all pages
+* **Dashboard flow redesign** — public profile is the north star — payment confirmed → REAL ID assigned → public profile live instantly → member fills it in and watches it update in real time
 
 \---
 
