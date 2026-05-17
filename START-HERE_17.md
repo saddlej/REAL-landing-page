@@ -868,11 +868,11 @@ Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. Fix dashboard "Verification Pending" badge — should read from members table id_verified
-2. Fix id_verified webhook — ensure Stripe Identity webhook updates members table automatically
-3. Fix profile avatar placeholder — show REAL shield not initials
-4. Add TikTok once username can be changed (30 days from 17 May 2026)
-5. Move to Step 8 — Trust Timeline
+1. Fix id_verified webhook — Stripe Identity webhook should automatically update id_verified in members table when identity.verification_session.verified fires
+2. Add TikTok once username can be changed — diary reminder set for 17 June 2026
+3. Move to Step 8 — Trust Timeline
+4. Plan shared stylesheet across all pages for brand consistency
+5. Consider profile customisation section on dashboard — theme choice (white card or full navy), profile picture upload already done
 
 \---
 
@@ -975,6 +975,14 @@ Step 16 — COMPLETE ✅
 83. Admin profile link URL fix — always prepends https:// ✅
 84. Supabase anon key fixed in profile.html — was using mismatched key causing 401 errors ✅
 85. id_verified now read from members table not user metadata — dashboard and profile both updated ✅
+86. REAL shield nav logo fixed on profile.html ✅
+87. Profile picture mirrors automatically from dashboard to public profile ✅
+88. "Complete the steps below to activate your REAL ID" message hidden when REAL ID is active ✅
+89. Founding Member badge styled in gold on public profile ✅
+90. Platform rows upgraded with branded coloured SVG icons and gold left border across dashboard, profile and admin pages ✅
+91. Public profile redesigned to two-column layout — avatar left, all info right ✅
+92. REAL Score removed from public profile — stays on dashboard only — decision made: score measures commitment to REAL not personal trustworthiness ✅
+93. Profile picture crop tool added to dashboard — mobile and desktop ✅
 
 \---
 
