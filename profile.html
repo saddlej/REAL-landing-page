@@ -109,30 +109,6 @@
       box-shadow: 0 24px 80px rgba(0,0,0,0.4);
     }
 
-    .real-id {
-      font-family: 'DM Mono', monospace;
-      font-size: 32px;
-      color: var(--navy);
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      margin-bottom: 4px;
-    }
-
-    .real-id .id-number { color: var(--gold); }
-
-    .display-name {
-      font-size: 24px;
-      color: var(--navy);
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .verified-since {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 22px;
-    }
-
     .badges {
       display: flex;
       gap: 7px;
@@ -235,10 +211,48 @@
       color: #9ca3af;
     }
 
+    /* PROFILE CARD TWO-COLUMN HEADER */
+    .profile-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .profile-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
     /* PROFILE AVATAR */
-    .profile-avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--navy); border: 3px solid rgba(255,208,7,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 20px; flex-shrink: 0; }
+    .profile-avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--navy); border: 2.5px solid rgba(255,208,7,0.55); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: none; border-radius: 50%; }
-    .profile-avatar-initials { font-family: 'DM Mono', monospace; font-size: 28px; color: var(--gold); user-select: none; line-height: 1; }
+    .profile-avatar-shield { width: 44px; height: 44px; }
+
+    .real-id {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      color: var(--gold);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+
+    .display-name {
+      font-size: 22px;
+      color: var(--navy);
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .verified-since {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 14px;
+    }
 
     /* NOT FOUND */
     .not-found {
@@ -465,18 +479,25 @@
 
     document.getElementById('content').innerHTML = `
       <div class="profile-card">
-        <div class="profile-avatar">
-          <img src="${avatarUrl}" alt="Profile picture"
-               onload="this.style.display='block';this.nextElementSibling.style.display='none';"
-               onerror="this.style.display='none';">
-          <span class="profile-avatar-initials">${initials}</span>
-        </div>
-        <div class="real-id">RL-<span class="id-number">${member.real_id.replace('RL-','')}</span></div>
-        <div class="display-name">${member.display_name || 'REAL Member'}</div>
-        <div class="verified-since">Verified since ${formatDateFull(member.verified_since)}</div>
-        <div class="badges">
-          ${member.id_verified ? '<span class="badge badge-id">✓ Gov ID Confirmed</span>' : ''}
-          ${tierBadge}
+        <div class="profile-card-header">
+          <div class="profile-avatar">
+            <img src="${avatarUrl}" alt="Profile picture"
+                 onload="this.style.display='block';this.nextElementSibling.style.display='none';"
+                 onerror="this.style.display='none';">
+            <svg class="profile-avatar-shield" viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="rgba(255,255,255,0.7)" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
+              <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
+            </svg>
+          </div>
+          <div class="profile-info">
+            <div class="real-id">${member.real_id}</div>
+            <div class="display-name">${member.display_name || 'REAL Member'}</div>
+            <div class="verified-since">Verified since ${formatDateFull(member.verified_since)}</div>
+            <div class="badges">
+              ${member.id_verified ? '<span class="badge badge-id">✓ Gov ID Confirmed</span>' : ''}
+              ${tierBadge}
+            </div>
+          </div>
         </div>
         <hr class="divider">
         <div class="section-label">Verified Platforms</div>
