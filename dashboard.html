@@ -984,15 +984,18 @@
       document.getElementById('idVerifyBtn').textContent = 'Verification submitted';
     }
 
-    // Lock Step 2 until government ID is verified (stored in user_metadata.id_verified by Stripe webhook)
-    idVerified = preview ? true : (user.user_metadata?.id_verified === true);
+    // Lock Step 2 until government ID is verified (read from members table via loadMemberData)
+    idVerified = preview ? true : false;
     updatePlatformSectionLock();
 
-    // Reflect ID verification status in Step 1 UI
+    // In preview mode reflect verified state immediately; non-preview is handled by loadMemberData
     if (idVerified) {
-      const pill = document.getElementById('idVerifyStatus');
-      pill.className = 'status-pill verified';
-      pill.innerHTML = '<span class="dot"></span><span>ID Verified</span>';
+      const vPill = document.getElementById('verificationStatus');
+      vPill.className = 'status-pill verified';
+      vPill.innerHTML = '<span class="dot"></span><span id="statusText">REAL ID Active</span>';
+      const idPill = document.getElementById('idVerifyStatus');
+      idPill.className = 'status-pill verified';
+      idPill.innerHTML = '<span class="dot"></span><span>ID Verified</span>';
       const btn = document.getElementById('idVerifyBtn');
       btn.disabled = true;
       btn.textContent = 'Verification complete';
@@ -1050,7 +1053,7 @@
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
@@ -1063,6 +1066,19 @@
           document.getElementById('displayNameBtn').textContent = 'Update';
           document.getElementById('memberName').textContent = data[0].display_name;
           document.getElementById('avatarInitials').textContent = getInitials(data[0].display_name);
+        }
+        if (data[0].id_verified === true) {
+          idVerified = true;
+          updatePlatformSectionLock();
+          const vPill = document.getElementById('verificationStatus');
+          vPill.className = 'status-pill verified';
+          vPill.innerHTML = '<span class="dot"></span><span id="statusText">REAL ID Active</span>';
+          const idPill = document.getElementById('idVerifyStatus');
+          idPill.className = 'status-pill verified';
+          idPill.innerHTML = '<span class="dot"></span><span>ID Verified</span>';
+          const idBtn = document.getElementById('idVerifyBtn');
+          idBtn.disabled = true;
+          idBtn.textContent = 'Verification complete';
         }
         updateRealScore();
       }

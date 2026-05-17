@@ -397,8 +397,9 @@
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + d.toISOString().slice(11,16) + ' UTC';
   }
 
-  function calculateRealScore(verifiedPlatformsCount, isFoundingMember, verifiedSince) {
-    let score = 40; // all active profiles have gov ID confirmed
+  function calculateRealScore(idVerified, verifiedPlatformsCount, isFoundingMember, verifiedSince) {
+    let score = 0;
+    if (idVerified) score += 40;
     score += Math.min(verifiedPlatformsCount * 8, 30);
     if (isFoundingMember) score += 10;
     if (verifiedSince) {
@@ -429,7 +430,7 @@
       : '<span class="badge badge-standard">Standard Member</span>';
 
     const verifiedPlatformsCount = (platforms || []).length;
-    const score = calculateRealScore(verifiedPlatformsCount, member.membership_tier === 'founding', member.verified_since);
+    const score = calculateRealScore(member.id_verified === true, verifiedPlatformsCount, member.membership_tier === 'founding', member.verified_since);
     const scoreLabel = getScoreLabel(score);
 
     let platformsHTML = '';
@@ -468,7 +469,7 @@
         <div class="display-name">${member.display_name || 'REAL Member'}</div>
         <div class="verified-since">Verified since ${formatDateFull(member.verified_since)}</div>
         <div class="badges">
-          <span class="badge badge-id">✓ Gov ID Confirmed</span>
+          ${member.id_verified ? '<span class="badge badge-id">✓ Gov ID Confirmed</span>' : ''}
           ${tierBadge}
           <span class="badge badge-score">${scoreLabel}</span>
         </div>
