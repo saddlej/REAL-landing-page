@@ -41,13 +41,22 @@ async function handler(req, res) {
     }
 
     try {
-      // Expand line_items to read the price nickname for tier determination
-      const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
-        expand: ['line_items.data.price'],
-      });
-
-      const nickname = fullSession.line_items?.data?.[0]?.price?.nickname ?? '';
-      const tier = nickname.toLowerCase().includes('founding') ? 'founding' : 'standard';
+      let tier = 'founding';
+      try {
+        const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: ['line_items.data.price'],
+        });
+        const lineItem = fullSession.line_items?.data?.[0];
+        if (!lineItem) {
+          console.warn(`checkout.session.completed ${session.id}: no line_items returned (amount_total=${session.amount_total}), defaulting tier to founding`);
+        } else {
+          const nickname = lineItem.price?.nickname ?? '';
+          tier = nickname.toLowerCase().includes('founding') ? 'founding' : 'standard';
+          console.log(`checkout.session.completed ${session.id}: price nickname="${nickname}", tier=${tier}`);
+        }
+      } catch (retrieveErr) {
+        console.error(`checkout.session.completed ${session.id}: session retrieve failed (amount_total=${session.amount_total}), defaulting tier to founding:`, retrieveErr.message);
+      }
 
       const supabaseHeaders = {
         'Content-Type': 'application/json',
