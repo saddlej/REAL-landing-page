@@ -511,7 +511,6 @@
       .from('members')
       .select('*')
       .eq('real_id', realId)
-      .eq('is_active', true)
       .single();
 
     if (error || !member) {
