@@ -321,6 +321,74 @@
     align-self: flex-end;
   }
 
+  /* ─── CROP MODAL ─── */
+  #cropModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+  #cropModal.visible { display: flex; }
+  .crop-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 24px;
+    background: #111827;
+    width: calc(100vw - 32px);
+    max-width: 360px;
+  }
+  .crop-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    text-align: center;
+  }
+  #cropViewport {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    flex-shrink: 0;
+    background: #000;
+    border: 2px solid rgba(255,208,7,0.7);
+  }
+  #cropViewport:active { cursor: grabbing; }
+  #cropPreviewImg {
+    position: absolute;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+  .crop-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .crop-actions button {
+    flex: 1;
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .crop-cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+  .crop-cancel:hover { background: rgba(255,255,255,0.14); }
+  .crop-confirm { background: var(--gold); color: var(--navy); }
+  .crop-confirm:hover { opacity: 0.92; }
+
   /* ─── STEP 2 — PLATFORMS ─── */
   .platforms-grid {
     display: grid;
@@ -735,6 +803,20 @@
   </div>
 </footer>
 
+<!-- CROP MODAL -->
+<div id="cropModal">
+  <div class="crop-container">
+    <div class="crop-hint">Drag to reposition · Scroll or pinch to zoom</div>
+    <div id="cropViewport">
+      <img id="cropPreviewImg" alt="" draggable="false">
+    </div>
+    <div class="crop-actions">
+      <button class="crop-cancel" onclick="cancelCrop()">Cancel</button>
+      <button class="crop-confirm" onclick="confirmCrop()">Confirm photo</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD PLATFORM MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
   <div class="modal">
@@ -864,22 +946,142 @@
     if (!file) return;
     input.value = '';
     const reader = new FileReader();
-    reader.onload = e => cropAndUpload(e.target.result);
+    reader.onload = e => showCropModal(e.target.result);
     reader.readAsDataURL(file);
   }
 
-  function cropAndUpload(dataUrl) {
-    const image = new Image();
-    image.onload = () => {
-      const size = Math.min(image.width, image.height);
-      const canvas = document.createElement('canvas');
-      canvas.width = 400; canvas.height = 400;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, (image.width - size) / 2, (image.height - size) / 2, size, size, 0, 0, 400, 400);
-      canvas.toBlob(blob => uploadAvatar(blob), 'image/jpeg', 0.88);
+  // ─── CROP MODAL ───
+  const CROP_SIZE = 280;
+  let cropScale = 1, cropMinScale = 1;
+  let cropOffsetX = 0, cropOffsetY = 0;
+  let cropDragging = false, cropLastX = 0, cropLastY = 0;
+  let cropPinchDist = 0;
+  let cropImgNaturalW = 0, cropImgNaturalH = 0;
+
+  function showCropModal(dataUrl) {
+    cropOffsetX = 0; cropOffsetY = 0;
+    const img = document.getElementById('cropPreviewImg');
+    img.onload = () => {
+      cropImgNaturalW = img.naturalWidth;
+      cropImgNaturalH = img.naturalHeight;
+      cropMinScale = Math.max(CROP_SIZE / cropImgNaturalW, CROP_SIZE / cropImgNaturalH);
+      cropScale = cropMinScale;
+      updateCropPreview();
     };
-    image.src = dataUrl;
+    img.src = dataUrl;
+    document.getElementById('cropModal').classList.add('visible');
   }
+
+  function cancelCrop() {
+    document.getElementById('cropModal').classList.remove('visible');
+  }
+
+  function confirmCrop() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 400; canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+    const img = document.getElementById('cropPreviewImg');
+    const half = CROP_SIZE / 2;
+    const srcX = cropImgNaturalW / 2 - cropOffsetX / cropScale - half / cropScale;
+    const srcY = cropImgNaturalH / 2 - cropOffsetY / cropScale - half / cropScale;
+    const srcSize = CROP_SIZE / cropScale;
+    ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 400, 400);
+    canvas.toBlob(blob => {
+      document.getElementById('cropModal').classList.remove('visible');
+      uploadAvatar(blob);
+    }, 'image/jpeg', 0.88);
+  }
+
+  function clampCropOffset() {
+    const half = CROP_SIZE / 2;
+    const maxX = Math.max(0, cropImgNaturalW * cropScale / 2 - half);
+    const maxY = Math.max(0, cropImgNaturalH * cropScale / 2 - half);
+    cropOffsetX = Math.max(-maxX, Math.min(maxX, cropOffsetX));
+    cropOffsetY = Math.max(-maxY, Math.min(maxY, cropOffsetY));
+  }
+
+  function updateCropPreview() {
+    clampCropOffset();
+    const img = document.getElementById('cropPreviewImg');
+    const w = cropImgNaturalW * cropScale;
+    const h = cropImgNaturalH * cropScale;
+    const half = CROP_SIZE / 2;
+    img.style.width = w + 'px';
+    img.style.height = h + 'px';
+    img.style.left = (half + cropOffsetX - w / 2) + 'px';
+    img.style.top  = (half + cropOffsetY - h / 2) + 'px';
+  }
+
+  function cropZoom(delta, cx, cy) {
+    const prevScale = cropScale;
+    cropScale = Math.max(cropMinScale, Math.min(cropMinScale * 4, cropScale * (1 + delta)));
+    const ratio = cropScale / prevScale;
+    const half = CROP_SIZE / 2;
+    const vx = (cx !== undefined ? cx : half) - half;
+    const vy = (cy !== undefined ? cy : half) - half;
+    cropOffsetX = vx + (cropOffsetX - vx) * ratio;
+    cropOffsetY = vy + (cropOffsetY - vy) * ratio;
+    updateCropPreview();
+  }
+
+  function initCropEvents() {
+    const vp = document.getElementById('cropViewport');
+    vp.addEventListener('mousedown', e => {
+      cropDragging = true;
+      cropLastX = e.clientX; cropLastY = e.clientY;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!cropDragging) return;
+      cropOffsetX += e.clientX - cropLastX;
+      cropOffsetY += e.clientY - cropLastY;
+      cropLastX = e.clientX; cropLastY = e.clientY;
+      updateCropPreview();
+    });
+    window.addEventListener('mouseup', () => { cropDragging = false; });
+    vp.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = vp.getBoundingClientRect();
+      cropZoom(e.deltaY < 0 ? 0.1 : -0.1, e.clientX - rect.left, e.clientY - rect.top);
+    }, { passive: false });
+    vp.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        cropDragging = true;
+        cropLastX = e.touches[0].clientX; cropLastY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        cropDragging = false;
+        cropPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+      e.preventDefault();
+    }, { passive: false });
+    vp.addEventListener('touchmove', e => {
+      if (e.touches.length === 1 && cropDragging) {
+        cropOffsetX += e.touches[0].clientX - cropLastX;
+        cropOffsetY += e.touches[0].clientY - cropLastY;
+        cropLastX = e.touches[0].clientX; cropLastY = e.touches[0].clientY;
+        updateCropPreview();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const rect = vp.getBoundingClientRect();
+        const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+        if (cropPinchDist) cropZoom((dist / cropPinchDist) - 1, cx, cy);
+        cropPinchDist = dist;
+      }
+      e.preventDefault();
+    }, { passive: false });
+    vp.addEventListener('touchend', e => {
+      if (e.touches.length < 2) cropPinchDist = 0;
+      if (e.touches.length === 0) cropDragging = false;
+    });
+  }
+  initCropEvents();
 
   async function uploadAvatar(blob) {
     const wrap = document.getElementById('avatarWrap');
