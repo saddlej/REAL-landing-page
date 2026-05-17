@@ -895,6 +895,7 @@
       ];
       renderPlatforms();
     } else {
+      loadMemberData(token, user.id);
       loadPlatforms(token);
       // Refresh platform statuses every 15 seconds
       setInterval(() => loadPlatforms(token), 15000);
@@ -902,6 +903,21 @@
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) loadPlatforms(token);
       });
+    }
+  }
+
+  // ─── LOAD MEMBER DATA ───
+  async function loadMemberData(token, userId) {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id&limit=1`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
+      });
+      const data = await r.json();
+      if (r.ok && Array.isArray(data) && data.length > 0 && data[0].real_id) {
+        document.getElementById('realId').textContent = data[0].real_id;
+      }
+    } catch (e) {
+      console.error('loadMemberData error:', e);
     }
   }
 
