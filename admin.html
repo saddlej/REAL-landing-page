@@ -325,7 +325,7 @@
         <div><div class="platform-tag">${escapeHtml(row.platform)}</div></div>
         <div class="handle-col">
           <div class="handle-text">${escapeHtml(row.handle)}</div>
-          ${row.profile_url ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener noreferrer" class="profile-link">↗ Open profile</a>` : '<span class="notes-text">No profile URL submitted</span>'}
+          ${row.profile_url ? `<a href="${row.profile_url.startsWith('http') ? escapeHtml(row.profile_url) : 'https://' + escapeHtml(row.profile_url)}" target="_blank" rel="noopener noreferrer" class="profile-link">↗ Open profile</a>` : '<span class="notes-text">No profile URL submitted</span>'}
           <div class="notes-text">Submitted ${submittedDate}</div>
           ${row.notes ? `<div class="notes-text">Note: ${escapeHtml(row.notes)}</div>` : ''}
         </div>
