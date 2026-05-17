@@ -679,7 +679,7 @@
       <div class="profile-field-desc">This is what appears on your public REAL profile. Use your name, brand name, or business name.</div>
       <div class="profile-field-row">
         <input type="text" id="displayNameInput" class="profile-field-input" placeholder="Your name or brand name" maxlength="80">
-        <button class="btn-primary" onclick="saveDisplayName()">Save</button>
+        <button class="btn-primary" id="displayNameBtn" onclick="saveDisplayName()">Save</button>
         <span class="save-success" id="displayNameSuccess">Saved ✓</span>
       </div>
     </div>
@@ -1060,6 +1060,7 @@
         memberVerifiedSince = data[0].verified_since || null;
         if (data[0].display_name) {
           document.getElementById('displayNameInput').value = data[0].display_name;
+          document.getElementById('displayNameBtn').textContent = 'Update';
           document.getElementById('memberName').textContent = data[0].display_name;
           document.getElementById('avatarInitials').textContent = getInitials(data[0].display_name);
         }
@@ -1090,8 +1091,10 @@
       if (!r.ok) throw new Error('Save failed');
       document.getElementById('memberName').textContent = val;
       document.getElementById('avatarInitials').textContent = getInitials(val);
-      successEl.style.display = 'inline-block';
-      setTimeout(() => { successEl.style.display = 'none'; }, 4000);
+      const btn = document.getElementById('displayNameBtn');
+      btn.textContent = 'Saved ✓';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = 'Update'; btn.disabled = false; }, 3000);
     } catch (e) {
       console.error('saveDisplayName error:', e);
       alert('Failed to save display name. Please try again.');
