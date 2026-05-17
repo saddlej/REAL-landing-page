@@ -1202,6 +1202,7 @@
       const btn = document.getElementById('idVerifyBtn');
       btn.disabled = true;
       btn.textContent = 'Verification complete';
+      document.getElementById('statusMeta').style.display = 'none';
     }
 
     if (preview) {
@@ -1273,6 +1274,7 @@
         if (data[0].id_verified === true) {
           idVerified = true;
           updatePlatformSectionLock();
+          document.getElementById('statusMeta').style.display = 'none';
           const vPill = document.getElementById('verificationStatus');
           vPill.className = 'status-pill verified';
           vPill.innerHTML = '<span class="dot"></span><span id="statusText">REAL ID Active</span>';
