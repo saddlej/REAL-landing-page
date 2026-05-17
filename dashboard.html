@@ -137,40 +137,55 @@
     border: 1px solid var(--gold);
     color: var(--gold);
   }
-  .real-score-block {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
+  .score-badge-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
   }
-  .real-score-level {
+  .score-level-pill {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--gold);
+    background: rgba(255,208,7,0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: default;
+    white-space: nowrap;
   }
-  .real-score-bar-track {
-    width: 100px;
-    height: 2px;
-    background: rgba(255,208,7,0.18);
-    border-radius: 1px;
-    overflow: hidden;
+  .score-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0F2044;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.55;
+    padding: 10px 14px;
+    border-radius: 8px;
+    width: 240px;
+    pointer-events: none;
+    z-index: 20;
+    text-align: center;
+    border: 1px solid rgba(255,208,7,0.35);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
   }
-  .real-score-bar-fill {
-    height: 100%;
-    background: var(--gold);
-    border-radius: 1px;
-    transition: width 0.6s ease;
+  .score-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(255,208,7,0.35);
   }
-  .real-score-hint {
-    font-family: 'DM Mono', monospace;
-    font-size: 8px;
-    color: rgba(255,255,255,0.28);
-    letter-spacing: 0.07em;
-    text-align: right;
-    max-width: 160px;
+  .score-badge-wrap:hover .score-tooltip {
+    display: block;
   }
   .identity-status-row {
     margin-top: 24px;
@@ -650,17 +665,16 @@
       <div class="identity-right">
         <div class="real-id-badge" id="realId">RL-PENDING</div>
         <div class="tier-pill" id="tierPill">Founding Member</div>
-        <div class="real-score-block" id="realScoreBlock">
-          <div class="real-score-level" id="realScoreLevel">—</div>
-          <div class="real-score-bar-track"><div class="real-score-bar-fill" id="realScoreBarFill" style="width:0%"></div></div>
-          <div class="real-score-hint">Add more verified platforms to increase your score.</div>
-        </div>
       </div>
     </div>
     <div class="identity-status-row">
       <div class="status-pill pending" id="verificationStatus">
         <span class="dot"></span>
         <span id="statusText">Verification pending</span>
+      </div>
+      <div class="score-badge-wrap">
+        <span class="score-level-pill" id="realScoreLevel">—</span>
+        <div class="score-tooltip">Your REAL Score reflects how long you've been a member and how many platforms you've verified. Add more platforms to increase your score.</div>
       </div>
       <span class="status-meta" id="statusMeta">Complete the steps below to activate your REAL ID</span>
     </div>
