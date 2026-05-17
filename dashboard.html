@@ -400,18 +400,19 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 16px;
-    background: white;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s;
+    padding: 12px 14px;
+    background: rgba(10, 25, 60, 0.04);
+    border-left: 3px solid #FFD007;
+    border-radius: 8px;
+    transition: background 0.2s;
   }
-  .platform-row:hover { border-color: #ccc; }
+  .platform-row:hover { background: rgba(10, 25, 60, 0.08); }
   .platform-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .platform-status-dot.green { background: var(--success); }
   .platform-status-dot.gold { background: var(--gold); }
   .platform-status-dot.red { background: var(--error); }
   .platform-status-dot.empty { background: var(--border); }
-  .platform-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+  .platform-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
   .platform-info { flex: 1; min-width: 0; }
   .platform-name { font-size: 13px; font-weight: 500; color: var(--navy); }
   .platform-handle { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-light); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1355,7 +1356,21 @@
     const grid = document.getElementById('platformsGrid');
     const empty = document.getElementById('platformEmptyState');
     const statusEl = document.getElementById('platformsStatusText');
-    const icons = { Instagram:'📸', TikTok:'🎵', 'X / Twitter':'🐦', Facebook:'📘', LinkedIn:'💼', YouTube:'▶️', Email:'✉️', 'Website':'🌐', 'Website / Domain':'🌐' };
+    function getPlatformIcon(platform) {
+      const map = {
+        'Instagram': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="white" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="white"/></svg></div>`,
+        'TikTok': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#000"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.54V6.78a4.85 4.85 0 01-1.02-.09z"/></svg></div>`,
+        'X': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#000"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.736-8.857L2.018 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>`,
+        'X / Twitter': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#000"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.736-8.857L2.018 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>`,
+        'Facebook': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#1877F2"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg></div>`,
+        'LinkedIn': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#0A66C2"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></div>`,
+        'YouTube': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#FF0000"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>`,
+        'Email': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#0F2044"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="white" stroke-width="2"/><path d="M2 8l10 7 10-7" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>`,
+        'Website': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#0F2044"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M2 12h20M12 2c-3 3-4 6-4 10s1 7 4 10M12 2c3 3 4 6 4 10s-1 7-4 10" stroke="white" stroke-width="1.5"/></svg></div>`,
+        'Website / Domain': `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#0F2044"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M2 12h20M12 2c-3 3-4 6-4 10s1 7 4 10M12 2c3 3 4 6 4 10s-1 7-4 10" stroke="white" stroke-width="1.5"/></svg></div>`
+      };
+      return map[platform] || `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#4B5563"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="8"/></svg></div>`;
+    }
 
     if (!Array.isArray(userPlatforms) || userPlatforms.length === 0) {
       grid.innerHTML = '';
@@ -1371,12 +1386,11 @@
     updateRealScore();
 
     grid.innerHTML = userPlatforms.map(p => {
-      const icon = icons[p.platform] || '🔗';
       const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
       const dotClass = safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold';
       const hasNotice = safeStatus === 'pending' || safeStatus === 'failed';
       const rowAttrs = hasNotice
-        ? `data-row-id="${p.id}" data-platform="${escapeHtml(p.platform)}" data-icon="${escapeHtml(icon)}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"`
+        ? `data-row-id="${p.id}" data-platform="${escapeHtml(p.platform)}" data-icon="${escapeHtml(p.platform)}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"`
         : '';
 
       let notice = '';
@@ -1433,7 +1447,7 @@
       return `
         <div class="platform-row${hasNotice ? ' has-notice' : ''}" ${rowAttrs}>
           <div class="platform-status-dot ${dotClass}"></div>
-          <div class="platform-icon">${escapeHtml(icon)}</div>
+          <div class="platform-icon">${getPlatformIcon(p.platform)}</div>
           <div class="platform-info">
             <div class="platform-name">${escapeHtml(p.platform)}</div>
             <div class="platform-handle">${escapeHtml(p.handle) || '—'}</div>
