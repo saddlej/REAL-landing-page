@@ -80,7 +80,6 @@ The page is a read-only trust page. Someone lands on it and within five seconds 
 * Verified since date — with exact timestamp
 * Government ID Confirmed badge
 * Membership tier badge — Founding Member or Standard
-* REAL Score level — Verified Foundation / Verified Established / Verified Authority
 * Every verified platform — platform name, handle, green tick, date verified
 * Impersonation attempts count — single line only e.g. "3 impersonation attempts documented by REAL"
 * Search bar in nav for finding other profiles
@@ -122,8 +121,7 @@ Cannot be purchased, faked, or gamed.
 Calculated from: platforms verified, length of membership, government ID confirmed, ID number tier, compromise history handling.
 Displayed as: Verified Foundation (0-39) / Verified Established (40-69) / Verified Authority (70+).
 
-**Display on public profile:**
-Shown as a trust level — not a number. Three levels: Verified Foundation / Verified Established / Verified Authority. Thresholds: 0-39 = Foundation, 40-69 = Established, 70+ = Authority.
+**Display on dashboard only — not shown on public profile. Decision made: the score measures commitment to REAL, not personal trustworthiness. Showing it publicly would mislead strangers. It remains on the member dashboard as an engagement and retention mechanic.**
 
 **Future use — tier system foundation:**
 The REAL Score is the anchor for the future Pro and Business tier system. When revenue supports it:
