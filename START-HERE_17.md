@@ -105,32 +105,17 @@ This is a member dashboard feature — not on the public profile. A button in th
 
 \---
 
-## THE REAL SCORE — TRUST INDICATOR
+## THE REAL SCORE — PROFILE COMPLETION INDICATOR
 
-The REAL Score is a trust indicator built entirely from objective verifiable facts. It cannot be purchased, gamed, or faked. It can only be built over time through genuine verified activity.
+The REAL Score is NOT a credibility score. Credibility cannot be earned by setting up profiles. The score is a profile completion indicator — it shows how much of a member's REAL presence is verified and complete.
 
-**Score is calculated from:**
+Displayed on the member dashboard only — never on the public profile. Shows as a progress bar with percentage and the message: 'Your REAL profile is X% complete. Add more verified platforms to strengthen your presence.'
 
-* Number of platforms verified — more platforms equals higher score
-* Length of verified membership — the longer the member has been on REAL the higher the score
-* Whether government ID is confirmed — significant weight, not confirmed means score is capped
-* REAL ID number tier — founding member carries more inherent weight than standard
-* Compromise history — a member who experienced a hack, reported it immediately, fought to recover the account, and updated REAL throughout demonstrates integrity and adds to the score
+Calculated from: government ID verified, number of verified platforms, membership tenure, founding member status. Cannot be purchased or gamed. But it measures verification completeness — not trustworthiness.
 
-Cannot be purchased, faked, or gamed.
-Calculated from: platforms verified, length of membership, government ID confirmed, ID number tier, compromise history handling.
-Displayed as: Verified Foundation (0-39) / Verified Established (40-69) / Verified Authority (70+).
+The real credibility layer is the Community Trust feature — a future build where verified REAL members can vouch for each other. Only verified members can contribute. No anonymous reviews. No fake endorsements. Every vouch is attached to a verified real identity. This is genuinely different from Trustpilot because the identity problem is solved first.
 
-**Display on dashboard only — not shown on public profile. Decision made: the score measures commitment to REAL, not personal trustworthiness. Showing it publicly would mislead strangers. It remains on the member dashboard as an engagement and retention mechanic.**
-
-**Future use — tier system foundation:**
-The REAL Score is the anchor for the future Pro and Business tier system. When revenue supports it:
-
-* REAL Standard — current offering
-* REAL Pro — high score threshold required — priority support, advanced toolkit, enhanced profile features, physical verification certificate
-* REAL Business — for brands and agencies — multiple profiles, commerce platform verification, dedicated account management
-
-Build the score now knowing these tiers are coming.
+Future use — tier system foundation: The completion score can still gate Pro and Business tier features when those tiers are built.
 
 \---
 
@@ -154,6 +139,36 @@ Every member has a permanent verified history that cannot be faked, purchased, o
 
 **Rebrand as a feature:**
 When a creator or business rebrands — new name, new handle — their REAL profile documents the entire journey. Old handle verified from original date. Name change logged. New handle verified with fresh timestamp. Same REAL ID throughout. Their audience never loses trust because the history is permanent and unbroken. This is a genuine selling point: "Taking your business through a rebrand? Your REAL profile documents the whole journey so your audience never loses trust in you."
+
+\---
+
+## THE VISION — WHERE REAL GOES
+
+REAL started as a verification tool. It is becoming something much larger.
+
+What REAL actually is:
+The only platform on the internet where every member is a verified real human being. Not algorithmically verified. Not paid-tick verified. Government ID verified. Biometrically confirmed. Every account they own proven to be theirs.
+
+The three layers:
+Layer 1 — Individual protection (current): Creators, freelancers, business owners protecting their identity. Proving their accounts are theirs. Building a verified history fakes can never replicate. This is the foundation that gets people through the door.
+
+Layer 2 — Verified community (next): Verified real people looking out for each other. A closed network where only verified members can vouch for others. Endorsements carry real weight because they are attached to verified identities. Warnings about scammers are credible because they come from real people. Members flag fakes impersonating other members. Everyone in the community has faced the same threat. They look out for each other because they genuinely get it. This is the moat — it cannot be purchased or replicated.
+
+Layer 3 — Identity infrastructure for the internet (long game): Brands require REAL verification before partnerships. Agencies build it into vetting. The REAL API allows other platforms to integrate REAL verification. Dating apps, marketplaces, freelance platforms, employers — anyone who needs to verify human identity uses REAL as the infrastructure layer. The badge becomes the standard — like SSL certificates on websites.
+
+The community trust insight:
+Every other platform tried to build reputation without solving identity first. They all failed — fake reviews from fake people. REAL solves identity first, then builds reputation on top. That is the right order. Every vouch, endorsement, and warning comes from a verified real human being. That changes everything.
+
+The business at scale:
+
+* Membership revenue — recurring, predictable, grows with every member
+* API licensing — platforms pay to use REAL verification infrastructure
+* B2B verification — brands and agencies pay for verified creator vetting
+* Enterprise — large platforms integrating REAL as their trust layer
+* The verified directory — the most trusted search for real people on the internet
+
+The honest end state:
+REAL becomes the standard for verified human identity online. Not because a government mandated it. Not because a big tech company built it. Because real people chose it because they needed it and it worked.
 
 \---
 
@@ -1016,6 +1031,20 @@ Step 16 — COMPLETE ✅
 * Update Stripe payout bank account to business account
 * Set up proper accounting software for REAL
 * Update Stripe to add VAT when revenue hits £90,000/year threshold
+
+\---
+
+## MARKETING AND GROWTH — WHEN TO START
+
+Do not build a marketing strategy until member 100. Before that, focus entirely on personal outreach to people who have experienced impersonation.
+
+First 10 members come from personal outreach only — people you know or follow who fit: had fake accounts, run an online business, are creators of any size, sell services online, have had their content or identity copied.
+
+You cannot advertise a trust product without trust. Trust comes from real members with real stories. The first members and their verified profiles ARE the first advertisement.
+
+The DM template is already written. The outreach strategy is already planned. Execute that first. Marketing strategy is a session for when the first 10 members are signed up.
+
+Olivia — two messages sent, no reply. Move on. Leave the door open. Do not send a third message.
 
 \---
 
