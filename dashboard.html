@@ -1413,18 +1413,40 @@
       if (safeStatus === 'pending') {
         const confirmed = p.member_confirmed === true;
         if (!confirmed) {
-          const label = p.platform === 'YouTube'
-            ? 'Add this code to your YouTube channel description, then confirm below:'
-            : 'Add this code to the first line of your bio, then confirm below:';
-          notice = `
-            <div class="platform-notice">
-              <span class="notice-label">${label}</span>
-              <div class="code-copy-block" onclick="copyCode(this)">
-                <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
-                <span class="code-copy-hint">Copy</span>
-              </div>
-              <button class="notice-action-btn" onclick="confirmFromCard(this)">I've added it — check my bio</button>
-            </div>`;
+          if (p.platform === 'Email') {
+            notice = `
+              <div class="platform-notice">
+                <span class="notice-label">Check your inbox and click the confirmation link to verify this email address.</span>
+                <div class="code-copy-block" onclick="copyCode(this)">
+                  <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                  <span class="code-copy-hint">Copy</span>
+                </div>
+                <button class="notice-action-btn" onclick="resendEmailFromCard(this)">Resend confirmation email</button>
+              </div>`;
+          } else if (p.platform === 'Website') {
+            notice = `
+              <div class="platform-notice">
+                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below.</span>
+                <div class="code-copy-block" onclick="copyCode(this)">
+                  <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                  <span class="code-copy-hint">Copy</span>
+                </div>
+                <button class="notice-action-btn" onclick="checkDomainFromCard(this)">Check my DNS</button>
+              </div>`;
+          } else {
+            const label = p.platform === 'YouTube'
+              ? 'Add this code to your YouTube channel description, then confirm below:'
+              : 'Add this code to the first line of your bio, then confirm below:';
+            notice = `
+              <div class="platform-notice">
+                <span class="notice-label">${label}</span>
+                <div class="code-copy-block" onclick="copyCode(this)">
+                  <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
+                  <span class="code-copy-hint">Copy</span>
+                </div>
+                <button class="notice-action-btn" onclick="confirmFromCard(this)">I've added it — check my bio</button>
+              </div>`;
+          }
         } else if (p.platform === 'YouTube') {
           notice = `
             <div class="platform-notice">
@@ -1649,7 +1671,8 @@
     const isEmail = name === 'Email';
     const isWebsite = name === 'Website' || name === 'Website / Domain';
     document.getElementById('handleLabel').textContent = isEmail ? 'Your email address' : isWebsite ? 'Your domain (e.g. yoursite.com)' : 'Your handle or username';
-    document.getElementById('handleInput').placeholder = isEmail ? 'you@yourdomain.com' : isWebsite ? 'yoursite.com' : '@yourhandle';
+    const handlePlaceholders = { Facebook: 'Your name or page name', LinkedIn: 'your-profile-slug', YouTube: '@yourchannel' };
+    document.getElementById('handleInput').placeholder = isEmail ? 'you@yourdomain.com' : isWebsite ? 'yoursite.com' : (handlePlaceholders[name] || '@yourhandle');
     document.getElementById('handleInput').value = '';
     // Show URL field for manual platforms
     const showUrl = !['YouTube','Email','Website','Website / Domain'].includes(name);
