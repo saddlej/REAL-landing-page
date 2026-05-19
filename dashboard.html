@@ -1416,11 +1416,7 @@
           if (p.platform === 'Email') {
             notice = `
               <div class="platform-notice">
-                <span class="notice-label">Check your inbox and click the confirmation link to verify this email address.</span>
-                <div class="code-copy-block" onclick="copyCode(this)">
-                  <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
-                  <span class="code-copy-hint">Copy</span>
-                </div>
+                <span class="notice-label">We've sent a confirmation link to this address. Click it to verify you own it. Can't see it? Check your spam folder.</span>
                 <button class="notice-action-btn" onclick="resendEmailFromCard(this)">Resend confirmation email</button>
               </div>`;
           } else if (p.platform === 'Website') {
