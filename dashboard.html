@@ -1426,7 +1426,7 @@
           } else if (p.platform === 'Website') {
             notice = `
               <div class="platform-notice">
-                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below.</span>
+                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below. <a href="/dns-guide.html" target="_blank" style="color:#0F2044;font-weight:500;white-space:nowrap;">How to do this →</a></span>
                 <div class="code-copy-block" onclick="copyCode(this)">
                   <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
                   <span class="code-copy-hint">Copy</span>
@@ -1620,7 +1620,7 @@
           _stepCBtn.textContent = 'Send confirmation email →';
           _stepCBtn.onclick = sendEmailConfirmation;
         } else if (selectedPlatform === 'Website') {
-          document.querySelector('#modalStepC .code-instructions').textContent = "Add this TXT record to your domain's DNS settings. Your domain registrar (e.g. Namecheap, GoDaddy) will have an Advanced DNS section where you can add it. It can take up to 30 minutes to update.";
+          document.querySelector('#modalStepC .code-instructions').innerHTML = "Add this code as a TXT record to your domain's DNS settings. Not sure how? <a href='/dns-guide.html' target='_blank' style='color:#0F2044;font-weight:500;'>Follow our step by step guide →</a>";
           _stepCBtn.textContent = 'Check my DNS →';
           _stepCBtn.onclick = checkDomainVerification;
         } else {
