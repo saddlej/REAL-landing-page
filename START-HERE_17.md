@@ -881,19 +881,14 @@ Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. Fix id_verified webhook — Stripe Identity webhook should automatically update id_verified in members table when identity.verification_session.verified fires
-2. Redesign dashboard flow — new order: Your REAL Identity (hero) → Build Your Profile (display name, picture, theme — all mirrors to public profile) → Government ID Verification → Link Your Platforms → Subscription. Every action feeds the public profile in real time.
-3. Build the Your Profile section properly — profile customisation, REAL Score breakdown with points explanation, "View my public profile" button
-4. Add TikTok once username can be changed — diary reminder 17 June 2026
-5. Move to Step 8 — Trust Timeline
-6. Plan shared stylesheet across all pages for brand consistency
+1. Test email verification end to end — send confirmation email, click link, confirm verified
+2. Test domain/DNS verification end to end — add TXT record, click Check my DNS, confirm verified
+3. Move to Step 7 — REAL Score
 
 \---
 
 ## FIXES TO MAKE BEFORE LAUNCH
 
-* Platform submission form should show the correct handle format for each platform — Instagram = @handle, Facebook = name or page name (no @), LinkedIn = profile slug (linkedin.com/in/yourname), YouTube = @handle or channel name, TikTok = @handle, X = @handle. Currently shows @yourhandle for all platforms which is incorrect for Facebook, LinkedIn and YouTube.
-* Improve Website/Domain verification instructions — need plain English step by step for non-developers
 * Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
 * Admin page Reject button and auto-refresh — confirm still working correctly after dropdown update.
 * Profile page avatar placeholder shows initials instead of REAL shield logo — fix placeholder to show REAL shield when no photo uploaded
@@ -999,6 +994,14 @@ Step 16 — COMPLETE ✅
 93. Profile picture crop tool added to dashboard — mobile and desktop ✅
 94. REAL Score badge moved to sit inline with REAL ID ACTIVE badge on dashboard ✅
 95. Hover tooltip added to REAL Score badge explaining what the score means ✅
+96. Public profile mobile layout fully fixed — nav search bar drops to full width, badges wrap correctly, platform dates stack below handle, tick stays right ✅
+97. Facebook placeholder corrected to "Your name or page name" ✅
+98. LinkedIn placeholder corrected to "your-profile-slug" ✅
+99. Email dashboard card fixed — now shows correct inbox instructions with spam folder tip, no code box ✅
+100. Website dashboard card fixed — now shows correct DNS instructions with "How to do this →" link ✅
+101. Website modal fixed — JavaScript error resolved, now shows correct instructions with guide link ✅
+102. dns-guide.html built and live at realverified.co.uk/dns-guide.html — plain English step by step domain verification guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other ✅
+103. Email verification code removed from email card — not needed for email flow ✅
 
 \---
 
