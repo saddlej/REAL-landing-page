@@ -361,8 +361,11 @@
     .nav-search input { width: 100%; flex: 1; }
     .profile-card { padding: 24px 18px; }
     .real-id { font-size: 24px; }
-    .platform-row { flex-wrap: wrap; }
-    .platform-date { width: 100%; padding-left: 42px; margin-top: -6px; font-size: 11px; color: #9ca3af; }
+    .badges { flex-direction: row; flex-wrap: wrap; }
+    .platform-row { flex-wrap: wrap; align-items: flex-start; }
+    .platform-handle { flex: 1; }
+    .platform-date { width: calc(100% - 42px); margin-left: 42px; margin-top: 2px; font-size: 11px; color: #9ca3af; order: 4; }
+    .platform-tick { margin-left: auto; order: 3; align-self: flex-start; padding-top: 2px; }
   }
   </style>
 </head>
