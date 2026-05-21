@@ -545,15 +545,14 @@ All stored in Vercel → real-landing-page → Settings → Environment Variable
 
 **Platform name in code:** Website platform is called 'Website' in the code — NOT 'Website / Domain'. This was fixed in isWebsite check (line 1088) and showUrl exclusion list (line 1093) in dashboard.html.
 
-**Handle format by platform (fix to make before launch):**
+**Handle format by platform:**
 
 * Instagram = @handle
 * TikTok = @handle
 * X = @handle
-* Facebook = name or page name (no @)
-* LinkedIn = profile slug (linkedin.com/in/yourname)
+* Facebook = name or page name (no @) — placeholder fixed ✅
+* LinkedIn = profile slug (linkedin.com/in/yourname) — placeholder fixed ✅
 * YouTube = @handle or channel name
-* Currently shows @yourhandle for all platforms which is wrong for Facebook, LinkedIn and YouTube — fix this before launch.
 
 **Email verification flow — technical detail:**
 
@@ -565,11 +564,11 @@ All stored in Vercel → real-landing-page → Settings → Environment Variable
 
 * api/domain-verify.js — receives id, domain, verification\_code from dashboard. Strips http/https from domain. Does DNS TXT lookup via Node.js dns module. If verification\_code found in any TXT record — marks status=verified in Supabase automatically.
 
-**Instructions for members — to improve before launch:**
+**Instructions for members:**
 
 * Bio code flow (Instagram, TikTok, X, Facebook, LinkedIn): instructions are clear — add code to first line of bio
 * Email flow: instructions are adequate — sends confirmation link, member clicks it
-* Website/Domain flow: instructions need improving — currently too technical for non-developers. Need step by step: log into your domain registrar → find Advanced DNS or DNS Management → add TXT record → type = TXT, host = @, value = paste the code → save → wait up to 30 minutes → click Check my DNS
+* Website/Domain flow: dns-guide.html built and live — plain English step by step guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other — linked from dashboard Website card ✅
 
 \---
 
@@ -890,10 +889,10 @@ Step 16 — COMPLETE ✅
 ## FIXES TO MAKE BEFORE LAUNCH
 
 * Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
-* Admin page Reject button and auto-refresh — confirm still working correctly after dropdown update.
 * Profile page avatar placeholder shows initials instead of REAL shield logo — fix placeholder to show REAL shield when no photo uploaded
 * "Verification Pending" badge on dashboard needs investigating — should show "REAL ID Active" once id_verified is true in members table
 * id_verified not being set automatically by Stripe Identity webhook — needs investigating and fixing so it updates automatically when identity.verification_session.verified fires
+* Email verification modal shows wrong text — displays bio code instructions instead of email instructions — needs fixing
 
 \---
 
@@ -1002,6 +1001,12 @@ Step 16 — COMPLETE ✅
 101. Website modal fixed — JavaScript error resolved, now shows correct instructions with guide link ✅
 102. dns-guide.html built and live at realverified.co.uk/dns-guide.html — plain English step by step domain verification guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other ✅
 103. Email verification code removed from email card — not needed for email flow ✅
+104. Facebook and LinkedIn handle format placeholders fixed — Facebook shows 'Your name or page name', LinkedIn shows 'your-profile-slug' ✅
+105. Website/Domain verification instructions improved — plain English step by step guide built as dns-guide.html — linked from dashboard card ✅
+106. Admin reject and auto-refresh confirmed working after dropdown update ✅
+107. api/email-verify.js fixed — converted from ES module import syntax to CommonJS require syntax — email sending not yet confirmed working pending Resend test ✅
+108. Suggest a platform card added to landing page platforms grid — mailto:info@realverified.co.uk?subject=Platform%20suggestion — fills empty 9th cell ✅
+109. Instagram icon on landing page updated to proper gradient to match brand ✅
 
 \---
 
