@@ -257,6 +257,7 @@
   .section-subtitle { font-size: 12px; color: var(--gray-light); margin-top: 2px; }
   .section-body { padding: 28px 32px; }
   #profileCard .section-body { padding: 16px 24px; }
+  #profileCard .section-header { padding: 16px 24px; }
 
   /* ─── STEP 1 — GOVT ID ─── */
   .id-verify-block { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
@@ -308,21 +309,21 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--navy);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     display: block;
   }
   .profile-field-desc {
     font-size: 12px;
     color: var(--gray-light);
-    margin-bottom: 12px;
+    margin-bottom: 6px;
     line-height: 1.5;
   }
   .profile-field-input {
     width: 100%;
     max-width: 480px;
-    padding: 11px 14px;
+    padding: 8px 12px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--navy);
     background: white;
     border: 1px solid var(--border);
@@ -716,29 +717,27 @@
       <a id="viewProfileBtn" href="#" target="_blank" class="btn-secondary" style="font-size:12px; padding:9px 18px; text-decoration:none; display:none;">View my public profile →</a>
     </div>
     <div class="section-body">
-      <p style="font-size:12px; color:var(--gray-light); margin-bottom:12px; line-height:1.5;">To update your profile photo, click your avatar at the top of this page.</p>
-
       <label class="profile-field-label" for="displayNameInput">Display Name</label>
       <div class="profile-field-desc">Your name or brand name as shown on your profile.</div>
-      <div style="margin-bottom:12px;">
+      <div style="margin-bottom:8px;">
         <input type="text" id="displayNameInput" class="profile-field-input" placeholder="Your name or brand name" maxlength="80">
       </div>
 
       <label class="profile-field-label" for="bioInput">Bio</label>
       <div class="profile-field-desc">Tell people who you are and what you do. <span id="bioCharCount" style="float:right; color:var(--gray-light);">0 / 160</span></div>
-      <div style="margin-bottom:12px;">
+      <div style="margin-bottom:8px;">
         <textarea id="bioInput" class="profile-field-input" placeholder="Tell people who you are and what you do" maxlength="160" rows="3"></textarea>
       </div>
 
       <label class="profile-field-label" for="locationInput">Location</label>
       <div class="profile-field-desc">Shown as context on your profile. Optional.</div>
-      <div style="margin-bottom:12px;">
+      <div style="margin-bottom:8px;">
         <input type="text" id="locationInput" class="profile-field-input" placeholder="City, Country (optional)" maxlength="80">
       </div>
 
       <label class="profile-field-label" for="contactLinkInput">Contact Link</label>
       <div class="profile-field-desc">A website or link where people can reach you. Optional.</div>
-      <div style="margin-bottom:14px;">
+      <div style="margin-bottom:10px;">
         <input type="text" id="contactLinkInput" class="profile-field-input" placeholder="https://yourwebsite.com" maxlength="200">
       </div>
 
