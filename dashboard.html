@@ -1684,8 +1684,59 @@
     const stepBBtn = document.getElementById('stepBPrimaryBtn');
     if (name === 'Email') {
       stepBBtn.textContent = 'Send confirmation email →';
+      stepBBtn.onclick = async function() {
+        const handle = document.getElementById('handleInput').value.trim();
+        if (!handle) {
+          document.getElementById('modalError').textContent = 'Please enter your email address.';
+          document.getElementById('modalError').classList.add('visible');
+          return;
+        }
+        document.getElementById('modalError').classList.remove('visible');
+        const _b = new Uint8Array(6);
+        crypto.getRandomValues(_b);
+        const _chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        generatedCode = 'REAL-' + Array.from(_b).map(b => _chars[b % _chars.length]).join('');
+        stepBBtn.disabled = true;
+        stepBBtn.textContent = 'Sending…';
+        try {
+          await fetch('/api/delete-platform', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: currentUser.id, platform: selectedPlatform, token: localStorage.getItem('real_access_token') })
+          });
+          const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=representation' },
+            body: JSON.stringify({ user_id: currentUser.id, platform: 'Email', handle, verification_code: generatedCode, member_confirmed: false, status: 'pending' })
+          });
+          const rowData = await r.json();
+          currentRowId = Array.isArray(rowData) ? (rowData[0]?.id || null) : null;
+          const emailRes = await fetch('/api/email-verify', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: handle, row_id: currentRowId })
+          });
+          if (!emailRes.ok) {
+            const errData = await emailRes.json().catch(() => ({}));
+            throw new Error(errData.error || 'Failed to send email');
+          }
+          document.getElementById('platformNameD').textContent = 'Email';
+          document.getElementById('stepDTitle').textContent = 'Email sent!';
+          document.getElementById('stepDMsg').textContent = "We've sent a confirmation link to your inbox. Click it to verify your email address. If you don't see it, check your spam folder — if it's not there, close this and hit Send confirmation email again from your dashboard.";
+          showStep('modalStepD');
+          document.getElementById('modalTitle').textContent = 'Email sent!';
+          await loadPlatforms(accessToken);
+        } catch(e) {
+          console.error('Email send error:', e.message);
+          stepBBtn.disabled = false;
+          stepBBtn.textContent = 'Send confirmation email →';
+          document.getElementById('modalError').textContent = 'Something went wrong: ' + e.message;
+          document.getElementById('modalError').classList.add('visible');
+        }
+      };
     } else {
       stepBBtn.textContent = 'Generate code →';
+      stepBBtn.onclick = goToStepC;
     }
     // Seed helper text for this platform
     updateHandleHelper();
