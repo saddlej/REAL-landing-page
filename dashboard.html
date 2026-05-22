@@ -78,7 +78,7 @@
   /* ─── IDENTITY CARD ─── */
   .identity-card {
     background: var(--navy);
-    padding: 36px 40px;
+    padding: 0;
     margin-bottom: 24px;
     position: relative;
     overflow: hidden;
@@ -93,14 +93,33 @@
     background: radial-gradient(circle, rgba(255,208,7,0.08) 0%, transparent 70%);
     pointer-events: none;
   }
-  .identity-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-  .identity-left { display: flex; flex-direction: column; }
+  /* ─── IDENTITY CARD LAYOUT ─── */
+  .identity-layout { display: flex; align-items: stretch; }
+  .identity-avatar-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 28px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .identity-info-panel {
+    flex: 1;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .identity-id-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
   /* ─── AVATAR ─── */
-  .avatar-wrap { position: relative; width: 72px; height: 72px; cursor: pointer; margin-bottom: 14px; align-self: flex-start; }
-  .avatar-circle { width: 72px; height: 72px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,208,7,0.3); display: flex; align-items: center; justify-content: center; }
+  .avatar-wrap { position: relative; width: 80px; height: 80px; cursor: pointer; }
+  .avatar-circle { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,208,7,0.3); display: flex; align-items: center; justify-content: center; }
   .avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
-  .avatar-initials { font-family: 'DM Mono', monospace; font-size: 20px; color: var(--gold); user-select: none; line-height: 1; }
+  .avatar-initials { font-family: 'DM Mono', monospace; font-size: 24px; color: var(--gold); user-select: none; line-height: 1; }
   .avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.52); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
   .avatar-wrap:hover .avatar-overlay { opacity: 1; }
   .avatar-overlay-text { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.12em; text-transform: uppercase; color: white; text-align: center; line-height: 1.5; }
@@ -110,7 +129,6 @@
     font-weight: 600;
     color: white;
     line-height: 1.1;
-    margin-bottom: 6px;
   }
   .identity-since {
     font-family: 'DM Mono', monospace;
@@ -119,7 +137,6 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  .identity-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
   .real-id-badge {
     font-family: 'DM Mono', monospace;
     font-size: 22px;
@@ -184,16 +201,11 @@
     border: 6px solid transparent;
     border-top-color: rgba(255,208,7,0.35);
   }
-  .score-badge-wrap:hover .score-tooltip {
-    display: block;
-  }
+  .score-badge-wrap:hover .score-tooltip { display: block; }
   .identity-status-row {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255,255,255,0.08);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
   }
   .status-pill {
@@ -606,7 +618,9 @@
   @media (max-width: 640px) {
     nav { padding: 0 20px; }
     .main { padding: 24px 16px 60px; }
-    .identity-card { padding: 24px 20px; }
+    .identity-layout { flex-direction: column; }
+    .identity-avatar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 24px 20px; }
+    .identity-info-panel { padding: 20px; }
     .section-header { padding: 18px 20px; }
     .section-body { padding: 20px; }
     .identity-name { font-size: 26px; }
@@ -650,8 +664,10 @@
 
   <!-- IDENTITY CARD -->
   <div class="identity-card">
-    <div class="identity-top">
-      <div class="identity-left">
+    <div class="identity-layout">
+
+      <!-- LEFT: circular avatar panel -->
+      <div class="identity-avatar-panel">
         <div class="avatar-wrap" id="avatarWrap" onclick="document.getElementById('avatarFileInput').click()">
           <div class="avatar-circle">
             <img id="avatarImg" alt="">
@@ -660,24 +676,29 @@
           <div class="avatar-overlay"><span class="avatar-overlay-text">Change<br>photo</span></div>
         </div>
         <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarFile(this)">
+      </div>
+
+      <!-- RIGHT: name / ID / status panel -->
+      <div class="identity-info-panel">
         <div class="identity-name" id="memberName">—</div>
+        <div class="identity-id-row">
+          <div class="real-id-badge" id="realId">RL-PENDING</div>
+          <div class="tier-pill" id="tierPill">Founding Member</div>
+          <div class="score-badge-wrap">
+            <span class="score-level-pill" id="realScoreLevel">—</span>
+            <div class="score-tooltip">Your REAL Score reflects how long you've been a member and how many platforms you've verified. Add more platforms to increase your score.</div>
+          </div>
+        </div>
+        <div class="identity-status-row">
+          <div class="status-pill pending" id="verificationStatus">
+            <span class="dot"></span>
+            <span id="statusText">Verification pending</span>
+          </div>
+          <span class="status-meta" id="statusMeta">Complete the steps below to activate your REAL ID</span>
+        </div>
         <div class="identity-since" id="memberSince">Member since —</div>
       </div>
-      <div class="identity-right">
-        <div class="real-id-badge" id="realId">RL-PENDING</div>
-        <div class="tier-pill" id="tierPill">Founding Member</div>
-      </div>
-    </div>
-    <div class="identity-status-row">
-      <div class="status-pill pending" id="verificationStatus">
-        <span class="dot"></span>
-        <span id="statusText">Verification pending</span>
-      </div>
-      <div class="score-badge-wrap">
-        <span class="score-level-pill" id="realScoreLevel">—</span>
-        <div class="score-tooltip">Your REAL Score reflects how long you've been a member and how many platforms you've verified. Add more platforms to increase your score.</div>
-      </div>
-      <span class="status-meta" id="statusMeta">Complete the steps below to activate your REAL ID</span>
+
     </div>
   </div>
 
