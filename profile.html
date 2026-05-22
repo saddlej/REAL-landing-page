@@ -368,20 +368,10 @@
       margin-bottom: 10px;
     }
     .profile-contact-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--navy);
-      font-weight: 500;
-      text-decoration: none;
-      padding: 7px 14px;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      transition: background 0.15s;
-      margin-bottom: 4px;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
     }
-    .profile-contact-link:hover { background: #f3f4f6; }
 
     /* NAVY THEME */
     .profile-card--navy { background: var(--navy); }
@@ -395,8 +385,7 @@
     .profile-card--navy .platform-date { color: rgba(255,255,255,0.3); }
     .profile-card--navy .profile-bio { color: rgba(255,255,255,0.8); }
     .profile-card--navy .profile-location { color: rgba(255,255,255,0.5); }
-    .profile-card--navy .profile-contact-link { color: white; border-color: rgba(255,255,255,0.2); }
-    .profile-card--navy .profile-contact-link:hover { background: rgba(255,255,255,0.08); }
+    .profile-card--navy .profile-contact-link { color: rgba(255,255,255,0.5); }
     .profile-card--navy .impersonation-box { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); }
     .profile-card--navy .badge-id { background: rgba(255,208,7,0.15); color: var(--gold); border-color: rgba(255,208,7,0.3); }
     .profile-card--navy .badge-founding { background: rgba(255,208,7,0.12); color: rgba(255,208,7,0.9); border-color: rgba(255,208,7,0.25); }
@@ -556,10 +545,7 @@
       profileMetaHTML += '<div style="margin-bottom:4px;">';
       if (bio) profileMetaHTML += `<p class="profile-bio">${escapeHtml(bio)}</p>`;
       if (location) profileMetaHTML += `<p class="profile-location">📍 ${escapeHtml(location)}</p>`;
-      if (contactLink) {
-        const safeHref = /^https?:\/\//i.test(contactLink) ? contactLink : 'https://' + contactLink;
-        profileMetaHTML += `<a class="profile-contact-link" href="${escapeHtml(safeHref)}" target="_blank" rel="noopener noreferrer">Contact / Visit →</a>`;
-      }
+      if (contactLink) profileMetaHTML += `<p class="profile-contact-link">💬 ${escapeHtml(contactLink)}</p>`;
       profileMetaHTML += '</div>';
     }
 
