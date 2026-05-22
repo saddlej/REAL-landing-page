@@ -1848,6 +1848,7 @@
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || 'Failed');
       if (data.verified) {
+        alert('Domain verified! You can now remove the TXT record from your DNS if you wish — or leave it there. Either is fine.');
         await loadPlatforms(accessToken);
       } else {
         btn.disabled = false;
