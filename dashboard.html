@@ -877,7 +877,7 @@
       <!-- Step C: Show code & instructions -->
       <div class="modal-step" id="modalStepC">
         <p class="code-instructions">Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.</p>
-        <div class="code-copy-block" onclick="copyCode(this)" style="margin-bottom:20px;">
+        <div class="code-copy-block" id="modalCodeBlock" onclick="copyCode(this)" style="margin-bottom:20px;">
           <span class="code-copy-text" id="verificationCode">REAL-XXXXXX</span>
           <span class="code-copy-hint">Copy</span>
         </div>
@@ -1612,14 +1612,17 @@
 
         const _stepCBtn = document.querySelector('#modalStepC .modal-actions .btn-primary');
         if (selectedPlatform === 'Email') {
-          document.querySelector('#modalStepC .code-instructions').textContent = "We'll send a confirmation link to this address. Click it to verify you own it. Check your inbox after clicking the button below.";
+          document.querySelector('#modalStepC .code-instructions').textContent = "We'll send a confirmation link to your email address. Click it to verify you own it. No code needed — just check your inbox after clicking the button below.";
+          document.getElementById('modalCodeBlock').style.display = 'none';
           _stepCBtn.textContent = 'Send confirmation email →';
           _stepCBtn.onclick = sendEmailConfirmation;
         } else if (selectedPlatform === 'Website') {
+          document.getElementById('modalCodeBlock').style.display = '';
           document.querySelector('#modalStepC .code-instructions').innerHTML = "Add this code as a TXT record to your domain's DNS settings. Not sure how? <a href='/dns-guide.html' target='_blank' style='color:#0F2044;font-weight:500;'>Follow our step by step guide →</a>";
           _stepCBtn.textContent = 'Check my DNS →';
           _stepCBtn.onclick = checkDomainVerification;
         } else {
+          document.getElementById('modalCodeBlock').style.display = '';
           document.querySelector('#modalStepC .code-instructions').innerHTML = 'Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.';
           document.getElementById('platformNameC').textContent = selectedPlatform;
           _stepCBtn.textContent = "I've added the code →";
