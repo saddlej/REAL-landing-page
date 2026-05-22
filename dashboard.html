@@ -881,7 +881,7 @@
           <span class="code-copy-text" id="verificationCode">REAL-XXXXXX</span>
           <span class="code-copy-hint">Copy</span>
         </div>
-        <p class="code-instructions" style="font-size:12px; color:var(--gray-light);">Once we can see the code in your bio, your verification request will be reviewed and approved — usually within 24 hours. You can remove the code from your bio after you're verified.</p>
+        <p class="code-instructions" id="modalBioNote" style="font-size:12px; color:var(--gray-light);">Once we can see the code in your bio, your verification request will be reviewed and approved — usually within 24 hours. You can remove the code from your bio after you're verified.</p>
         <div class="modal-actions">
           <button class="btn-primary" onclick="confirmPlatform()">I've added the code →</button>
         </div>
@@ -1614,15 +1614,19 @@
         if (selectedPlatform === 'Email') {
           document.querySelector('#modalStepC .code-instructions').textContent = "We'll send a confirmation link to your email address. Click it to verify you own it. No code needed — just check your inbox after clicking the button below.";
           document.getElementById('modalCodeBlock').style.display = 'none';
+          document.getElementById('modalBioNote').style.display = 'none';
+          document.getElementById('modalTitle').textContent = 'Check your inbox';
           _stepCBtn.textContent = 'Send confirmation email →';
           _stepCBtn.onclick = sendEmailConfirmation;
         } else if (selectedPlatform === 'Website') {
           document.getElementById('modalCodeBlock').style.display = '';
+          document.getElementById('modalBioNote').style.display = '';
           document.querySelector('#modalStepC .code-instructions').innerHTML = "Add this code as a TXT record to your domain's DNS settings. Not sure how? <a href='/dns-guide.html' target='_blank' style='color:#0F2044;font-weight:500;'>Follow our step by step guide →</a>";
           _stepCBtn.textContent = 'Check my DNS →';
           _stepCBtn.onclick = checkDomainVerification;
         } else {
           document.getElementById('modalCodeBlock').style.display = '';
+          document.getElementById('modalBioNote').style.display = '';
           document.querySelector('#modalStepC .code-instructions').innerHTML = 'Your account has been saved. <strong>Add this code to the first line of your bio</strong> on <span id="platformNameC"></span> — you can also copy it from your dashboard card at any time.';
           document.getElementById('platformNameC').textContent = selectedPlatform;
           _stepCBtn.textContent = "I've added the code →";
