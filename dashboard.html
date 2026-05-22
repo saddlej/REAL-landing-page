@@ -870,7 +870,7 @@
         </div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="goToStepA()">← Back</button>
-          <button class="btn-primary" onclick="goToStepC()">Generate code →</button>
+          <button class="btn-primary" id="stepBPrimaryBtn" onclick="goToStepC()">Generate code →</button>
         </div>
       </div>
 
@@ -1677,6 +1677,12 @@
     const showUrl = !['YouTube','Email','Website','Website / Domain'].includes(name);
     document.getElementById('urlField').style.display = showUrl ? 'block' : 'none';
     document.getElementById('urlInput').value = '';
+    const stepBBtn = document.getElementById('stepBPrimaryBtn');
+    if (name === 'Email') {
+      stepBBtn.textContent = 'Send confirmation email →';
+    } else {
+      stepBBtn.textContent = 'Generate code →';
+    }
     // Seed helper text for this platform
     updateHandleHelper();
     // Wire live update (remove old listener first to avoid duplicates)
