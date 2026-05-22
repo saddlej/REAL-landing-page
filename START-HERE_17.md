@@ -874,20 +874,22 @@ Step 3 — COMPLETE ✅
 Step 4 — COMPLETE ✅
 Step 5 — COMPLETE ✅
 Step 6 — COMPLETE ✅
-Step 7 — REAL Score — COMPLETE ✅
 Step 12 — COMPLETE ✅
 Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. Test email verification end to end — send confirmation email, click link, confirm verified
-2. Test domain/DNS verification end to end — add TXT record, click Check my DNS, confirm verified
-3. Move to Step 7 — REAL Score
+1. RL-000001 already assigned to info@realverified.co.uk in Supabase ✅
+2. Email platform verification flow fully working end to end ✅ — tested 22 May 2026
+3. Update physical notebook with new Resend API key (old key deleted 22 May 2026)
+4. Switch Supabase signup confirmation email to send via Resend instead of Supabase default — before launch
+5. Move to Step 7 — REAL Score
 
 \---
 
 ## FIXES TO MAKE BEFORE LAUNCH
 
+* Switch Supabase signup email to Resend — currently sends from Supabase default address — needs to come from info@realverified.co.uk before launch
 * Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
 * Profile page avatar placeholder shows initials instead of REAL shield logo — fix placeholder to show REAL shield when no photo uploaded
 * "Verification Pending" badge on dashboard needs investigating — should show "REAL ID Active" once id_verified is true in members table
@@ -969,44 +971,52 @@ Step 16 — COMPLETE ✅
 69. api/stripe-webhook.js updated — checkout.session.completed handler added — creates members row, assigns REAL ID, sets tier ✅
 70. Live Stripe webhook created — REAL Identity Webhook — Active — listening to checkout.session.completed and identity.verification\_session.verified ✅
 71. STRIPE\_WEBHOOK\_SECRET updated in Vercel with new live signing secret — Vercel redeployed ✅
-72. api/stripe-webhook.js — line\_items expand call wrapped in its own try/catch — if retrieve fails (e.g. £0 session, key mismatch) defaults to 'founding' tier and continues to create members row regardless ✅
-73. dashboard.html — loadMemberData() function added — fetches real\_id from members table on auth and displays it in identity card (RL-000001 etc) — falls back to RL-PENDING if no row yet ✅
-74. Stripe payment link after-payment redirect fixed — redirects directly to https://realverified.co.uk/dashboard.html — no broken confirmation page ✅
-75. FOUNDER coupon created in Stripe live account — 100% off forever — promotion code: FOUNDER — for founder use only ✅
-76. Stripe Founding Member payment link — Allow promotion codes enabled ✅
-77. Stripe Identity activated on live account ✅
-78. Government ID verified on live account — RL-000001 fully verified ✅
-79. REAL Score system built — calculates live from Supabase — displays on dashboard and public profile ✅
-80. Display name field added to dashboard — saves to members table — button shows Save/Update correctly ✅
-81. Public profile page fully working — loads as soon as real_id exists ✅
-82. Platform verifications display on public profile — RLS policy added for anon reads of verified platforms ✅
-83. Admin profile link URL fix — always prepends https:// ✅
-84. Supabase anon key fixed in profile.html — was using mismatched key causing 401 errors ✅
-85. id_verified now read from members table not user metadata — dashboard and profile both updated ✅
-86. REAL shield nav logo fixed on profile.html ✅
-87. Profile picture mirrors automatically from dashboard to public profile ✅
-88. "Complete the steps below to activate your REAL ID" message hidden when REAL ID is active ✅
-89. Founding Member badge styled in gold on public profile ✅
-90. Platform rows upgraded with branded coloured SVG icons and gold left border across dashboard, profile and admin pages ✅
-91. Public profile redesigned to two-column layout — avatar left, all info right ✅
-92. REAL Score removed from public profile — stays on dashboard only — decision made: score measures commitment to REAL not personal trustworthiness ✅
-93. Profile picture crop tool added to dashboard — mobile and desktop ✅
-94. REAL Score badge moved to sit inline with REAL ID ACTIVE badge on dashboard ✅
-95. Hover tooltip added to REAL Score badge explaining what the score means ✅
-96. Public profile mobile layout fully fixed — nav search bar drops to full width, badges wrap correctly, platform dates stack below handle, tick stays right ✅
-97. Facebook placeholder corrected to "Your name or page name" ✅
-98. LinkedIn placeholder corrected to "your-profile-slug" ✅
-99. Email dashboard card fixed — now shows correct inbox instructions with spam folder tip, no code box ✅
-100. Website dashboard card fixed — now shows correct DNS instructions with "How to do this →" link ✅
-101. Website modal fixed — JavaScript error resolved, now shows correct instructions with guide link ✅
-102. dns-guide.html built and live at realverified.co.uk/dns-guide.html — plain English step by step domain verification guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other ✅
-103. Email verification code removed from email card — not needed for email flow ✅
-104. Facebook and LinkedIn handle format placeholders fixed — Facebook shows 'Your name or page name', LinkedIn shows 'your-profile-slug' ✅
-105. Website/Domain verification instructions improved — plain English step by step guide built as dns-guide.html — linked from dashboard card ✅
-106. Admin reject and auto-refresh confirmed working after dropdown update ✅
-107. api/email-verify.js fixed — converted from ES module import syntax to CommonJS require syntax — email sending not yet confirmed working pending Resend test ✅
-108. Suggest a platform card added to landing page platforms grid — mailto:info@realverified.co.uk?subject=Platform%20suggestion — fills empty 9th cell ✅
-109. Instagram icon on landing page updated to proper gradient to match brand ✅
+72. package.json — @supabase/supabase-js and resend dependencies added — previously missing, caused 500 errors ✅
+73. api/email-verify.js — fully rewritten — uses Resend to send branded confirmation email — generates secure 32-byte token — stores expiry in notes field — sends from info@realverified.co.uk ✅
+74. Email verification modal flow rebuilt — step B now sends email directly, skipping step C entirely — no bio code shown for email platform — correct button label "Send confirmation email" on step B ✅
+75. Email confirmation modal copy fixed — code block hidden for email platform — bio instructions hidden for email platform — "Check your inbox" title shown on success step ✅
+76. Premium email template built — navy background, REAL shield logo hosted at realverified.co.uk/shield-email.svg, gold divider, white card, gold label, Cormorant Garamond serif heading, gold CTA button, navy footer ✅
+77. shield-email.svg — created and hosted at realverified.co.uk/shield-email.svg — used in email templates ✅
+78. email-confirmed.html updated — shield SVG added above REAL wordmark ✅
+79. REAL folder cleaned — loose duplicate HTML files deleted from parent REAL folder — folder now contains only REAL-landing-page/, START-HERE_17.md, and REAL-Accounts-and-Tools_1.pdf ✅
+80. api/stripe-webhook.js — line\_items expand call wrapped in its own try/catch — if retrieve fails (e.g. £0 session, key mismatch) defaults to 'founding' tier and continues to create members row regardless ✅
+81. dashboard.html — loadMemberData() function added — fetches real\_id from members table on auth and displays it in identity card (RL-000001 etc) — falls back to RL-PENDING if no row yet ✅
+82. Stripe payment link after-payment redirect fixed — redirects directly to https://realverified.co.uk/dashboard.html — no broken confirmation page ✅
+83. FOUNDER coupon created in Stripe live account — 100% off forever — promotion code: FOUNDER — for founder use only ✅
+84. Stripe Founding Member payment link — Allow promotion codes enabled ✅
+85. Stripe Identity activated on live account ✅
+86. Government ID verified on live account — RL-000001 fully verified ✅
+87. REAL Score system built — calculates live from Supabase — displays on dashboard and public profile ✅
+88. Display name field added to dashboard — saves to members table — button shows Save/Update correctly ✅
+89. Public profile page fully working — loads as soon as real_id exists ✅
+90. Platform verifications display on public profile — RLS policy added for anon reads of verified platforms ✅
+91. Admin profile link URL fix — always prepends https:// ✅
+92. Supabase anon key fixed in profile.html — was using mismatched key causing 401 errors ✅
+93. id_verified now read from members table not user metadata — dashboard and profile both updated ✅
+94. REAL shield nav logo fixed on profile.html ✅
+95. Profile picture mirrors automatically from dashboard to public profile ✅
+96. "Complete the steps below to activate your REAL ID" message hidden when REAL ID is active ✅
+97. Founding Member badge styled in gold on public profile ✅
+98. Platform rows upgraded with branded coloured SVG icons and gold left border across dashboard, profile and admin pages ✅
+99. Public profile redesigned to two-column layout — avatar left, all info right ✅
+100. REAL Score removed from public profile — stays on dashboard only — decision made: score measures commitment to REAL not personal trustworthiness ✅
+101. Profile picture crop tool added to dashboard — mobile and desktop ✅
+102. REAL Score badge moved to sit inline with REAL ID ACTIVE badge on dashboard ✅
+103. Hover tooltip added to REAL Score badge explaining what the score means ✅
+104. Public profile mobile layout fully fixed — nav search bar drops to full width, badges wrap correctly, platform dates stack below handle, tick stays right ✅
+105. Facebook placeholder corrected to "Your name or page name" ✅
+106. LinkedIn placeholder corrected to "your-profile-slug" ✅
+107. Email dashboard card fixed — now shows correct inbox instructions with spam folder tip, no code box ✅
+108. Website dashboard card fixed — now shows correct DNS instructions with "How to do this →" link ✅
+109. Website modal fixed — JavaScript error resolved, now shows correct instructions with guide link ✅
+110. dns-guide.html built and live at realverified.co.uk/dns-guide.html — plain English step by step domain verification guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other ✅
+111. Email verification code removed from email card — not needed for email flow ✅
+112. Facebook and LinkedIn handle format placeholders fixed — Facebook shows 'Your name or page name', LinkedIn shows 'your-profile-slug' ✅
+113. Website/Domain verification instructions improved — plain English step by step guide built as dns-guide.html — linked from dashboard card ✅
+114. Admin reject and auto-refresh confirmed working after dropdown update ✅
+115. api/email-verify.js fixed — converted from ES module import syntax to CommonJS require syntax — email sending not yet confirmed working pending Resend test ✅
+116. Suggest a platform card added to landing page platforms grid — mailto:info@realverified.co.uk?subject=Platform%20suggestion — fills empty 9th cell ✅
+117. Instagram icon on landing page updated to proper gradient to match brand ✅
 
 \---
 
@@ -1126,9 +1136,18 @@ All API keys are written in physical notebook. NEVER put in code directly — al
 * Stripe Secret Key (LIVE) — sk\_live\_...
 * Stripe Webhook Signing Secret (LIVE) — whsec\_... — under "Webhook Secrets" — updated May 2026
 * YouTube Data API Key — labelled "REAL YouTube API" in notebook
-* Resend API Key — labelled "REAL Resend API" in notebook — re\_...
+* Resend API Key — NEW KEY created 22 May 2026 — old key deleted — update notebook — re\_...
 * Resend DNS records — DKIM value written in notebook ✅
 * Stripe Founding Member Payment Link (LIVE) — https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00
+
+\---
+
+## VERCEL DEPLOYMENT NOTE
+
+Vercel does not always auto-deploy when Claude Code pushes to GitHub. If changes are not live within 2 minutes of a push, use this fix in Claude Code:
+git commit --allow-empty -m "Trigger Vercel redeploy" and push to main
+This forces GitHub to fire the webhook and Vercel picks up all pending commits.
+The Windows path to the project is: C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
 
 \---
 
