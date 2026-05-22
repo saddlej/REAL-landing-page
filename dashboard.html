@@ -318,6 +318,7 @@
     transition: border-color 0.2s;
   }
   .profile-field-input:focus { border-color: var(--navy); }
+  textarea.profile-field-input { resize: vertical; min-height: 76px; }
   .profile-field-row {
     display: flex;
     align-items: flex-start;
@@ -680,6 +681,52 @@
     </div>
   </div>
 
+  <!-- YOUR PROFILE -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="step-badge" style="background: var(--navy-light); color: var(--navy);">✎</div>
+        <div>
+          <div class="section-title">Your Profile</div>
+          <div class="section-subtitle">How you appear on your public REAL profile</div>
+        </div>
+      </div>
+      <a id="viewProfileBtn" href="#" target="_blank" class="btn-secondary" style="font-size:12px; padding:9px 18px; text-decoration:none; display:none;">View my public profile →</a>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12px; color:var(--gray-light); margin-bottom:20px; line-height:1.5;">To update your profile photo, click your avatar at the top of this page.</p>
+
+      <label class="profile-field-label" for="displayNameInput">Display Name</label>
+      <div class="profile-field-desc">Your name or brand name as shown on your profile.</div>
+      <div style="margin-bottom:20px;">
+        <input type="text" id="displayNameInput" class="profile-field-input" placeholder="Your name or brand name" maxlength="80">
+      </div>
+
+      <label class="profile-field-label" for="bioInput">Bio</label>
+      <div class="profile-field-desc">Tell people who you are and what you do. <span id="bioCharCount" style="float:right; color:var(--gray-light);">0 / 160</span></div>
+      <div style="margin-bottom:20px;">
+        <textarea id="bioInput" class="profile-field-input" placeholder="Tell people who you are and what you do" maxlength="160" rows="3"></textarea>
+      </div>
+
+      <label class="profile-field-label" for="locationInput">Location</label>
+      <div class="profile-field-desc">Shown as context on your profile. Optional.</div>
+      <div style="margin-bottom:20px;">
+        <input type="text" id="locationInput" class="profile-field-input" placeholder="City, Country (optional)" maxlength="80">
+      </div>
+
+      <label class="profile-field-label" for="contactLinkInput">Contact Link</label>
+      <div class="profile-field-desc">A website or link where people can reach you. Optional.</div>
+      <div style="margin-bottom:24px;">
+        <input type="text" id="contactLinkInput" class="profile-field-input" placeholder="https://yourwebsite.com" maxlength="200">
+      </div>
+
+      <div class="profile-field-row">
+        <button class="btn-primary" id="saveProfileBtn" onclick="saveProfile()">Save profile</button>
+        <span class="save-success" id="saveProfileSuccess">Saved ✓</span>
+      </div>
+    </div>
+  </div>
+
   <!-- STEP 1: GOVERNMENT ID -->
   <div class="section-card">
     <div class="section-header">
@@ -743,28 +790,6 @@
         Add a platform
       </button>
       <p class="platform-lock-msg" id="platformLockMsg">Complete identity verification above before linking your platforms.</p>
-    </div>
-  </div>
-
-  <!-- YOUR PROFILE -->
-  <div class="section-card">
-    <div class="section-header">
-      <div class="section-header-left">
-        <div class="step-badge" style="background: var(--navy-light); color: var(--navy);">✎</div>
-        <div>
-          <div class="section-title">Your Profile</div>
-          <div class="section-subtitle">How you appear on your public REAL profile</div>
-        </div>
-      </div>
-    </div>
-    <div class="section-body">
-      <label class="profile-field-label" for="displayNameInput">Display Name</label>
-      <div class="profile-field-desc">This is what appears on your public REAL profile. Use your name, brand name, or business name.</div>
-      <div class="profile-field-row">
-        <input type="text" id="displayNameInput" class="profile-field-input" placeholder="Your name or brand name" maxlength="80">
-        <button class="btn-primary" id="displayNameBtn" onclick="saveDisplayName()">Save</button>
-        <span class="save-success" id="displayNameSuccess">Saved ✓</span>
-      </div>
     </div>
   </div>
 
@@ -1271,7 +1296,7 @@
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
@@ -1281,9 +1306,16 @@
         memberVerifiedSince = data[0].verified_since || null;
         if (data[0].display_name) {
           document.getElementById('displayNameInput').value = data[0].display_name;
-          document.getElementById('displayNameBtn').textContent = 'Update';
           document.getElementById('memberName').textContent = data[0].display_name;
           document.getElementById('avatarInitials').textContent = getInitials(data[0].display_name);
+        }
+        if (data[0].bio) { document.getElementById('bioInput').value = data[0].bio; updateBioCounter(); }
+        if (data[0].location) document.getElementById('locationInput').value = data[0].location;
+        if (data[0].contact_link) document.getElementById('contactLinkInput').value = data[0].contact_link;
+        if (data[0].real_id) {
+          const vpBtn = document.getElementById('viewProfileBtn');
+          vpBtn.href = '/profile/' + data[0].real_id;
+          vpBtn.style.display = '';
         }
         if (data[0].id_verified === true) {
           idVerified = true;
@@ -1306,12 +1338,16 @@
     }
   }
 
-  // ─── SAVE DISPLAY NAME ───
-  async function saveDisplayName() {
-    const val = document.getElementById('displayNameInput').value.trim();
-    if (!val) return;
-    const successEl = document.getElementById('displayNameSuccess');
-    successEl.style.display = 'none';
+  // ─── SAVE PROFILE ───
+  async function saveProfile() {
+    const displayName = document.getElementById('displayNameInput').value.trim();
+    const bio = document.getElementById('bioInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const contactLink = document.getElementById('contactLinkInput').value.trim();
+    if (!displayName) return;
+    const btn = document.getElementById('saveProfileBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
     try {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${currentUser.id}`, {
         method: 'PATCH',
@@ -1321,20 +1357,31 @@
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
-        body: JSON.stringify({ display_name: val })
+        body: JSON.stringify({
+          display_name: displayName,
+          bio: bio || null,
+          location: location || null,
+          contact_link: contactLink || null
+        })
       });
       if (!r.ok) throw new Error('Save failed');
-      document.getElementById('memberName').textContent = val;
-      document.getElementById('avatarInitials').textContent = getInitials(val);
-      const btn = document.getElementById('displayNameBtn');
+      document.getElementById('memberName').textContent = displayName;
+      document.getElementById('avatarInitials').textContent = getInitials(displayName);
       btn.textContent = 'Saved ✓';
-      btn.disabled = true;
-      setTimeout(() => { btn.textContent = 'Update'; btn.disabled = false; }, 3000);
+      setTimeout(() => { btn.textContent = 'Save profile'; btn.disabled = false; }, 2500);
     } catch (e) {
-      console.error('saveDisplayName error:', e);
-      alert('Failed to save display name. Please try again.');
+      console.error('saveProfile error:', e);
+      alert('Failed to save profile. Please try again.');
+      btn.textContent = 'Save profile';
+      btn.disabled = false;
     }
   }
+
+  function updateBioCounter() {
+    const val = document.getElementById('bioInput').value;
+    document.getElementById('bioCharCount').textContent = val.length + ' / 160';
+  }
+  document.getElementById('bioInput').addEventListener('input', updateBioCounter);
 
   // ─── LOAD PLATFORMS ───
   async function loadPlatforms(token) {

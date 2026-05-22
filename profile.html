@@ -354,6 +354,35 @@
       font-size: 13px;
       padding: 20px;
     }
+
+    /* PROFILE META — bio / location / contact */
+    .profile-bio {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    .profile-location {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+    .profile-contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--navy);
+      font-weight: 500;
+      text-decoration: none;
+      padding: 7px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      transition: background 0.15s;
+      margin-bottom: 4px;
+    }
+    .profile-contact-link:hover { background: #f3f4f6; }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -403,6 +432,16 @@
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;');
+  }
 
   function getPlatformIcon(platform) {
     const icons = {
@@ -488,6 +527,22 @@
     const avatarUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${member.user_id}`;
     const initials = getProfileInitials(member.display_name || 'REAL Member');
 
+    // ─── Bio / Location / Contact ───
+    const bio = (member.bio || '').trim();
+    const location = (member.location || '').trim();
+    const contactLink = (member.contact_link || '').trim();
+    let profileMetaHTML = '';
+    if (bio || location || contactLink) {
+      profileMetaHTML += '<div style="margin-bottom:4px;">';
+      if (bio) profileMetaHTML += `<p class="profile-bio">${escapeHtml(bio)}</p>`;
+      if (location) profileMetaHTML += `<p class="profile-location">📍 ${escapeHtml(location)}</p>`;
+      if (contactLink) {
+        const safeHref = /^https?:\/\//i.test(contactLink) ? contactLink : 'https://' + contactLink;
+        profileMetaHTML += `<a class="profile-contact-link" href="${escapeHtml(safeHref)}" target="_blank" rel="noopener noreferrer">Contact / Visit →</a>`;
+      }
+      profileMetaHTML += '</div>';
+    }
+
     document.getElementById('content').innerHTML = `
       <div class="profile-card">
         <div class="profile-card-header">
@@ -510,6 +565,7 @@
             </div>
           </div>
         </div>
+        ${profileMetaHTML ? `<hr class="divider">${profileMetaHTML}` : ''}
         <hr class="divider">
         <div class="section-label">Verified Platforms</div>
         ${platformsHTML}
