@@ -53,10 +53,13 @@ module.exports = async function handler(req, res) {
 
   const confirmUrl = `https://www.realverified.co.uk/api/email-confirm?token=${confirmToken}&id=${verificationId}`;
 
+  const resendKey = process.env.RESEND_API_KEY || '';
+  console.log('[email-verify] RESEND_API_KEY prefix:', resendKey ? resendKey.slice(0, 10) + '…' : '(not set)');
+
   const resendResponse = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Authorization': `Bearer ${resendKey}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -69,7 +72,8 @@ module.exports = async function handler(req, res) {
 
   if (!resendResponse.ok) {
     const resendError = await resendResponse.text();
-    console.error('Resend error:', resendError);
+    console.error('[email-verify] Resend HTTP status:', resendResponse.status);
+    console.error('[email-verify] Resend error body:', resendError);
     return res.status(500).json({ error: 'Failed to send confirmation email' });
   }
 
