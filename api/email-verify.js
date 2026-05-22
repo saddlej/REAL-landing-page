@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
             <td style="background-color:#ffffff; padding:48px 48px 40px;">
               <p style="margin:0 0 12px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#FFD007; font-weight:700;">Email Verification</p>
               <p style="margin:0 0 20px; font-size:28px; font-weight:700; color:#0F2044; font-family:Georgia,serif; line-height:1.2;">Confirm your email address</p>
-              <table width="48" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;"><tr><td style="height:3px; background:#FFD007;">&nbsp;</td></tr></table>
+              <div style="width:48px; height:3px; background:#FFD007; margin-bottom:24px; font-size:0; line-height:0;">&nbsp;</div>
               <p style="margin:0 0 8px; font-size:14px; color:#4a4a4a; line-height:1.8;">You asked REAL to verify</p>
               <p style="margin:0 0 24px; font-size:16px; font-weight:700; color:#0F2044;">${email}</p>
               <p style="margin:0 0 32px; font-size:14px; color:#4a4a4a; line-height:1.8;">as one of your confirmed contact addresses. Click the button below to confirm it's yours and add it to your REAL profile.</p>
