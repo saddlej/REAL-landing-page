@@ -350,7 +350,7 @@ Claude Code is installed and used to commit and push files to GitHub. It is far 
 **Live payment links:**
 
 * Founding Member (£15/month): https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00 ✅
-* Standard Member (£25/month): NOT YET CREATED — create when founding tier fills
+* Standard Member (£25/month): https://buy.stripe.com/14A5kveLV6kOa4R9D4gjC01 ✅
 * After payment confirmation message: "Welcome to REAL. Your membership is confirmed. Your REAL ID will be activated shortly — click below to access your member dashboard."
 * After payment redirect: https://www.realverified.co.uk/dashboard.html
 
@@ -876,19 +876,13 @@ Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. Test photo upload in Edit Profile modal — upload a real photo and confirm it appears on dashboard and public profile
-2. Test White theme — select White in Edit Profile modal, save, view public profile and confirm white styling applies correctly
-3. Move to Step 7 — REAL Score
+1. Build Step 7 — REAL Score
 
 ---
 
 ## FIXES TO MAKE BEFORE LAUNCH
 
-* Platform submission form should show the correct handle format for each platform — Instagram = @handle, Facebook = name or page name (no @), LinkedIn = profile slug (linkedin.com/in/yourname), YouTube = @handle or channel name, TikTok = @handle, X = @handle. Currently shows @yourhandle for all platforms which is incorrect for Facebook, LinkedIn and YouTube.
-* Improve Website/Domain verification instructions — need plain English step by step for non-developers
-* Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
-* Admin page Reject button and auto-refresh — confirm still working correctly after dropdown update
-* Dashboard "Your Profile" section pencil icon looks broken/tiny — replace with a proper edit icon or remove it
+All pre-launch fixes are complete. No blockers remaining.
 
 ---
 
@@ -973,6 +967,12 @@ Step 16 — COMPLETE ✅
 77. View my public profile button fixed — routes to /RL-000001 — hidden if no real_id ✅
 78. Contact field changed from URL to free text "How to contact me" ✅
 79. Dashboard section order correct — Identity card, Your Profile, Gov ID, Platforms, Subscription ✅
+80. Handle format helper text fixed — correct format shown per platform — Instagram/TikTok/X = @handle, Facebook = name or page name, LinkedIn = profile slug, YouTube = @handle or channel name ✅
+81. Website/Domain verification — plain English DNS instructions page built ✅
+82. Stripe Standard Member payment link created (LIVE) — https://buy.stripe.com/14A5kveLV6kOa4R9D4gjC01 — £25/month ✅
+83. Admin page confirmed working — queue loads, auto-refresh active ✅
+84. Photo upload confirmed working — saves on Confirm Photo button, separate to main Save button ✅
+85. White theme confirmed working — saves correctly when session token is fresh ✅
 
 ---
 
@@ -1080,6 +1080,7 @@ All API keys are written in physical notebook. NEVER put in code directly — al
 * Resend API Key — labelled "REAL Resend API" in notebook — re_...
 * Resend DNS records — DKIM value written in notebook ✅
 * Stripe Founding Member Payment Link (LIVE) — https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00
+* Stripe Standard Member Payment Link (LIVE) — https://buy.stripe.com/14A5kveLV6kOa4R9D4gjC01
 
 ---
 
