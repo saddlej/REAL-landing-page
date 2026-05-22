@@ -473,7 +473,7 @@
   function formatDateFull(ts) {
     if (!ts) return '';
     const d = new Date(ts);
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + d.toISOString().slice(11,16) + ' UTC';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   function calculateRealScore(idVerified, verifiedPlatformsCount, isFoundingMember, verifiedSince) {
