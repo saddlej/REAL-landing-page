@@ -893,7 +893,7 @@
           <div style="font-size:48px; margin-bottom:16px;">✓</div>
           <div id="stepDTitle" style="font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; color:var(--navy); margin-bottom:8px;">Submitted</div>
           <p id="stepDMsg" style="font-size:13px; color:var(--gray); line-height:1.7; max-width:340px; margin:0 auto 24px;">Your <span id="platformNameD"></span> account has been submitted for verification. We'll review it and update your status — usually within 24 hours.</p>
-          <button class="btn-primary" onclick="closeModal()">Done</button>
+          <button class="btn-primary" onclick="closeModal()">Close</button>
         </div>
       </div>
 
@@ -1774,7 +1774,7 @@
       }
       document.getElementById('platformNameD').textContent = 'Email';
       document.getElementById('stepDTitle').textContent = 'Email sent!';
-      document.getElementById('stepDMsg').textContent = 'Check your inbox for a confirmation link. Click it to verify your email address.';
+      document.getElementById('stepDMsg').textContent = "We've sent a confirmation link to your inbox. Click it to verify your email address. If you don't see it, check your spam folder — if it's not there, close this and hit Send confirmation email again from your dashboard.";
       showStep('modalStepD');
       document.getElementById('modalTitle').textContent = 'Email sent!';
     } catch (e) {
