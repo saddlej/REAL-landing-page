@@ -1422,12 +1422,12 @@
           } else if (p.platform === 'Website') {
             notice = `
               <div class="platform-notice">
-                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below. <a href="/dns-guide.html" target="_blank" style="color:#0F2044;font-weight:500;white-space:nowrap;">How to do this →</a></span>
+                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below. <a href="/dns-guide.html" target="_blank" style="color:var(--navy);">How to do this →</a></span>
                 <div class="code-copy-block" onclick="copyCode(this)">
                   <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
                   <span class="code-copy-hint">Copy</span>
                 </div>
-                <button class="notice-action-btn" onclick="checkDomainVerification()">Check my DNS</button>
+                <button class="notice-action-btn" onclick="checkDomainFromCard('${escapeHtml(String(p.id))}', '${escapeHtml(p.handle)}', '${escapeHtml(p.verification_code || '')}')">Check my DNS</button>
               </div>`;
           } else {
             const label = p.platform === 'YouTube'
@@ -1832,6 +1832,32 @@
       console.error('sendEmailConfirmation error:', e.message);
       btn.disabled = false;
       btn.textContent = 'Send confirmation email →';
+    }
+  }
+
+  async function checkDomainFromCard(rowId, domain, code) {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    try {
+      const r = await fetch('/api/domain-verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rowId, domain: domain, verification_code: code })
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'Failed');
+      if (data.verified) {
+        await loadPlatforms(accessToken);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Check my DNS';
+        alert(data.message || 'DNS record not found yet. Wait a few minutes and try again.');
+      }
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = 'Check my DNS';
+      alert('Something went wrong. Please try again.');
     }
   }
 
