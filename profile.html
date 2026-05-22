@@ -383,6 +383,25 @@
     }
     .profile-contact-link:hover { background: #f3f4f6; }
 
+    /* NAVY THEME */
+    .profile-card--navy { background: var(--navy); }
+    .profile-card--navy .display-name { color: white; }
+    .profile-card--navy .verified-since { color: rgba(255,255,255,0.45); }
+    .profile-card--navy .section-label { color: rgba(255,255,255,0.38); }
+    .profile-card--navy .divider { border-color: rgba(255,255,255,0.1); }
+    .profile-card--navy .platform-row { background: rgba(255,255,255,0.05); }
+    .profile-card--navy .platform-name { color: rgba(255,255,255,0.45); }
+    .profile-card--navy .platform-handle { color: white; }
+    .profile-card--navy .platform-date { color: rgba(255,255,255,0.3); }
+    .profile-card--navy .profile-bio { color: rgba(255,255,255,0.8); }
+    .profile-card--navy .profile-location { color: rgba(255,255,255,0.5); }
+    .profile-card--navy .profile-contact-link { color: white; border-color: rgba(255,255,255,0.2); }
+    .profile-card--navy .profile-contact-link:hover { background: rgba(255,255,255,0.08); }
+    .profile-card--navy .impersonation-box { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); }
+    .profile-card--navy .badge-id { background: rgba(255,208,7,0.15); color: var(--gold); border-color: rgba(255,208,7,0.3); }
+    .profile-card--navy .badge-founding { background: rgba(255,208,7,0.12); color: rgba(255,208,7,0.9); border-color: rgba(255,208,7,0.25); }
+    .profile-card--navy .badge-standard { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.15); }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -524,8 +543,9 @@
       ? `<div class="impersonation-box">${member.impersonation_count} impersonation attempt${member.impersonation_count === 1 ? '' : 's'} documented by REAL</div>`
       : '';
 
-    const avatarUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${member.user_id}`;
+    const avatarUrl = member.avatar_url || `${SUPABASE_URL}/storage/v1/object/public/avatars/${member.user_id}`;
     const initials = getProfileInitials(member.display_name || 'REAL Member');
+    const themeClass = member.profile_theme === 'navy' ? 'profile-card--navy' : '';
 
     // ─── Bio / Location / Contact ───
     const bio = (member.bio || '').trim();
@@ -544,16 +564,13 @@
     }
 
     document.getElementById('content').innerHTML = `
-      <div class="profile-card">
+      <div class="profile-card ${themeClass}">
         <div class="profile-card-header">
           <div class="profile-avatar">
-            <img src="${avatarUrl}" alt="Profile picture"
+            <img src="${escapeHtml(avatarUrl)}" alt="Profile picture"
                  onload="this.style.display='block';this.nextElementSibling.style.display='none';"
-                 onerror="this.style.display='none';">
-            <svg class="profile-avatar-shield" viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
-              <path fill="rgba(255,255,255,0.7)" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
-              <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
-            </svg>
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <span style="font-family:'DM Mono',monospace;font-size:22px;color:var(--gold);line-height:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">${escapeHtml(initials)}</span>
           </div>
           <div class="profile-info">
             <div class="real-id">${member.real_id}</div>
@@ -586,7 +603,8 @@
   async function loadProfile() {
     const path = window.location.pathname;
     const segments = path.split('/').filter(Boolean);
-    const rawId = segments[segments.length - 1];
+    // Support both /RL-000001 and /profile/RL-000001
+    const rawId = segments.find(s => s.toUpperCase().startsWith('RL-')) || segments[segments.length - 1];
 
     if (!rawId || !rawId.toUpperCase().startsWith('RL-')) {
       document.getElementById('content').innerHTML = `

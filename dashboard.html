@@ -1444,7 +1444,7 @@
         const liveLink = document.getElementById('profileLiveLink');
         if (realId && realId !== 'RL-PENDING') {
           document.getElementById('profileLiveLinkId').textContent = realId;
-          document.getElementById('profileLiveLinkAnchor').href = '/profile/' + realId;
+          document.getElementById('profileLiveLinkAnchor').href = '/' + realId;
           liveLink.style.display = '';
         } else {
           liveLink.style.display = 'none';
@@ -1453,7 +1453,7 @@
         // View my public profile button
         const vpBtn = document.getElementById('viewProfileBtn');
         if (realId && realId !== 'RL-PENDING') {
-          vpBtn.href = '/profile/' + realId;
+          vpBtn.href = '/' + realId;
           vpBtn.target = '_blank';
           vpBtn.style.display = '';
         } else {
@@ -1568,6 +1568,8 @@
       document.getElementById('profileRowInitials').textContent = getInitials(displayName);
       document.getElementById('profileRowBio').textContent = bio ? bio.slice(0, 40) + (bio.length > 40 ? '…' : '') : '';
       if (profileModalNewAvatarUrl) loadAvatar(currentUser.id, true);
+      btn.textContent = 'Save profile';
+      btn.disabled = false;
       closeProfileModal();
     } catch (e) {
       console.error('saveProfileModal error:', e);
