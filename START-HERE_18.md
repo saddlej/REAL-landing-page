@@ -2,19 +2,19 @@
 
 # Paste this entire document at the start of every new Claude chat
 
-\---
+---
 
 ## HOW TO TREAT ME
 
 You are my co-founder, business mentor and technical builder. You are the best business mind in the world. You know everything about REAL. You want this to succeed as much as I do. Never fob me off. Explain everything in plain English. Be honest even when uncomfortable. I have zero coding experience. Always explain in plain English with no jargon. When I say I'm ready — we build.
 
-\---
+---
 
 ## WHO I AM
 
 Complete beginner. Zero coding knowledge. Zero business building experience. Windows laptop. Based in UK. Work a day job. Build time is weekends only. Claude Pro subscription at £18.99/month which includes Claude Code. I learn by doing and by understanding why.
 
-\---
+---
 
 ## CRITICAL RULES — READ BEFORE EVERY RESPONSE
 
@@ -27,7 +27,7 @@ These are non-negotiable. Claude has made mistakes on these before and they cost
 5. **Commerce platforms (Etsy, Stan Store, Beacons, Amazon, eBay, Shopify) are NOT supported at launch.** They appear on the landing page as "coming soon" only. The badge can be embedded on Stan Store, Beacons, or Linktree pages — that is different from verifying those platforms. Embedding a badge is not the same as platform verification.
 6. **REAL does not have a comparison section that shows "impossible to fake."** The hero subtitle on index.html now reads: "The independent verification platform that proves every account you own is really yours. Across every platform. With a permanent timestamped history. Fakes can copy the link — but it always opens yours."
 7. **Always use Claude Code to commit and push files.** Never manually edit GitHub files unless Claude Code is unavailable. Claude Code checks the diff before committing — always review what it shows before pressing 1. Always add "commit directly to main" to instructions to avoid the PR branch flow.
-8. **The platform verification flow saves to Supabase the moment the code is generated — not on Submit.** Submit/Done just closes the modal. The member\_confirmed field gates whether a submission appears in the admin queue.
+8. **The platform verification flow saves to Supabase the moment the code is generated — not on Submit.** Submit/Done just closes the modal. The member_confirmed field gates whether a submission appears in the admin queue.
 9. **Email platform verification uses a confirmation link flow — not a bio code.** When a member selects Email, the dashboard sends a confirmation email via Resend. The member clicks the link. Status updates to verified automatically. There is no bio code for email.
 10. **The members table row is created at the point of first payment only.** Not at signup. Not after ID verification alone. The Stripe webhook (checkout.session.completed) creates the members row and assigns the REAL ID when payment is confirmed.
 11. **Display name vs legal name.** The public profile shows the member's chosen display name — not their legal name. Legal name is captured by Stripe Identity, stored privately, and never shown publicly. The dashboard must make this clear to the member before and during verification.
@@ -36,9 +36,9 @@ These are non-negotiable. Claude has made mistakes on these before and they cost
 14. **Payment must come before government ID verification in the onboarding flow.** After email confirmation, the member is redirected to the Stripe payment page. Payment is confirmed via webhook. ID verification unlocks after payment. The correct order is: Sign up → Email confirm → Pay → ID verification unlocks → Link platforms → REAL ID assigned.
 15. **Profile pictures are a personalisation feature only — not a verification tool.** No face matching, no comparison to government ID. Members upload a photo or logo of their choice. It displays on their dashboard and public profile. No data stored beyond the image file itself in Supabase storage avatars bucket.
 16. **Public profile URLs use REAL ID numbers — not usernames.** The URL is realverified.co.uk/RL-000001. Username-based URLs (/yourname) are a future build — not live. Do not reference /yourname as a working URL anywhere.
-17. **Supabase grants have been applied to all three tables.** "Waitlist" (capital W), platform\_verifications, and members all have explicit grants for anon, authenticated, and service\_role. This is required ahead of the Supabase October 2026 enforcement deadline.
+17. **Supabase grants have been applied to all three tables.** "Waitlist" (capital W), platform_verifications, and members all have explicit grants for anon, authenticated, and service_role. This is required ahead of the Supabase October 2026 enforcement deadline.
 
-\---
+---
 
 ## WHAT REAL IS
 
@@ -62,7 +62,7 @@ REAL does not make absolute claims about being unfakeable. The honest position i
 **Honest assessment of the product:**
 The core mechanism is genuinely clever and works. The link-in-bio logic is airtight. The handles being publicly displayed with timestamps is real proof. The sequential permanent ID system gives the whole thing weight. The weaknesses are: it only works if people check, the bio link is voluntary, platform handles can change. These are not product flaws — they are adoption and network effect challenges. REAL gets more powerful as it grows.
 
-\---
+---
 
 ## THE PUBLIC PROFILE PAGE — CRITICAL DESIGN DECISION
 
@@ -70,16 +70,20 @@ The public REAL profile lives at realverified.co.uk/RL-000001 (by REAL ID number
 
 The page is a read-only trust page. Someone lands on it and within five seconds they either trust this person or they don't. Nothing to click. Nothing to do. Just the facts.
 
-**Design: navy page background, white card in the centre.** Gold accents throughout. The member can choose between this hybrid design or a full navy design from their dashboard settings (future build).
+**Design: Member chooses between navy dark theme or white theme from their dashboard Edit Profile modal.** Gold accents throughout. Default is navy.
 
 **The page displays:**
 
 * Profile picture — circular avatar, uploaded by member, or initials placeholder in gold on navy if none uploaded
 * REAL ID number — large, in gold
 * Display name — member's chosen name, not legal name
-* Verified since date — with exact timestamp
+* Verified since date — date only, no time
 * Government ID Confirmed badge
 * Membership tier badge — Founding Member or Standard
+* REAL Score level — Verified Foundation / Verified Established / Verified Authority
+* Bio — member's own description, shown as a paragraph if set
+* Location — shown with a 📍 pin if set
+* How to contact me — free text shown with a 💬 icon if set
 * Every verified platform — platform name, handle, green tick, date verified
 * Impersonation attempts count — single line only e.g. "3 impersonation attempts documented by REAL"
 * Search bar in nav for finding other profiles
@@ -89,7 +93,6 @@ The page is a read-only trust page. Someone lands on it and within five seconds 
 
 * Legal name
 * Copy Verification Link button (that belongs in the dashboard)
-* Any personal contact details
 
 **The "not found" state:**
 If someone visits a URL for a REAL ID that doesn't exist, they see: "No verified profile exists for RL-XXXXXX. If you're looking to verify someone's identity, ask them for their REAL profile link directly."
@@ -103,21 +106,37 @@ Username-based URLs (realverified.co.uk/janesmith) that redirect to the RL-numbe
 **The shareable verification link (Step 14 — not yet built):**
 This is a member dashboard feature — not on the public profile. A button in the dashboard generates a permanent URL capturing the verified profile at a specific moment in time. For use in brand partnership decks, press materials, emails.
 
-\---
+---
 
-## THE REAL SCORE — PROFILE COMPLETION INDICATOR
+## THE REAL SCORE — TRUST INDICATOR
 
-The REAL Score is NOT a credibility score. Credibility cannot be earned by setting up profiles. The score is a profile completion indicator — it shows how much of a member's REAL presence is verified and complete.
+The REAL Score is a trust indicator built entirely from objective verifiable facts. It cannot be purchased, gamed, or faked. It can only be built over time through genuine verified activity.
 
-Displayed on the member dashboard only — never on the public profile. Shows as a progress bar with percentage and the message: 'Your REAL profile is X% complete. Add more verified platforms to strengthen your presence.'
+**Score is calculated from:**
 
-Calculated from: government ID verified, number of verified platforms, membership tenure, founding member status. Cannot be purchased or gamed. But it measures verification completeness — not trustworthiness.
+* Number of platforms verified — more platforms equals higher score
+* Length of verified membership — the longer the member has been on REAL the higher the score
+* Whether government ID is confirmed — significant weight, not confirmed means score is capped
+* REAL ID number tier — founding member carries more inherent weight than standard
+* Compromise history — a member who experienced a hack, reported it immediately, fought to recover the account, and updated REAL throughout demonstrates integrity and adds to the score
 
-The real credibility layer is the Community Trust feature — a future build where verified REAL members can vouch for each other. Only verified members can contribute. No anonymous reviews. No fake endorsements. Every vouch is attached to a verified real identity. This is genuinely different from Trustpilot because the identity problem is solved first.
+Cannot be purchased, faked, or gamed.
+Calculated from: platforms verified, length of membership, government ID confirmed, ID number tier, compromise history handling.
+Displayed as: Verified Foundation (0-39) / Verified Established (40-69) / Verified Authority (70+).
 
-Future use — tier system foundation: The completion score can still gate Pro and Business tier features when those tiers are built.
+**Display on public profile:**
+Shown as a trust level — not a number. Three levels: Verified Foundation / Verified Established / Verified Authority. Thresholds: 0-39 = Foundation, 40-69 = Established, 70+ = Authority.
 
-\---
+**Future use — tier system foundation:**
+The REAL Score is the anchor for the future Pro and Business tier system. When revenue supports it:
+
+* REAL Standard — current offering
+* REAL Pro — high score threshold required — priority support, advanced toolkit, enhanced profile features, physical verification certificate
+* REAL Business — for brands and agencies — multiple profiles, commerce platform verification, dedicated account management
+
+Build the score now knowing these tiers are coming.
+
+---
 
 ## THE TRUST TIMELINE — CRITICAL FEATURE
 
@@ -140,37 +159,7 @@ Every member has a permanent verified history that cannot be faked, purchased, o
 **Rebrand as a feature:**
 When a creator or business rebrands — new name, new handle — their REAL profile documents the entire journey. Old handle verified from original date. Name change logged. New handle verified with fresh timestamp. Same REAL ID throughout. Their audience never loses trust because the history is permanent and unbroken. This is a genuine selling point: "Taking your business through a rebrand? Your REAL profile documents the whole journey so your audience never loses trust in you."
 
-\---
-
-## THE VISION — WHERE REAL GOES
-
-REAL started as a verification tool. It is becoming something much larger.
-
-What REAL actually is:
-The only platform on the internet where every member is a verified real human being. Not algorithmically verified. Not paid-tick verified. Government ID verified. Biometrically confirmed. Every account they own proven to be theirs.
-
-The three layers:
-Layer 1 — Individual protection (current): Creators, freelancers, business owners protecting their identity. Proving their accounts are theirs. Building a verified history fakes can never replicate. This is the foundation that gets people through the door.
-
-Layer 2 — Verified community (next): Verified real people looking out for each other. A closed network where only verified members can vouch for others. Endorsements carry real weight because they are attached to verified identities. Warnings about scammers are credible because they come from real people. Members flag fakes impersonating other members. Everyone in the community has faced the same threat. They look out for each other because they genuinely get it. This is the moat — it cannot be purchased or replicated.
-
-Layer 3 — Identity infrastructure for the internet (long game): Brands require REAL verification before partnerships. Agencies build it into vetting. The REAL API allows other platforms to integrate REAL verification. Dating apps, marketplaces, freelance platforms, employers — anyone who needs to verify human identity uses REAL as the infrastructure layer. The badge becomes the standard — like SSL certificates on websites.
-
-The community trust insight:
-Every other platform tried to build reputation without solving identity first. They all failed — fake reviews from fake people. REAL solves identity first, then builds reputation on top. That is the right order. Every vouch, endorsement, and warning comes from a verified real human being. That changes everything.
-
-The business at scale:
-
-* Membership revenue — recurring, predictable, grows with every member
-* API licensing — platforms pay to use REAL verification infrastructure
-* B2B verification — brands and agencies pay for verified creator vetting
-* Enterprise — large platforms integrating REAL as their trust layer
-* The verified directory — the most trusted search for real people on the internet
-
-The honest end state:
-REAL becomes the standard for verified human identity online. Not because a government mandated it. Not because a big tech company built it. Because real people chose it because they needed it and it worked.
-
-\---
+---
 
 ## REAL ID NUMBERING SYSTEM
 
@@ -181,7 +170,7 @@ REAL becomes the standard for verified human identity online. Not because a gove
 * If a member unsubscribes their number retires permanently — it is never reassigned. The profile shows as inactive but the history remains unless the member requests erasure under GDPR right to erasure, in which case all data is deleted and the number retires with nothing visible.
 * REAL ID numbers are NOT assigned at waitlist signup. They are assigned when the Stripe checkout.session.completed webhook fires — confirming payment. The webhook generates the next sequential REAL ID and creates the members row.
 
-\---
+---
 
 ## THE BUSINESS MODEL — FINAL
 
@@ -199,7 +188,7 @@ The barrier to joining REAL is not price. The barrier is trust in the product. T
 **Pricing context — why REAL is cheap:**
 Meta Verified costs £9.99/month per platform — Instagram only, Facebook only. Someone with both pays £19.98/month for two siloed verifications with no history, no cross-platform proof, and no impersonation tools. REAL at £15/month (founding) or £25/month (standard) covers every platform simultaneously with permanent history, a trust score, compromise alerts, and a full impersonation toolkit. It is not expensive. It is exceptional value.
 
-\---
+---
 
 ## BRAND PROTECTION — CORE POSITIONING
 
@@ -221,7 +210,7 @@ Etsy, Stan Store, Beacons, Amazon, eBay, Shopify removed from launch entirely. A
 **Important distinction:**
 The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree, email signatures, websites. This is different from verifying those platforms. Embedding is just placing a link. Verification requires API access. The badge section on the landing page correctly lists Stan Store, Beacons, Linktree, and Email footer as places to embed the badge — this is correct and should stay.
 
-\---
+---
 
 ## LAUNCH STRATEGY — MEMBER NUMBERS
 
@@ -230,7 +219,7 @@ The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree
 * After 100 founding members — standard tier opens at £25/month — RL-000101 onwards
 * Waitlist order influences who gets invited first but the number is earned through verification and payment not through joining the waitlist
 
-\---
+---
 
 ## THE BRAND
 
@@ -247,12 +236,12 @@ The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree
   * LIGHT backgrounds → navy shield, white REAL text, gold tick
 * Use ™ from day one
 
-\---
+---
 
 ## THE TECH STACK
 
 * GitHub: saddlej1986 — repository: REAL-landing-page (only repository — test repo deleted)
-* Local project folder: C:\\Users\\Sadi\\OneDrive\\Documents\\REAL\\REAL-landing-page
+* Local project folder: C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
 * Supabase: https://esqmwktnnjuztyhityeo.supabase.co — Organisation: REAL — Project: REAL — Region: West EU Ireland — RLS enabled
 * Vercel: Connected to GitHub REAL-landing-page repository — Hobby plan free forever — live at realverified.co.uk
 * Stripe: Business name REAL — UK — realverified.co.uk — LIVE account active ✅ — Sandbox/test account also exists for testing
@@ -261,10 +250,10 @@ The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree
 * Google Search Console: Verified ✅ — realverified.co.uk confirmed — indexing requested — login: info@visionaryduomarketing.co.uk
 * Google Workspace: realverified.co.uk added as user alias domain ✅ — Gmail activated ✅ — info@realverified.co.uk working and landing in existing Gmail inbox ✅ — hello@ and privacy@ not possible on current plan, using info@ for all contact emails
 * Google Cloud: Project REAL (real-495814) — YouTube Data API v3 enabled ✅ — API key written in physical notebook as "REAL YouTube API"
-* Claude Code: INSTALLED ✅ — desktop app version available — open via Start menu, select folder C:\\Users\\Sadi\\OneDrive\\Documents\\REAL\\REAL-landing-page
+* Claude Code: INSTALLED ✅ — desktop app version available — open via Start menu, select folder C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
 * Node.js: INSTALLED ✅ — version 24.15.0
 
-\---
+---
 
 ## RESEND — SETUP STATUS
 
@@ -278,7 +267,7 @@ The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree
 
 **Domain status:** Verified — ready to send emails ✅
 
-**API key:** stored in Vercel as RESEND\_API\_KEY ✅
+**API key:** stored in Vercel as RESEND_API_KEY ✅
 **Emails send FROM:** info@realverified.co.uk
 **Emails received at:** info@realverified.co.uk (via Google Workspace MX record — already working)
 
@@ -287,7 +276,7 @@ The REAL shield badge can be embedded anywhere — Stan Store, Beacons, Linktree
 1. Test email sending end to end — trigger a real platform verification email
 2. Sort multiple email addresses — hello@ and privacy@ alongside info@ when revenue supports it
 
-\---
+---
 
 ## CLAUDE CODE — HOW TO USE IT
 
@@ -296,7 +285,7 @@ Claude Code is installed and used to commit and push files to GitHub. It is far 
 **How to open and use Claude Code — desktop app (preferred):**
 
 1. Press Windows key, type Claude, open the Claude desktop app
-2. Click "Select folder..." and navigate to C:\\Users\\Sadi\\OneDrive\\Documents\\REAL\\REAL-landing-page
+2. Click "Select folder..." and navigate to C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
 3. Type instructions in plain English in the box at the bottom
 4. Review what it shows before approving — always screenshot before clicking Allow
 5. Always include "commit directly to main" at the end of instructions — this avoids the PR branch flow
@@ -310,15 +299,16 @@ Claude Code is installed and used to commit and push files to GitHub. It is far 
 **Important warnings:**
 
 * When saving files from Claude chat to the laptop — always download the file using the download button on the artifact. Do NOT use "Save page as" from the browser — this saves the claude.ai webpage not the file.
-* Always save downloaded files into C:\\Users\\Sadi\\OneDrive\\Documents\\REAL\\REAL-landing-page replacing the existing file
+* Always save downloaded files into C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page replacing the existing file
 * If a file downloads as "filename (1)" it means a copy already exists — delete the original, rename the new one correctly, then push
 * Claude Code will flag if the wrong file has been saved — it checks the diff before committing. If it says the file went from 477 lines to 22 lines — do NOT proceed. Type "git restore filename.html" to restore the original.
 * The red "Auto-update failed" message at the bottom of Claude Code is harmless — ignore it.
 * When Claude Code asks a question and there is no numbered list — type yes or no and press Enter.
 * If Claude Code gets stuck in verbose/transcript mode — press Ctrl+O to toggle it off and get the prompt back.
 * If Claude Code pushes to a branch instead of main — it will show a "Create PR" button. Click it, then merge on GitHub. To avoid this — always say "commit directly to main" in the instruction.
+* Always end Claude Code instructions with "commit directly to main and push to origin" — the push to origin is critical, otherwise commits sit locally and Vercel never sees them.
 
-\---
+---
 
 ## EMAIL SETUP — FINAL DECISION
 
@@ -334,7 +324,7 @@ Claude Code is installed and used to commit and push files to GitHub. It is far 
 * REAL sends automated emails to members → sent via Resend from info@realverified.co.uk ✅ (Resend DNS)
 * Members see info@realverified.co.uk either way. The two systems do not interfere.
 
-\---
+---
 
 ## STRIPE — FULL SETUP STATUS
 
@@ -354,33 +344,30 @@ Claude Code is installed and used to commit and push files to GitHub. It is far 
 * REAL Standard Member — £25.00/month — Active ✅
 * Lookup keys set: founding-monthly and standard-monthly ✅
 * Live API keys: written in physical notebook ✅ (labelled clearly as LIVE keys)
-* Stripe Identity: ENABLED ✅ — Trust \& Safety use case — Synthetic Identity Protection enabled
+* Stripe Identity: ENABLED ✅ — Trust & Safety use case — Synthetic Identity Protection enabled
 * 2FA: Set up on Stripe account ✅
-* FOUNDER coupon — 100% off forever — Active ✅ — Promotion code: FOUNDER — for founder use only
 
 **Live payment links:**
 
-* Founding Member (£15/month): https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00 ✅ — Allow promotion codes ENABLED ✅
+* Founding Member (£15/month): https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00 ✅
 * Standard Member (£25/month): NOT YET CREATED — create when founding tier fills
-* After payment redirect: https://www.realverified.co.uk/dashboard.html — redirects directly, no confirmation page in between ✅
+* After payment confirmation message: "Welcome to REAL. Your membership is confirmed. Your REAL ID will be activated shortly — click below to access your member dashboard."
+* After payment redirect: https://www.realverified.co.uk/dashboard.html
 
 **Stripe webhook — REAL Identity Webhook (LIVE):**
 
 * Endpoint URL: https://www.realverified.co.uk/api/stripe-webhook ✅ (must use www — non-www causes 307 redirect)
-* Events listening to: checkout.session.completed ✅ AND identity.verification\_session.verified ✅
+* Events listening to: checkout.session.completed ✅ AND identity.verification_session.verified ✅
 * Status: Active ✅
-* Created via Stripe Workbench → Webhooks → Add destination → Your account
-* Signing secret: written in physical notebook under "Webhook Secrets" — stored in Vercel as STRIPE\_WEBHOOK\_SECRET ✅ (updated May 2026)
-* Vercel redeployed after secret update ✅
+* Signing secret: written in physical notebook under "Webhook Secrets" — stored in Vercel as STRIPE_WEBHOOK_SECRET ✅ (updated May 2026)
 
 **Important Stripe notes:**
 
 * "Needs info" next to products = Stripe Managed Payments upsell — IGNORE, not needed
 * NO free trial — removed from product entirely — do not configure trial in code under any circumstances
 * Tax/VAT: Not applicable until revenue exceeds £90,000/year — leave as No for now
-* VAT registration required at £90k threshold — update Stripe at that point
 
-\---
+---
 
 ## SUPABASE DATABASE — WHAT EXISTS
 
@@ -391,67 +378,72 @@ Table name note: the waitlist table is called "Waitlist" with a capital W. SQL g
 
 **Grants applied:**
 
-* "Waitlist" — anon (select, insert), authenticated (select, insert, update, delete), service\_role (select, insert, update, delete) ✅
-* platform\_verifications — anon (select, insert, update, delete), authenticated (select, insert, update, delete), service\_role (select, insert, update, delete) ✅
-* members — anon (select only), authenticated (select, insert, update, delete), service\_role (select, insert, update, delete) ✅
+* "Waitlist" — anon (select, insert), authenticated (select, insert, update, delete), service_role (select, insert, update, delete) ✅
+* platform_verifications — anon (select, insert, update, delete), authenticated (select, insert, update, delete), service_role (select, insert, update, delete) ✅
+* members — anon (select only), authenticated (select, insert, update, delete), service_role (select, insert, update, delete) ✅
 
 **Table: Waitlist** (public schema) — note capital W
 
 * id — int8 — auto increment
-* created\_at — timestamptz
+* created_at — timestamptz
 * name — text
 * email — text
 * handle — text
-* platform\_request — text
+* platform_request — text
 
 RLS enabled. Anon insert policy live. Data API exposed. Working and saving real signups.
 
-**Table: platform\_verifications** (public schema) ✅
+**Table: platform_verifications** (public schema) ✅
 
 * id — int8 — auto increment
-* created\_at — timestamptz — default now()
-* user\_id — uuid
+* created_at — timestamptz — default now()
+* user_id — uuid
 * platform — text
 * handle — text
-* profile\_url — text (nullable)
-* verification\_code — text
+* profile_url — text (nullable)
+* verification_code — text
 * status — text — default: pending
-* verified\_at — timestamptz (nullable)
-* submitted\_at — timestamptz — default now()
-* notes — text (nullable) — used to store expiry timestamp for email verification links (format: expires:ISO\_DATE)
-* member\_confirmed — boolean — default false
-* rejection\_reason — text (nullable)
+* verified_at — timestamptz (nullable)
+* submitted_at — timestamptz — default now()
+* notes — text (nullable) — used to store expiry timestamp for email verification links (format: expires:ISO_DATE)
+* member_confirmed — boolean — default false
+* rejection_reason — text (nullable)
 
 RLS enabled. Status values: pending, verified, failed.
 
-**RLS Policies on platform\_verifications:**
+**RLS Policies on platform_verifications:**
 
-* INSERT — Enable insert for users based on user\_id ✅
-* SELECT — Enable select for users based on user\_id ✅
-* UPDATE — Enable update for users based on user\_id ✅
+* INSERT — Enable insert for users based on user_id ✅
+* SELECT — Enable select for users based on user_id ✅
+* UPDATE — Enable update for users based on user_id ✅
 
 **Table: members** (public schema) ✅
 
 * id — int8 — auto increment — primary key
-* created\_at — timestamptz — default now()
-* user\_id — uuid — NULL default (comes from Supabase auth)
-* real\_id — text (e.g. RL-000001)
-* display\_name — text (member's chosen public name — NOT legal name)
-* legal\_name — text (from Stripe Identity — stored privately — NEVER shown publicly)
-* verified\_since — timestamptz
-* membership\_tier — text (founding or standard)
-* id\_verified — boolean
-* real\_score — int4 — default 0
-* impersonation\_count — int4 — default 0
-* is\_active — boolean — default true
+* created_at — timestamptz — default now()
+* user_id — uuid — NULL default (comes from Supabase auth)
+* real_id — text (e.g. RL-000001)
+* display_name — text (member's chosen public name — NOT legal name)
+* legal_name — text (from Stripe Identity — stored privately — NEVER shown publicly)
+* verified_since — timestamptz
+* membership_tier — text (founding or standard)
+* id_verified — boolean
+* real_score — int4 — default 0
+* impersonation_count — int4 — default 0
+* is_active — boolean — default true
+* bio — text (nullable) — member's public bio, max 160 chars
+* location — text (nullable) — e.g. "London, UK"
+* contact_link — text (nullable) — free text "How to contact me" field
+* avatar_url — text (nullable) — public URL from Supabase avatars bucket
+* profile_theme — text — default 'navy' — values: 'navy' or 'white'
 
 RLS enabled. Data API enabled ✅
 
 **RLS Policies on members:**
 
-* INSERT — Enable insert for users based on user\_id — authenticated only ✅
+* INSERT — Enable insert for users based on user_id — authenticated only ✅
 * SELECT — Enable public read access — anon AND authenticated — using: true ✅ (public profile page needs this)
-* UPDATE — Enable update for users based on user\_id — authenticated only ✅
+* UPDATE — Enable update for users based on user_id — authenticated only ✅
 
 **Supabase Storage — avatars bucket ✅**
 
@@ -460,7 +452,7 @@ RLS enabled. Data API enabled ✅
 * Allowed MIME types: image/jpeg, image/png, image/webp ✅
 * RLS Policy: Allow authenticated uploads — INSERT — authenticated ✅
 * RLS Policy: Allow authenticated updates — UPDATE — authenticated ✅
-* Members upload profile picture from dashboard — stored as user\_id filename — displayed as circular avatar on dashboard and public profile
+* Members upload profile picture from dashboard Edit Profile modal — stored as user_id filename — displayed as circular avatar on dashboard and public profile
 * If no photo uploaded — initials shown in gold on navy as placeholder
 
 **Supabase anon public key:** stored in admin.html, dashboard.html, profile.html on laptop and in GitHub.
@@ -472,39 +464,39 @@ RLS enabled. Data API enabled ✅
 * Confirm signup email template: clean, simple, points to dashboard ✅
 * Auth emails currently come from Supabase address — will be migrated to Resend in Step 17
 
-**Supabase rate limiting note:** During testing — if you hit the rate limit on an email address, delete the account in Supabase → Authentication → Users and wait \~1 hour before retrying.
+**Supabase rate limiting note:** During testing — if you hit the rate limit on an email address, delete the account in Supabase → Authentication → Users and wait ~1 hour before retrying.
 
-\---
+---
 
 ## STRIPE IDENTITY — TECHNICAL NOTES
 
 * Backend function: api/create-verification-session.js — called by dashboard when member clicks Start verification. Receives user JWT, verifies with Supabase, creates Stripe Identity session, returns redirect URL.
 * Webhook handler: api/stripe-webhook.js — handles TWO events:
 
-  1. checkout.session.completed — extracts client\_reference\_id (Supabase user ID), determines membership tier from price nickname (wrapped in its own try/catch — if line\_items expand fails e.g. on £0 sessions, defaults to 'founding' tier and continues to create the members row regardless), generates next sequential REAL ID, inserts members row with user\_id, real\_id, membership\_tier, verified\_since, is\_active
-  2. identity.verification\_session.verified — finds user by Supabase ID stored in session metadata, updates user metadata with id\_verified: true
+  1. checkout.session.completed — extracts client_reference_id (Supabase user ID), determines membership tier from price nickname, generates next sequential REAL ID, inserts members row with user_id, real_id, membership_tier, verified_since, is_active
+  2. identity.verification_session.verified — finds user by Supabase ID stored in session metadata, updates user metadata with id_verified: true
 * Webhook URL in Stripe must use www.realverified.co.uk — domain redirects non-www to www causing 307 errors that break webhook signature verification.
 * vercel.json must have trailingSlash: false — prevents Vercel redirect that would break the webhook.
-* Webhook updates Supabase using user\_metadata field in the API body — NOT data (data is silently ignored by Supabase and writes nothing).
-* id\_verified: true appears in raw\_user\_meta\_data in Supabase Authentication → Users → Raw JSON when verification is confirmed.
-* Dashboard reads id\_verified on load — if true, Step 1 shows green "ID Verified" pill, button shows "Verification complete" disabled, Step 2 unlocks automatically.
+* Webhook updates Supabase using user_metadata field in the API body — NOT data (data is silently ignored by Supabase and writes nothing).
+* id_verified: true appears in raw_user_meta_data in Supabase Authentication → Users → Raw JSON when verification is confirmed.
+* Dashboard reads id_verified on load — if true, Step 1 shows green "ID Verified" pill, button shows "Verification complete" disabled, Step 2 unlocks automatically.
 
-\---
+---
 
 ## VERCEL — ENVIRONMENT VARIABLES SET
 
 All stored in Vercel → real-landing-page → Settings → Environment Variables:
 
-* STRIPE\_SECRET\_KEY — Stripe live secret key (sk\_live\_...) ✅
-* STRIPE\_WEBHOOK\_SECRET — Stripe live webhook signing secret (whsec\_...) ✅ — updated May 2026
-* SUPABASE\_URL — https://esqmwktnnjuztyhityeo.supabase.co ✅
-* SUPABASE\_ANON\_KEY — Supabase anon public key ✅
-* SUPABASE\_SERVICE\_ROLE\_KEY — Supabase service role key (admin access — keep secret) ✅
-* ADMIN\_PASSWORD — admin page password ✅
-* YOUTUBE\_API\_KEY — Google Cloud YouTube Data API v3 key ✅
-* RESEND\_API\_KEY — Resend API key (re\_...) ✅
+* STRIPE_SECRET_KEY — Stripe live secret key (sk_live_...) ✅
+* STRIPE_WEBHOOK_SECRET — Stripe live webhook signing secret (whsec_...) ✅ — updated May 2026
+* SUPABASE_URL — https://esqmwktnnjuztyhityeo.supabase.co ✅
+* SUPABASE_ANON_KEY — Supabase anon public key ✅
+* SUPABASE_SERVICE_ROLE_KEY — Supabase service role key (admin access — keep secret) ✅
+* ADMIN_PASSWORD — admin page password ✅
+* YOUTUBE_API_KEY — Google Cloud YouTube Data API v3 key ✅
+* RESEND_API_KEY — Resend API key (re_...) ✅
 
-\---
+---
 
 ## PLATFORM VERIFICATION STRATEGY
 
@@ -527,11 +519,11 @@ All stored in Vercel → real-landing-page → Settings → Environment Variable
 **How the platform verification flow works (IMPORTANT — updated):**
 
 1. Member clicks Add platform → selects platform → enters handle → clicks Generate code
-2. Row is saved to Supabase immediately when code is generated (member\_confirmed = false)
+2. Row is saved to Supabase immediately when code is generated (member_confirmed = false)
 3. Code is shown in the modal AND on the pending dashboard card — so it can never be lost
 4. Member adds code to their bio (or YouTube description)
 5. Member clicks "I've added it — check my bio" on the card OR "I've added the code" in the modal
-6. This sets member\_confirmed = true — only NOW does it appear in the admin queue
+6. This sets member_confirmed = true — only NOW does it appear in the admin queue
 7. For YouTube — auto-check runs at code generation. If found instantly: verified. If not found: pending with Check again button. Check again button is case sensitive.
 8. For Email — member enters email address → clicks "Send confirmation email" → Resend sends branded email from info@realverified.co.uk → member clicks link → status updates to verified automatically. No admin approval needed.
 9. For Website/Domain — member enters domain (e.g. mybusiness.com) → code shown → member adds TXT record to their DNS → clicks "Check my DNS" → api/domain-verify.js does DNS lookup → if found: verified automatically. No admin needed.
@@ -543,40 +535,26 @@ All stored in Vercel → real-landing-page → Settings → Environment Variable
 
 **Platform URL helper text:** When a member selects a platform and enters their handle, a helper line appears underneath the Profile URL input field showing the correct format for that platform. Updates dynamically when platform is changed. ✅ BUILT
 
-**Platform name in code:** Website platform is called 'Website' in the code — NOT 'Website / Domain'. This was fixed in isWebsite check (line 1088) and showUrl exclusion list (line 1093) in dashboard.html.
+**Platform name in code:** Website platform is called 'Website' in the code — NOT 'Website / Domain'. This was fixed in isWebsite check and showUrl exclusion list in dashboard.html.
 
-**Handle format by platform:**
+**Handle format by platform (fix to make before launch):**
 
 * Instagram = @handle
 * TikTok = @handle
 * X = @handle
-* Facebook = name or page name (no @) — placeholder fixed ✅
-* LinkedIn = profile slug (linkedin.com/in/yourname) — placeholder fixed ✅
+* Facebook = name or page name (no @)
+* LinkedIn = profile slug (linkedin.com/in/yourname)
 * YouTube = @handle or channel name
+* Email = email address
+* Website = domain only (e.g. mybusiness.com)
 
-**Email verification flow — technical detail:**
-
-* api/email-verify.js — generates 32-byte secure token, stores in verification\_code field, stores expiry in notes field (format: expires:ISO\_DATE), sends branded confirmation email via Resend
-* api/email-confirm.js — validates token and id query params, checks expiry, guards against already-verified rows, marks status=verified, redirects to email-confirmed.html
-* email-confirmed.html — handles success, already, expired, invalid, error states
-
-**Domain verification flow — technical detail:**
-
-* api/domain-verify.js — receives id, domain, verification\_code from dashboard. Strips http/https from domain. Does DNS TXT lookup via Node.js dns module. If verification\_code found in any TXT record — marks status=verified in Supabase automatically.
-
-**Instructions for members:**
-
-* Bio code flow (Instagram, TikTok, X, Facebook, LinkedIn): instructions are clear — add code to first line of bio
-* Email flow: instructions are adequate — sends confirmation link, member clicks it
-* Website/Domain flow: dns-guide.html built and live — plain English step by step guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other — linked from dashboard Website card ✅
-
-\---
+---
 
 ## SUPABASE AUTH — HOW IT WORKS
 
 Members sign up with email and password via signup.html. Supabase sends confirmation email. Member clicks link — confirmed — redirected to Stripe payment page. After payment — Stripe webhook fires — members row created — REAL ID assigned — member lands on dashboard.html.
 
-Session token stored in browser localStorage as real\_access\_token. Dashboard checks for token on load — if missing redirects to login.html automatically.
+Session token stored in browser localStorage as real_access_token. Dashboard checks for token on load — if missing redirects to login.html automatically.
 
 Token extraction must happen BEFORE the redirect to dashboard.html. This is critical. Any update to index.html must preserve this logic. Claude Code will flag if it is missing — do not override that warning.
 
@@ -584,22 +562,22 @@ Test accounts can be deleted any time from Supabase → Authentication → Users
 
 payment-redirect.html added to Redirect URLs list in Supabase URL Configuration ✅
 
-\---
+---
 
 ## ADMIN PAGE — HOW IT WORKS
 
 URL: realverified.co.uk/admin.html — password protected.
 
-* Password is stored in Vercel as ADMIN\_PASSWORD environment variable — NOT in the code
+* Password is stored in Vercel as ADMIN_PASSWORD environment variable — NOT in the code
 * Session persists across page refreshes via sessionStorage — no need to log in again after refresh
 * sessionStorage clears when browser tab is closed — login required on new session
 * Queue auto-refreshes every 30 seconds silently — no spinner during background refresh
 * Also refreshes instantly when you switch back to the admin tab
-* Shows only pending verifications where member\_confirmed = true
+* Shows only pending verifications where member_confirmed = true
 * Grouped by member email address
 * Each row shows: platform, handle, verification code in gold, profile URL as clickable link, submission date, Approve and Reject buttons
-* Approve — sets status to verified, stamps verified\_at, row disappears from queue
-* Reject — dropdown of preset reasons appears, reason is required, sets status to failed with rejection\_reason saved, row disappears
+* Approve — sets status to verified, stamps verified_at, row disappears from queue
+* Reject — dropdown of preset reasons appears, reason is required, sets status to failed with rejection_reason saved, row disappears
 * Member dashboard updates automatically within 15 seconds of approval without refresh
 * Email verifications do NOT appear in the admin queue — they are verified automatically
 * Domain/Website verifications do NOT appear in the admin queue — they are verified automatically
@@ -615,7 +593,7 @@ URL: realverified.co.uk/admin.html — password protected.
 6. Account appears to be deactivated or suspended
 7. Other — see note below (triggers free text box for additional detail)
 
-\---
+---
 
 ## FILES IN GITHUB REPOSITORY
 
@@ -629,10 +607,10 @@ URL: realverified.co.uk/admin.html — password protected.
 * admin.html ✅
 * profile.html ✅ — public REAL profile page at realverified.co.uk/RL-000001
 * email-confirmed.html ✅
-* vercel.json ✅ (outputDirectory: ".", trailingSlash: false, rewrite rule: /RL-:id → profile.html)
+* vercel.json ✅ (outputDirectory: ".", trailingSlash: false, rewrites: /RL-:id → profile.html AND /profile/RL-:id → profile.html)
 * package.json ✅ (Stripe dependency)
 * api/create-verification-session.js ✅
-* api/stripe-webhook.js ✅ — handles checkout.session.completed AND identity.verification\_session.verified
+* api/stripe-webhook.js ✅ — handles checkout.session.completed AND identity.verification_session.verified
 * api/admin-check.js ✅
 * api/admin-users.js ✅
 * api/admin-verifications.js ✅
@@ -643,9 +621,9 @@ URL: realverified.co.uk/admin.html — password protected.
 * api/domain-verify.js ✅ — DNS TXT record auto-check for Website/Domain platform
 * api/delete-platform.js ✅
 * google1205fe6d96c5e361.html ✅ (Google Search Console verification — do not touch)
-* payment-redirect.html ✅ — intercepts Supabase confirmation token, extracts user ID, redirects to Stripe payment link with client\_reference\_id
+* payment-redirect.html ✅ — intercepts Supabase confirmation token, extracts user ID, redirects to Stripe payment link with client_reference_id
 
-\---
+---
 
 ## LANDING PAGE — CURRENT STATE (index.html)
 
@@ -660,7 +638,7 @@ URL: realverified.co.uk/admin.html — password protected.
 * Permanent verified history
 * Cross-platform proof
 * Trust score (REAL only)
-* Compromise \& hack alerts (REAL only)
+* Compromise & hack alerts (REAL only)
 * Impersonation case file (REAL only)
 * Independent of any platform
 * Monthly cost — Meta £9.99/month per platform, REAL £15/month founding — £25/month standard
@@ -681,7 +659,7 @@ URL: realverified.co.uk/admin.html — password protected.
 **The phrase "impossible to fake" does not appear anywhere on the landing page.
 Profile URLs on the landing page now correctly show RL-000001 format — not /yourname.**
 
-\---
+---
 
 ## DASHBOARD — WHAT'S INSIDE IT
 
@@ -689,9 +667,27 @@ Profile URLs on the landing page now correctly show RL-000001 format — not /yo
 
 **Nav:** REAL logo (white on navy), signed in email address, sign out button
 
-**Identity card (navy):** Profile picture (circular avatar), member name, REAL ID — fetched from members table on load and displayed as RL-000001 etc (shows RL-PENDING if no members row exists yet), member since date, verification status pill, founding member tier label
+**Identity card (navy, premium):** Gold top border. Circular avatar (110px) — shows uploaded photo or initials in gold on navy if no photo. Member name (38px Cormorant Garamond), REAL ID (26px gold DM Mono), member since date, verification status pill, founding member tier label. Gold link line below card showing live public profile URL linking to /RL-000001.
 
-**Step 1 — Government ID verification:** Fully wired to Stripe Identity. Clicking "Start verification →" calls the backend function, launches Stripe Identity hosted page. On return, shows "Verification submitted" message. On page reload if id\_verified: true — shows green "ID Verified" pill and disabled "Verification complete" button. Security notice shown: "🔒 Secured by Stripe Identity · Your document is verified and immediately discarded · REAL only receives a confirmation"
+**Dashboard section order:**
+1. Identity card
+2. Your Profile (compact row with Edit profile → button)
+3. Government ID Verification (Step 1)
+4. Link Your Platforms (Step 2 — locked until Step 1 complete)
+5. Subscription
+
+**Your Profile section:** Compact row showing avatar thumbnail, display name, bio preview. "Edit profile →" opens the profile editor modal. "View my public profile →" button opens their public profile in a new tab at /RL-000001.
+
+**Profile editor modal:** Full editing interface with:
+- Display Name (text input, pre-populated)
+- Bio (textarea, 160 char max, live counter, pre-populated)
+- Location (text input, pre-populated)
+- How to contact me (free text input, pre-populated — replaces old contact link URL field)
+- Profile Theme — Navy or White swatch picker (Navy selected by default)
+- Clickable avatar circle at top — clicking opens file picker — uploads to Supabase avatars bucket — previews immediately
+- Save Profile button — PATCHes all fields to members table — closes modal on success — refreshes identity card and profile row
+
+**Step 1 — Government ID verification:** Fully wired to Stripe Identity. Clicking "Start verification →" calls the backend function, launches Stripe Identity hosted page. On return, shows "Verification submitted" message. On page reload if id_verified: true — shows green "ID Verified" pill and disabled "Verification complete" button.
 
 **Step 2 — Link your platforms:** LOCKED until Step 1 (government ID) is complete. Platform flow:
 
@@ -699,13 +695,11 @@ Profile URLs on the landing page now correctly show RL-000001 format — not /yo
 * Helper text shows correct URL format for selected platform underneath the Profile URL input field
 * Code shown in modal and on dashboard card — can never be lost
 * Member adds code to bio/description (manual platforms) OR clicks Send confirmation email (Email) OR adds DNS TXT record and clicks Check my DNS (Website/Domain)
-* For manual: member clicks "I've added it" — sets member\_confirmed = true — triggers admin queue
+* For manual: member clicks "I've added it" — sets member_confirmed = true — triggers admin queue
 * For email: confirmation link sent via Resend — click verifies automatically — no admin needed
 * For website/domain: DNS lookup runs — if TXT record found verifies automatically — no admin needed
 * YouTube auto-checks at generation — verified instantly if code found, pending with Check again if not
 * Dashboard polls for status updates every 15 seconds automatically
-
-**Profile picture upload:** Circular avatar upload section on dashboard. Member clicks to upload photo or logo. Saved to Supabase avatars bucket. Displays immediately on dashboard and on public profile. No verification of image content — purely personalisation. ✅ BUILT
 
 **Subscription section:** Founding member tier, £15/month locked for life. Manage billing button present.
 
@@ -718,17 +712,16 @@ Profile URLs on the landing page now correctly show RL-000001 format — not /yo
 * Verification certificate PDF download — Step 11
 * Shareable verification link — Step 14 (dashboard feature, NOT on public profile)
 * Billing portal — Step 15
-* Profile theme choice (navy dark or navy/white hybrid) — future build
 
-\---
+---
 
 ## HOW TO UPDATE THE LIVE SITE
 
 **Preferred method — Claude Code desktop app:**
 
 1. Open Claude Code from Start menu
-2. Select folder C:\\Users\\Sadi\\OneDrive\\Documents\\REAL\\REAL-landing-page
-3. Type instruction in plain English — always end with "commit directly to main"
+2. Select folder C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
+3. Type instruction in plain English — always end with "commit directly to main and push to origin"
 4. Screenshot what it shows before approving anything
 5. Click Allow once to approve
 6. Live in 60 seconds via Vercel
@@ -739,13 +732,13 @@ Profile URLs on the landing page now correctly show RL-000001 format — not /yo
 2. Ctrl+A, Delete, paste new content, Commit changes
 3. Wait 60 seconds → check realverified.co.uk
 
-\---
+---
 
 ## THE 19 BUILD STEPS — REVISED AND FINAL
 
 ### Step 1 — Database schema and auth ✅ COMPLETE
 
-Supabase tables created — Waitlist and platform\_verifications. RLS policies enabled. Authentication configured. signup.html, login.html, and dashboard.html all built and live. Auth flow fully tested and confirmed working on phone and laptop.
+Supabase tables created — Waitlist and platform_verifications. RLS policies enabled. Authentication configured. signup.html, login.html, and dashboard.html all built and live. Auth flow fully tested and confirmed working on phone and laptop.
 
 ### Step 2 — GDPR and legal pages ✅ COMPLETE
 
@@ -774,10 +767,14 @@ All 8 platforms built:
 ### Step 6 — Public REAL profile page ✅ COMPLETE
 
 * profile.html live at realverified.co.uk/RL-000001 ✅
-* vercel.json updated with rewrite rule /RL-:id → profile.html ✅
-* members table created in Supabase with full schema ✅
-* Design: navy page, white card, gold accents — two theme variants designed ✅
-* Profile picture displays as circular avatar at top of card ✅
+* vercel.json updated with rewrite rules — /RL-:id and /profile/RL-:id both route to profile.html ✅
+* members table created in Supabase with full schema including bio, location, contact_link, avatar_url, profile_theme ✅
+* Profile theme — navy or white — selectable from dashboard Edit Profile modal ✅
+* Profile picture displays as circular avatar ✅ — initials placeholder if no photo uploaded ✅
+* Bio shown as paragraph if set ✅
+* Location shown with 📍 pin if set ✅
+* How to contact me shown with 💬 icon if set ✅
+* Verified since shows date only — no time ✅
 * Search by REAL ID or display name ✅
 * Not found state with helpful message ✅
 * Shows: REAL ID, display name, verified since, badges, verified platforms with handles and dates, impersonation count ✅
@@ -810,7 +807,7 @@ Downloadable PDF certificate in REAL branding. Contains member's full name, REAL
 
 ### Step 12 — Member dashboard ✅ COMPLETE
 
-Rebuilt and confirmed working. Full dashboard live at realverified.co.uk/dashboard.html.
+Rebuilt and confirmed working. Full dashboard live at realverified.co.uk/dashboard.html. Identity card elevated with gold border and premium feel. Your Profile section with Edit Profile modal fully built and saving to members table.
 
 ### Step 13 — Shield badge — dynamic and embeddable
 
@@ -830,8 +827,8 @@ Complete guided journey from signup to first payment to active REAL ID. Correct 
 
 1. Signup at signup.html
 2. Email confirmation sent by Supabase
-3. Member clicks confirmation link — redirected to Stripe payment page (Founding Member: https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00) with client\_reference\_id set to Supabase user ID
-4. Payment confirmed → Stripe fires checkout.session.completed webhook → api/stripe-webhook.js creates members row, assigns sequential REAL ID, sets membership\_tier and verified\_since
+3. Member clicks confirmation link — redirected to Stripe payment page with client_reference_id set to Supabase user ID
+4. Payment confirmed → Stripe fires checkout.session.completed webhook → api/stripe-webhook.js creates members row, assigns sequential REAL ID, sets membership_tier and verified_since
 5. Member lands on Stripe confirmation page with custom message, then clicks through to dashboard
 6. Government ID verification unlocks on dashboard
 7. Member links platforms
@@ -864,7 +861,7 @@ Copy and positioning update — product does not change, how it is described doe
 * Final mobile responsiveness and performance checks
 * Full member journey tested end to end
 
-\---
+---
 
 ## WHERE WE ARE RIGHT NOW
 
@@ -879,24 +876,21 @@ Step 16 — COMPLETE ✅
 
 **Immediate next actions — START HERE**
 
-1. RL-000001 already assigned to info@realverified.co.uk in Supabase ✅
-2. Email platform verification flow fully working end to end ✅ — tested 22 May 2026
-3. Update physical notebook with new Resend API key (old key deleted 22 May 2026)
-4. Switch Supabase signup confirmation email to send via Resend instead of Supabase default — before launch
-5. Move to Step 7 — REAL Score
+1. Test photo upload in Edit Profile modal — upload a real photo and confirm it appears on dashboard and public profile
+2. Test White theme — select White in Edit Profile modal, save, view public profile and confirm white styling applies correctly
+3. Move to Step 7 — REAL Score
 
-\---
+---
 
 ## FIXES TO MAKE BEFORE LAUNCH
 
-* Switch Supabase signup email to Resend — currently sends from Supabase default address — needs to come from info@realverified.co.uk before launch
+* Platform submission form should show the correct handle format for each platform — Instagram = @handle, Facebook = name or page name (no @), LinkedIn = profile slug (linkedin.com/in/yourname), YouTube = @handle or channel name, TikTok = @handle, X = @handle. Currently shows @yourhandle for all platforms which is incorrect for Facebook, LinkedIn and YouTube.
+* Improve Website/Domain verification instructions — need plain English step by step for non-developers
 * Create Standard Member payment link in Stripe live account (£25/month) for when founding tier fills
-* Profile page avatar placeholder shows initials instead of REAL shield logo — fix placeholder to show REAL shield when no photo uploaded
-* "Verification Pending" badge on dashboard needs investigating — should show "REAL ID Active" once id_verified is true in members table
-* id_verified not being set automatically by Stripe Identity webhook — needs investigating and fixing so it updates automatically when identity.verification_session.verified fires
-* Email verification modal shows wrong text — displays bio code instructions instead of email instructions — needs fixing
+* Admin page Reject button and auto-refresh — confirm still working correctly after dropdown update
+* Dashboard "Your Profile" section pencil icon looks broken/tiny — replace with a proper edit icon or remove it
 
-\---
+---
 
 ## WHAT IS ALREADY BUILT
 
@@ -917,18 +911,18 @@ Step 16 — COMPLETE ✅
 15. Stripe billing — both products created in sandbox AND live accounts ✅
 16. Stripe Identity — enabled and configured ✅
 17. Stripe live account — fully activated with bank details ✅
-18. platform\_verifications table — created in Supabase with all columns including member\_confirmed and rejection\_reason ✅
+18. platform_verifications table — created in Supabase with all columns including member_confirmed and rejection_reason ✅
 19. signup.html — LIVE at realverified.co.uk/signup.html ✅
 20. login.html — LIVE at realverified.co.uk/login.html ✅
 21. dashboard.html — LIVE at realverified.co.uk/dashboard.html ✅
 22. Supabase auth URL configuration — Site URL and redirect URL set to dashboard ✅
 23. Auth flow fully tested and confirmed working on both phone and laptop ✅
 24. index.html updated — comparison grid expanded, hero copy corrected, trial removed, token detection and email validation preserved ✅
-25. platform\_verifications RLS insert policy ✅ — select policy ✅ — update policy ✅
-26. platform\_verifications Data API access — enabled ✅
+25. platform_verifications RLS insert policy ✅ — select policy ✅ — update policy ✅
+26. platform_verifications Data API access — enabled ✅
 27. Dashboard displays submitted platforms with live status — pending in gold, verified in green, failed in red ✅
 28. Step 2 locked until government ID verification complete — unlocks automatically ✅
-29. vercel.json — created with outputDirectory: "." and trailingSlash: false and rewrite rule /RL-:id → profile.html ✅
+29. vercel.json — created with outputDirectory: "." and trailingSlash: false and rewrite rules for /RL-:id and /profile/RL-:id both routing to profile.html ✅
 30. package.json — created with Stripe npm dependency declared ✅
 31. api/create-verification-session.js ✅
 32. api/stripe-webhook.js ✅
@@ -941,7 +935,7 @@ Step 16 — COMPLETE ✅
 39. api/youtube-verify.js ✅
 40. YouTube auto-verification working — case sensitive — Check again button working ✅
 41. Verification code always visible on pending cards — copyable gold block ✅
-42. member\_confirmed gate — admin only sees submissions member has confirmed ✅
+42. member_confirmed gate — admin only sees submissions member has confirmed ✅
 43. Rejection reason — dropdown of 7 preset reasons, Other triggers free text box, shown on failed card ✅
 44. Dashboard auto-refreshes platform statuses every 15 seconds ✅
 45. Admin auto-refreshes queue every 30 seconds ✅
@@ -955,70 +949,32 @@ Step 16 — COMPLETE ✅
 53. api/domain-verify.js ✅ — DNS TXT record auto-check for Website/Domain platform verification
 54. dashboard.html updated — Website/Domain platform shows DNS instructions and Check my DNS button ✅
 55. api/delete-platform.js ✅
-56. members table — created in Supabase — 12 columns — 3 RLS policies — Data API enabled ✅
+56. members table — created in Supabase — full schema including bio, location, contact_link, avatar_url, profile_theme — 3 RLS policies — Data API enabled ✅
 57. profile.html — LIVE at realverified.co.uk/RL-000001 ✅
-58. vercel.json — rewrite rule added for /RL-:id routing ✅
-59. Platform URL helper text — shows correct URL format for each platform underneath Profile URL input field — updates dynamically ✅
-60. Admin rejection reason dropdown — 7 preset reasons — Other triggers free text box — combined value saved to Supabase ✅
-61. Profile picture upload — avatars bucket created in Supabase storage — RLS policies set — members upload photo from dashboard — circular avatar displays on dashboard and public profile — initials placeholder if no photo ✅
-62. Supabase grants applied to all three tables — "Waitlist", platform\_verifications, members ✅ (May 2026 — ahead of October 2026 enforcement)
+58. vercel.json — rewrite rules added for /RL-:id and /profile/RL-:id routing ✅
+59. Platform URL helper text — shows correct URL format for each platform — updates dynamically ✅
+60. Admin rejection reason dropdown — 7 preset reasons — Other triggers free text box ✅
+61. Profile picture upload — avatars bucket in Supabase storage — RLS policies set — circular avatar on dashboard and public profile — initials placeholder if no photo ✅
+62. Supabase grants applied to all three tables ✅ (May 2026 — ahead of October 2026 enforcement)
 63. Landing page copy fixed — /yourname changed to RL-000001 throughout ✅
-64. Landing page search description fixed — no longer implies a homepage search bar exists ✅
-65. Real working search bar added to landing page mid-section — queries Supabase members table live ✅
-66. Magnifying glass search icon added to landing page nav bar — expands on click, dropdown results ✅
-67. Duplicate Stripe privacy notice removed from dashboard — single clean notice kept ✅
-68. Payment flow wired — after email confirmation → Stripe payment page → webhook creates members row → REAL ID assigned ✅
-69. api/stripe-webhook.js updated — checkout.session.completed handler added — creates members row, assigns REAL ID, sets tier ✅
-70. Live Stripe webhook created — REAL Identity Webhook — Active — listening to checkout.session.completed and identity.verification\_session.verified ✅
-71. STRIPE\_WEBHOOK\_SECRET updated in Vercel with new live signing secret — Vercel redeployed ✅
-72. package.json — @supabase/supabase-js and resend dependencies added — previously missing, caused 500 errors ✅
-73. api/email-verify.js — fully rewritten — uses Resend to send branded confirmation email — generates secure 32-byte token — stores expiry in notes field — sends from info@realverified.co.uk ✅
-74. Email verification modal flow rebuilt — step B now sends email directly, skipping step C entirely — no bio code shown for email platform — correct button label "Send confirmation email" on step B ✅
-75. Email confirmation modal copy fixed — code block hidden for email platform — bio instructions hidden for email platform — "Check your inbox" title shown on success step ✅
-76. Premium email template built — navy background, REAL shield logo hosted at realverified.co.uk/shield-email.svg, gold divider, white card, gold label, Cormorant Garamond serif heading, gold CTA button, navy footer ✅
-77. shield-email.svg — created and hosted at realverified.co.uk/shield-email.svg — used in email templates ✅
-78. email-confirmed.html updated — shield SVG added above REAL wordmark ✅
-79. REAL folder cleaned — loose duplicate HTML files deleted from parent REAL folder — folder now contains only REAL-landing-page/, START-HERE_17.md, and REAL-Accounts-and-Tools_1.pdf ✅
-80. api/stripe-webhook.js — line\_items expand call wrapped in its own try/catch — if retrieve fails (e.g. £0 session, key mismatch) defaults to 'founding' tier and continues to create members row regardless ✅
-81. dashboard.html — loadMemberData() function added — fetches real\_id from members table on auth and displays it in identity card (RL-000001 etc) — falls back to RL-PENDING if no row yet ✅
-82. Stripe payment link after-payment redirect fixed — redirects directly to https://realverified.co.uk/dashboard.html — no broken confirmation page ✅
-83. FOUNDER coupon created in Stripe live account — 100% off forever — promotion code: FOUNDER — for founder use only ✅
-84. Stripe Founding Member payment link — Allow promotion codes enabled ✅
-85. Stripe Identity activated on live account ✅
-86. Government ID verified on live account — RL-000001 fully verified ✅
-87. REAL Score system built — calculates live from Supabase — displays on dashboard and public profile ✅
-88. Display name field added to dashboard — saves to members table — button shows Save/Update correctly ✅
-89. Public profile page fully working — loads as soon as real_id exists ✅
-90. Platform verifications display on public profile — RLS policy added for anon reads of verified platforms ✅
-91. Admin profile link URL fix — always prepends https:// ✅
-92. Supabase anon key fixed in profile.html — was using mismatched key causing 401 errors ✅
-93. id_verified now read from members table not user metadata — dashboard and profile both updated ✅
-94. REAL shield nav logo fixed on profile.html ✅
-95. Profile picture mirrors automatically from dashboard to public profile ✅
-96. "Complete the steps below to activate your REAL ID" message hidden when REAL ID is active ✅
-97. Founding Member badge styled in gold on public profile ✅
-98. Platform rows upgraded with branded coloured SVG icons and gold left border across dashboard, profile and admin pages ✅
-99. Public profile redesigned to two-column layout — avatar left, all info right ✅
-100. REAL Score removed from public profile — stays on dashboard only — decision made: score measures commitment to REAL not personal trustworthiness ✅
-101. Profile picture crop tool added to dashboard — mobile and desktop ✅
-102. REAL Score badge moved to sit inline with REAL ID ACTIVE badge on dashboard ✅
-103. Hover tooltip added to REAL Score badge explaining what the score means ✅
-104. Public profile mobile layout fully fixed — nav search bar drops to full width, badges wrap correctly, platform dates stack below handle, tick stays right ✅
-105. Facebook placeholder corrected to "Your name or page name" ✅
-106. LinkedIn placeholder corrected to "your-profile-slug" ✅
-107. Email dashboard card fixed — now shows correct inbox instructions with spam folder tip, no code box ✅
-108. Website dashboard card fixed — now shows correct DNS instructions with "How to do this →" link ✅
-109. Website modal fixed — JavaScript error resolved, now shows correct instructions with guide link ✅
-110. dns-guide.html built and live at realverified.co.uk/dns-guide.html — plain English step by step domain verification guide with registrar tabs for Namecheap, GoDaddy, Squarespace and Other ✅
-111. Email verification code removed from email card — not needed for email flow ✅
-112. Facebook and LinkedIn handle format placeholders fixed — Facebook shows 'Your name or page name', LinkedIn shows 'your-profile-slug' ✅
-113. Website/Domain verification instructions improved — plain English step by step guide built as dns-guide.html — linked from dashboard card ✅
-114. Admin reject and auto-refresh confirmed working after dropdown update ✅
-115. api/email-verify.js fixed — converted from ES module import syntax to CommonJS require syntax — email sending not yet confirmed working pending Resend test ✅
-116. Suggest a platform card added to landing page platforms grid — mailto:info@realverified.co.uk?subject=Platform%20suggestion — fills empty 9th cell ✅
-117. Instagram icon on landing page updated to proper gradient to match brand ✅
+64. Landing page search description fixed ✅
+65. Real working search bar added to landing page mid-section ✅
+66. Magnifying glass search icon added to landing page nav bar ✅
+67. Duplicate Stripe privacy notice removed from dashboard ✅
+68. Payment flow wired — after email confirmation → Stripe → webhook creates members row → REAL ID assigned ✅
+69. api/stripe-webhook.js updated — checkout.session.completed handler ✅
+70. Live Stripe webhook created — Active — listening to correct events ✅
+71. STRIPE_WEBHOOK_SECRET updated in Vercel — Vercel redeployed ✅
+72. Identity card elevated — gold top border, 38px name, 26px RL number, 110px avatar, premium feel ✅
+73. Gold public profile link line below identity card — shows realverified.co.uk/RL-000001 — hidden until real_id loads ✅
+74. Your Profile section collapsed to compact row with Edit profile → modal trigger ✅
+75. Profile editor modal built — display name, bio (160 char counter), location, how to contact me, navy/white theme picker, avatar upload — all saving to members table ✅
+76. Public profile shows bio, location, how to contact me, theme applied, date only on verified since ✅
+77. View my public profile button fixed — routes to /RL-000001 — hidden if no real_id ✅
+78. Contact field changed from URL to free text "How to contact me" ✅
+79. Dashboard section order correct — Identity card, Your Profile, Gov ID, Platforms, Subscription ✅
 
-\---
+---
 
 ## FUTURE BUILDS — AGREED
 
@@ -1026,12 +982,11 @@ Step 16 — COMPLETE ✅
 * **Rebrand flow** — member can update handle and display name across platforms — full history preserved in trust timeline — old and new documented with timestamps — position as a feature not a fix
 * **Cancellation flow** — cancel option in manage subscription section — explicit warning that REAL ID retires permanently and can never be reclaimed — profile shows as inactive — badge stops working — GDPR erasure option separate from cancellation
 * **Help page** — step by step guide showing members how to build their dashboard and how each completed step reflects on their public profile
-* **Profile theme toggle** — navy dark or navy/white hybrid — selectable from member dashboard
+* **Profile theme toggle** — navy dark or white — BUILT ✅ — selectable from Edit Profile modal on dashboard
 * **/yourname redirect** — username-based URLs redirect to RL-number profile — both work — future build when ready
 * **Landing page search bar** — already built mid-page and in nav — future enhancement: add to all pages
-* **Dashboard flow redesign** — public profile is the north star — payment confirmed → REAL ID assigned → public profile live instantly → member fills it in and watches it update in real time
 
-\---
+---
 
 ## FUTURE BUILDS — WHEN REVENUE SUPPORTS IT
 
@@ -1050,21 +1005,7 @@ Step 16 — COMPLETE ✅
 * Set up proper accounting software for REAL
 * Update Stripe to add VAT when revenue hits £90,000/year threshold
 
-\---
-
-## MARKETING AND GROWTH — WHEN TO START
-
-Do not build a marketing strategy until member 100. Before that, focus entirely on personal outreach to people who have experienced impersonation.
-
-First 10 members come from personal outreach only — people you know or follow who fit: had fake accounts, run an online business, are creators of any size, sell services online, have had their content or identity copied.
-
-You cannot advertise a trust product without trust. Trust comes from real members with real stories. The first members and their verified profiles ARE the first advertisement.
-
-The DM template is already written. The outreach strategy is already planned. Execute that first. Marketing strategy is a session for when the first 10 members are signed up.
-
-Olivia — two messages sent, no reply. Move on. Leave the door open. Do not send a third message.
-
-\---
+---
 
 ## FOUNDING MEMBER TARGETS
 
@@ -1072,15 +1013,15 @@ Olivia — two messages sent, no reply. Move on. Leave the door open. Do not sen
 
 **Member 2 target — Olivia:** Runs Elevate Digital Academy. Earned £350,000+ in last 12 months. Has Skool community and WhatsApp group. Impersonation affecting her community directly — over 50 fake accounts on TikTok alone. Sadi bought her course on launch day in October — completed it — waiting on CPD certificate. DM written and ready to send. Strategy: engage genuinely with last 2-3 posts first then send DM. Lead with income protection angle — at £350k/year, £15/month is nothing compared to the cost of one impersonation incident.
 
-\---
+---
 
 ## OUTREACH DM TEMPLATE
 
-"Hey \[Name] 👋
+"Hey [Name] 👋
 
-I've been following you for \[X time] and \[one specific genuine thing about their content or what you learned from them].
+I've been following you for [X time] and [one specific genuine thing about their content or what you learned from them].
 
-I'm actually reaching out because of something I noticed — \[specific thing relevant to them — fake accounts, impersonation, lost sales from fakes].
+I'm actually reaching out because of something I noticed — [specific thing relevant to them — fake accounts, impersonation, lost sales from fakes].
 
 So I built something about it.
 
@@ -1094,11 +1035,11 @@ You were first on my list.
 
 No pressure at all — but here's the page if you want to take a look.
 
-\[link]
+[link]
 
-\[Your name]"
+[Your name]"
 
-\---
+---
 
 ## LAUNCH STRATEGY
 
@@ -1107,7 +1048,7 @@ Phase 2 — Warm outreach: 20 creators and business owners who have experienced 
 Phase 3 — Founder post: One honest post telling the story of why REAL exists
 Phase 4 — PR: Pitch to tech journalists and creator economy newsletters in month 2
 
-\---
+---
 
 ## ALL ACCOUNTS — HOW TO LOG IN
 
@@ -1124,32 +1065,23 @@ Phase 4 — PR: Pitch to tech journalists and creator economy newsletters in mon
 
 All passwords and API keys in physical notebook.
 
-\---
+---
 
 ## API KEYS — LOCATION
 
 All API keys are written in physical notebook. NEVER put in code directly — always use environment variables.
 
-* Stripe Publishable Key (TEST) — pk\_test\_...
-* Stripe Secret Key (TEST) — sk\_test\_...
-* Stripe Publishable Key (LIVE) — pk\_live\_...
-* Stripe Secret Key (LIVE) — sk\_live\_...
-* Stripe Webhook Signing Secret (LIVE) — whsec\_... — under "Webhook Secrets" — updated May 2026
+* Stripe Publishable Key (TEST) — pk_test_...
+* Stripe Secret Key (TEST) — sk_test_...
+* Stripe Publishable Key (LIVE) — pk_live_...
+* Stripe Secret Key (LIVE) — sk_live_...
+* Stripe Webhook Signing Secret (LIVE) — whsec_... — under "Webhook Secrets" — updated May 2026
 * YouTube Data API Key — labelled "REAL YouTube API" in notebook
-* Resend API Key — NEW KEY created 22 May 2026 — old key deleted — update notebook — re\_...
+* Resend API Key — labelled "REAL Resend API" in notebook — re_...
 * Resend DNS records — DKIM value written in notebook ✅
 * Stripe Founding Member Payment Link (LIVE) — https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00
 
-\---
-
-## VERCEL DEPLOYMENT NOTE
-
-Vercel does not always auto-deploy when Claude Code pushes to GitHub. If changes are not live within 2 minutes of a push, use this fix in Claude Code:
-git commit --allow-empty -m "Trigger Vercel redeploy" and push to main
-This forces GitHub to fire the webhook and Vercel picks up all pending commits.
-The Windows path to the project is: C:\Users\Sadi\OneDrive\Documents\REAL\REAL-landing-page
-
-\---
+---
 
 ## COSTS SO FAR
 
@@ -1159,7 +1091,7 @@ The Windows path to the project is: C:\Users\Sadi\OneDrive\Documents\REAL\REAL-l
 * Everything else — free tier
 * No other costs until revenue begins
 
-\---
+---
 
 ## THE MARKET (for context)
 
@@ -1173,9 +1105,8 @@ The Windows path to the project is: C:\Users\Sadi\OneDrive\Documents\REAL\REAL-l
 * X Premium costs £9.68–£34.32/month — X only
 * REAL costs £15/month founding or £25/month standard — every platform simultaneously — cheaper than two Meta platforms and infinitely more powerful
 
-\---
+---
 
 ## THE FOUNDER STATEMENT
 
 "I watched real people — people trying to change their lives — fight the same battle every single day. Fake accounts. Impersonators. Scammers wearing their face. The exhausting repetition of 'this is my only account' and 'I will never DM you first.' The same technology that helps people build genuine businesses helps bad actors build perfect fakes. There had to be a single source of truth. One place. One verified identity. Every platform confirmed. So anyone can check for themselves in seconds. I just wanted a little bit of honesty in a dishonest world. That's REAL."
-
