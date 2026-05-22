@@ -78,6 +78,7 @@
   /* ─── IDENTITY CARD ─── */
   .identity-card {
     background: var(--navy);
+    border-top: 3px solid var(--gold);
     padding: 0;
     margin-bottom: 24px;
     position: relative;
@@ -100,13 +101,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 28px;
+    padding: 40px 36px;
     border-right: 1px solid rgba(255,255,255,0.08);
     flex-shrink: 0;
   }
   .identity-info-panel {
     flex: 1;
-    padding: 28px 32px;
+    padding: 40px 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -125,7 +126,7 @@
   .avatar-overlay-text { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.12em; text-transform: uppercase; color: white; text-align: center; line-height: 1.5; }
   .identity-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 600;
     color: white;
     line-height: 1.1;
@@ -139,7 +140,7 @@
   }
   .real-id-badge {
     font-family: 'DM Mono', monospace;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 500;
     color: var(--gold);
     letter-spacing: 0.06em;
@@ -540,6 +541,7 @@
     transition: color 0.2s;
   }
   .modal-close:hover { color: var(--navy); }
+  #profileModalAvatarWrap:hover #profileModalAvatarOverlay { opacity: 1; }
   .modal-body { padding: 28px; }
   .modal-step { display: none; }
   .modal-step.active { display: block; }
@@ -704,6 +706,9 @@
     </div>
   </div>
 
+  <!-- PROFILE LIVE LINK -->
+  <p id="profileLiveLink" style="display:none; font-family:'DM Mono',monospace; font-size:11px; color:var(--gold); text-align:center; letter-spacing:0.04em; margin-bottom:12px; margin-top:-12px;"><a id="profileLiveLinkAnchor" href="#" target="_blank" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">realverified.co.uk/<span id="profileLiveLinkId"></span></a></p>
+
   <!-- YOUR PROFILE -->
   <div class="section-card" id="profileCard">
     <div class="section-header">
@@ -717,33 +722,16 @@
       <a id="viewProfileBtn" href="#" target="_blank" class="btn-secondary" style="font-size:12px; padding:9px 18px; text-decoration:none; display:none;">View my public profile →</a>
     </div>
     <div class="section-body">
-      <label class="profile-field-label" for="displayNameInput">Display Name</label>
-      <div class="profile-field-desc">Your name or brand name as shown on your profile.</div>
-      <div style="margin-bottom:8px;">
-        <input type="text" id="displayNameInput" class="profile-field-input" placeholder="Your name or brand name" maxlength="80">
-      </div>
-
-      <label class="profile-field-label" for="bioInput">Bio</label>
-      <div class="profile-field-desc">Tell people who you are and what you do. <span id="bioCharCount" style="float:right; color:var(--gray-light);">0 / 160</span></div>
-      <div style="margin-bottom:8px;">
-        <textarea id="bioInput" class="profile-field-input" placeholder="Tell people who you are and what you do" maxlength="160" rows="3"></textarea>
-      </div>
-
-      <label class="profile-field-label" for="locationInput">Location</label>
-      <div class="profile-field-desc">Shown as context on your profile. Optional.</div>
-      <div style="margin-bottom:8px;">
-        <input type="text" id="locationInput" class="profile-field-input" placeholder="City, Country (optional)" maxlength="80">
-      </div>
-
-      <label class="profile-field-label" for="contactLinkInput">Contact Link</label>
-      <div class="profile-field-desc">A website or link where people can reach you. Optional.</div>
-      <div style="margin-bottom:10px;">
-        <input type="text" id="contactLinkInput" class="profile-field-input" placeholder="https://yourwebsite.com" maxlength="200">
-      </div>
-
-      <div class="profile-field-row">
-        <button class="btn-primary" id="saveProfileBtn" onclick="saveProfile()">Save profile</button>
-        <span class="save-success" id="saveProfileSuccess">Saved ✓</span>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:40px; height:40px; border-radius:50%; overflow:hidden; background:rgba(15,32,68,0.08); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <img id="profileRowImg" alt="" style="width:100%; height:100%; object-fit:cover; display:none;">
+          <span id="profileRowInitials" style="font-family:'DM Mono',monospace; font-size:13px; color:var(--navy); line-height:1;">—</span>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div id="profileRowName" style="font-weight:600; font-size:14px; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</div>
+          <div id="profileRowBio" style="font-size:12px; color:var(--gray-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;"></div>
+        </div>
+        <button class="btn-secondary" onclick="openProfileModal()" style="font-size:12px; padding:8px 16px; white-space:nowrap; flex-shrink:0;">Edit profile →</button>
       </div>
     </div>
   </div>
@@ -947,6 +935,76 @@
   </div>
 </div>
 
+<!-- PROFILE EDITOR MODAL -->
+<div class="modal-overlay" id="profileModalOverlay" onclick="closeProfileModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Profile</div>
+      <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Avatar -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <div id="profileModalAvatarWrap" onclick="document.getElementById('profileModalAvatarInput').click()" style="position:relative; width:90px; height:90px; border-radius:50%; overflow:hidden; background:rgba(15,32,68,0.08); border:2px solid var(--border); display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">
+          <img id="profileModalAvatarImg" alt="" style="width:100%; height:100%; object-fit:cover; display:none;">
+          <span id="profileModalAvatarInitials" style="font-family:'DM Mono',monospace; font-size:22px; color:var(--navy); line-height:1;">—</span>
+          <div id="profileModalAvatarOverlay" style="position:absolute; inset:0; border-radius:50%; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s;">
+            <span style="font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.12em; text-transform:uppercase; color:white; text-align:center; line-height:1.5;">Change<br>photo</span>
+          </div>
+        </div>
+        <input type="file" id="profileModalAvatarInput" accept="image/*" style="display:none;" onchange="handleProfileModalAvatarFile(this)">
+      </div>
+
+      <!-- Fields -->
+      <div class="modal-field">
+        <label class="modal-label">Display Name</label>
+        <input type="text" class="modal-input" id="pmDisplayName" placeholder="Your name or brand name" maxlength="80">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Bio <span id="pmBioCount" style="float:right; font-size:10px; color:var(--gray-light); font-weight:400; letter-spacing:0;">0 / 160</span></label>
+        <textarea class="modal-input" id="pmBio" placeholder="Tell people who you are and what you do" maxlength="160" rows="3" style="resize:vertical;" oninput="document.getElementById('pmBioCount').textContent = this.value.length + ' / 160'"></textarea>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Location</label>
+        <input type="text" class="modal-input" id="pmLocation" placeholder="City, Country (optional)" maxlength="80">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Contact Link</label>
+        <input type="text" class="modal-input" id="pmContactLink" placeholder="https://yourwebsite.com" maxlength="200">
+      </div>
+
+      <!-- Profile Theme -->
+      <div class="modal-field">
+        <label class="modal-label">Profile Theme</label>
+        <div style="display:flex; gap:12px;">
+          <div id="themeSwatchNavy" onclick="selectProfileTheme('navy')" style="flex:1; padding:16px 12px; background:var(--navy); border:2px solid transparent; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; transition:border-color 0.15s;">
+            <svg width="22" height="26" viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
+              <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
+            </svg>
+            <span style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:white; text-transform:uppercase;">Navy</span>
+          </div>
+          <div id="themeSwatchWhite" onclick="selectProfileTheme('white')" style="flex:1; padding:16px 12px; background:white; border:2px solid var(--border); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; transition:border-color 0.15s;">
+            <svg width="22" height="26" viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#0F2044" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
+              <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
+            </svg>
+            <span style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--navy); text-transform:uppercase;">White</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="profileModalMsg" class="msg"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeProfileModal()">Cancel</button>
+        <button class="btn-primary" id="saveProfileModalBtn" onclick="saveProfileModal()">Save profile</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
@@ -982,6 +1040,10 @@
   let idVerified = false;
   let memberTier = null;
   let memberVerifiedSince = null;
+  let cropContext = 'identity';
+  let currentProfileTheme = 'navy';
+  let profileData = { display_name: '', bio: '', location: '', contact_link: '', profile_theme: 'navy' };
+  let profileModalNewAvatarUrl = null;
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -994,18 +1056,36 @@
   }
 
   function loadAvatar(userId, bust) {
+    const url = `${SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${userId}${bust ? '?t=' + Date.now() : ''}`;
     const img = document.getElementById('avatarImg');
     const ini = document.getElementById('avatarInitials');
-    const url = `${SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${userId}${bust ? '?t=' + Date.now() : ''}`;
     img.onload = () => { img.style.display = 'block'; ini.style.display = 'none'; };
     img.onerror = () => { img.style.display = 'none'; ini.style.display = ''; };
     img.src = url;
+    const rowImg = document.getElementById('profileRowImg');
+    const rowIni = document.getElementById('profileRowInitials');
+    if (rowImg) {
+      rowImg.onload = () => { rowImg.style.display = 'block'; rowIni.style.display = 'none'; };
+      rowImg.onerror = () => { rowImg.style.display = 'none'; rowIni.style.display = ''; };
+      rowImg.src = url;
+    }
   }
 
   function handleAvatarFile(input) {
     const file = input.files[0];
     if (!file) return;
     input.value = '';
+    cropContext = 'identity';
+    const reader = new FileReader();
+    reader.onload = e => showCropModal(e.target.result);
+    reader.readAsDataURL(file);
+  }
+
+  function handleProfileModalAvatarFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = '';
+    cropContext = 'profileModal';
     const reader = new FileReader();
     reader.onload = e => showCropModal(e.target.result);
     reader.readAsDataURL(file);
@@ -1163,7 +1243,17 @@
         throw new Error(err.message || 'Upload failed');
       }
       loadAvatar(currentUser.id, true);
+      if (cropContext === 'profileModal') {
+        profileModalNewAvatarUrl = `${SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${currentUser.id}`;
+        const mImg = document.getElementById('profileModalAvatarImg');
+        const mIni = document.getElementById('profileModalAvatarInitials');
+        mImg.onload = () => { mImg.style.display = 'block'; mIni.style.display = 'none'; };
+        mImg.onerror = () => { mImg.style.display = 'none'; mIni.style.display = ''; };
+        mImg.src = profileModalNewAvatarUrl + '?t=' + Date.now();
+      }
+      cropContext = 'identity';
     } catch (e) {
+      cropContext = 'identity';
       console.error('Avatar upload error:', e);
       alert('Failed to upload photo: ' + e.message);
     } finally {
@@ -1230,6 +1320,8 @@
     const nameDisplay = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Member';
     document.getElementById('memberName').textContent = nameDisplay;
     document.getElementById('avatarInitials').textContent = getInitials(nameDisplay);
+    document.getElementById('profileRowName').textContent = nameDisplay;
+    document.getElementById('profileRowInitials').textContent = getInitials(nameDisplay);
     if (!preview) loadAvatar(user.id);
 
     // Set member since
@@ -1317,28 +1409,58 @@
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link,profile_theme&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
       if (r.ok && Array.isArray(data) && data.length > 0) {
-        if (data[0].real_id) document.getElementById('realId').textContent = data[0].real_id;
-        memberTier = data[0].membership_tier || null;
-        memberVerifiedSince = data[0].verified_since || null;
-        if (data[0].display_name) {
-          document.getElementById('displayNameInput').value = data[0].display_name;
-          document.getElementById('memberName').textContent = data[0].display_name;
-          document.getElementById('avatarInitials').textContent = getInitials(data[0].display_name);
+        const d = data[0];
+        if (d.real_id) document.getElementById('realId').textContent = d.real_id;
+        memberTier = d.membership_tier || null;
+        memberVerifiedSince = d.verified_since || null;
+
+        // Store in profileData
+        profileData.display_name = d.display_name || '';
+        profileData.bio = d.bio || '';
+        profileData.location = d.location || '';
+        profileData.contact_link = d.contact_link || '';
+        profileData.profile_theme = d.profile_theme || 'navy';
+        currentProfileTheme = profileData.profile_theme;
+
+        // Update identity card name + initials
+        if (d.display_name) {
+          document.getElementById('memberName').textContent = d.display_name;
+          document.getElementById('avatarInitials').textContent = getInitials(d.display_name);
         }
-        if (data[0].bio) { document.getElementById('bioInput').value = data[0].bio; updateBioCounter(); }
-        if (data[0].location) document.getElementById('locationInput').value = data[0].location;
-        if (data[0].contact_link) document.getElementById('contactLinkInput').value = data[0].contact_link;
-        if (data[0].real_id) {
-          const vpBtn = document.getElementById('viewProfileBtn');
-          vpBtn.href = '/profile/' + data[0].real_id;
+
+        // Update compact profile row
+        document.getElementById('profileRowName').textContent = d.display_name || '—';
+        document.getElementById('profileRowInitials').textContent = getInitials(d.display_name || '');
+        const bio = d.bio || '';
+        document.getElementById('profileRowBio').textContent = bio ? bio.slice(0, 40) + (bio.length > 40 ? '…' : '') : '';
+
+        // Profile live link
+        const realId = d.real_id;
+        const liveLink = document.getElementById('profileLiveLink');
+        if (realId && realId !== 'RL-PENDING') {
+          document.getElementById('profileLiveLinkId').textContent = realId;
+          document.getElementById('profileLiveLinkAnchor').href = '/profile/' + realId;
+          liveLink.style.display = '';
+        } else {
+          liveLink.style.display = 'none';
+        }
+
+        // View my public profile button
+        const vpBtn = document.getElementById('viewProfileBtn');
+        if (realId && realId !== 'RL-PENDING') {
+          vpBtn.href = '/profile/' + realId;
+          vpBtn.target = '_blank';
           vpBtn.style.display = '';
+        } else {
+          vpBtn.style.display = 'none';
         }
-        if (data[0].id_verified === true) {
+
+        if (d.id_verified === true) {
           idVerified = true;
           updatePlatformSectionLock();
           document.getElementById('statusMeta').style.display = 'none';
@@ -1359,16 +1481,70 @@
     }
   }
 
-  // ─── SAVE PROFILE ───
-  async function saveProfile() {
-    const displayName = document.getElementById('displayNameInput').value.trim();
-    const bio = document.getElementById('bioInput').value.trim();
-    const location = document.getElementById('locationInput').value.trim();
-    const contactLink = document.getElementById('contactLinkInput').value.trim();
-    if (!displayName) return;
-    const btn = document.getElementById('saveProfileBtn');
+  // ─── PROFILE MODAL ───
+  function openProfileModal() {
+    document.getElementById('pmDisplayName').value = profileData.display_name || '';
+    document.getElementById('pmBio').value = profileData.bio || '';
+    document.getElementById('pmLocation').value = profileData.location || '';
+    document.getElementById('pmContactLink').value = profileData.contact_link || '';
+    document.getElementById('pmBioCount').textContent = (profileData.bio || '').length + ' / 160';
+    const mainImg = document.getElementById('avatarImg');
+    const mImg = document.getElementById('profileModalAvatarImg');
+    const mIni = document.getElementById('profileModalAvatarInitials');
+    if (mainImg.style.display !== 'none' && mainImg.src) {
+      mImg.src = mainImg.src;
+      mImg.style.display = 'block';
+      mIni.style.display = 'none';
+    } else {
+      mImg.style.display = 'none';
+      mIni.style.display = '';
+      mIni.textContent = document.getElementById('avatarInitials').textContent;
+    }
+    profileModalNewAvatarUrl = null;
+    selectProfileTheme(currentProfileTheme);
+    document.getElementById('profileModalMsg').className = 'msg';
+    document.getElementById('profileModalOverlay').classList.add('visible');
+  }
+
+  function closeProfileModal() {
+    document.getElementById('profileModalOverlay').classList.remove('visible');
+  }
+
+  function closeProfileModalOnOverlay(event) {
+    if (event.target === document.getElementById('profileModalOverlay')) closeProfileModal();
+  }
+
+  function selectProfileTheme(theme) {
+    currentProfileTheme = theme;
+    const navy = document.getElementById('themeSwatchNavy');
+    const white = document.getElementById('themeSwatchWhite');
+    navy.style.borderColor = theme === 'navy' ? 'var(--gold)' : 'transparent';
+    white.style.borderColor = theme === 'white' ? 'var(--gold)' : 'var(--border)';
+  }
+
+  async function saveProfileModal() {
+    const displayName = document.getElementById('pmDisplayName').value.trim();
+    const bio = document.getElementById('pmBio').value.trim();
+    const location = document.getElementById('pmLocation').value.trim();
+    const contactLink = document.getElementById('pmContactLink').value.trim();
+    const msgEl = document.getElementById('profileModalMsg');
+    if (!displayName) {
+      msgEl.textContent = 'Display name is required.';
+      msgEl.className = 'msg error visible';
+      return;
+    }
+    const btn = document.getElementById('saveProfileModalBtn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
+    msgEl.className = 'msg';
+    const body = {
+      display_name: displayName,
+      bio: bio || null,
+      location: location || null,
+      contact_link: contactLink || null,
+      profile_theme: currentProfileTheme
+    };
+    if (profileModalNewAvatarUrl) body.avatar_url = profileModalNewAvatarUrl;
     try {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${currentUser.id}`, {
         method: 'PATCH',
@@ -1378,31 +1554,29 @@
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
-        body: JSON.stringify({
-          display_name: displayName,
-          bio: bio || null,
-          location: location || null,
-          contact_link: contactLink || null
-        })
+        body: JSON.stringify(body)
       });
       if (!r.ok) throw new Error('Save failed');
+      profileData.display_name = displayName;
+      profileData.bio = bio;
+      profileData.location = location;
+      profileData.contact_link = contactLink;
+      profileData.profile_theme = currentProfileTheme;
       document.getElementById('memberName').textContent = displayName;
       document.getElementById('avatarInitials').textContent = getInitials(displayName);
-      btn.textContent = 'Saved ✓';
-      setTimeout(() => { btn.textContent = 'Save profile'; btn.disabled = false; }, 2500);
+      document.getElementById('profileRowName').textContent = displayName;
+      document.getElementById('profileRowInitials').textContent = getInitials(displayName);
+      document.getElementById('profileRowBio').textContent = bio ? bio.slice(0, 40) + (bio.length > 40 ? '…' : '') : '';
+      if (profileModalNewAvatarUrl) loadAvatar(currentUser.id, true);
+      closeProfileModal();
     } catch (e) {
-      console.error('saveProfile error:', e);
-      alert('Failed to save profile. Please try again.');
+      console.error('saveProfileModal error:', e);
+      msgEl.textContent = 'Failed to save. Please try again.';
+      msgEl.className = 'msg error visible';
       btn.textContent = 'Save profile';
       btn.disabled = false;
     }
   }
-
-  function updateBioCounter() {
-    const val = document.getElementById('bioInput').value;
-    document.getElementById('bioCharCount').textContent = val.length + ' / 160';
-  }
-  document.getElementById('bioInput').addEventListener('input', updateBioCounter);
 
   // ─── LOAD PLATFORMS ───
   async function loadPlatforms(token) {
