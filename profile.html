@@ -726,7 +726,7 @@
 
     const { data: platforms } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at, is_backup, compromise_status, updated_at')
+      .select('platform, handle, verified_at, is_backup, compromise_status')
       .eq('user_id', member.user_id)
       .eq('status', 'verified')
       .order('verified_at', { ascending: true });

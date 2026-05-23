@@ -1738,7 +1738,9 @@
           </div>`;
       }
 
-      const hasAnyNotice = hasNotice || isCompromised || isRecovered;
+      // All verified rows get a notice section so the report/status strip wraps below
+      // the main items, keeping the flex row uncluttered and the handle readable.
+      const hasAnyNotice = hasNotice || safeStatus === 'verified';
       return `
         <div class="platform-row${hasAnyNotice ? ' has-notice' : ''}" ${rowAttrs}>
           <div class="platform-status-dot ${dotClass}"></div>
@@ -1749,10 +1751,11 @@
           </div>
           ${isBackup ? '<div class="platform-tag backup">Backup</div>' : ''}
           <div class="platform-tag ${safeStatus}">${safeStatus}</div>
-          ${safeStatus === 'verified' && !isCompromised && !isRecovered
-            ? `<button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">⚠ Report</button>`
-            : ''}
           ${notice}
+          ${safeStatus === 'verified' && !isCompromised && !isRecovered ? `
+          <div class="platform-notice" style="border-top-color:rgba(10,25,60,0.07); flex-direction:row; padding-top:7px; margin-top:0; gap:0;">
+            <button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">⚠ Report Compromise</button>
+          </div>` : ''}
           ${isCompromised ? `
           <div class="platform-notice" style="border-top-color:rgba(192,57,43,0.15); flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <span class="compromise-notice-label">⚠ Reported as ${escapeHtml(cs)}</span>
