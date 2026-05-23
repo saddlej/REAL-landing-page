@@ -616,6 +616,75 @@
   }
   .backup-checkbox-field.visible { display: block; }
 
+  /* ─── STEP 10 — IMPERSONATION REPORTS ─── */
+  .impersonation-list { display: flex; flex-direction: column; gap: 10px; }
+  .impersonation-item {
+    padding: 14px 16px;
+    background: rgba(10, 25, 60, 0.04);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+  }
+  .impersonation-item-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+  .impersonation-platform { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .impersonation-handle { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--error); }
+  .impersonation-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-light); margin-left: auto; }
+  .impersonation-notes { font-size: 12px; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .impersonation-empty { text-align: center; padding: 12px 0 4px; font-size: 13px; color: var(--gray-light); line-height: 1.7; }
+
+  /* ─── CASE FILE FULL-SCREEN MODAL ─── */
+  .case-file-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,32,68,0.85);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 2000;
+    padding: 24px;
+    overflow-y: auto;
+    backdrop-filter: blur(3px);
+  }
+  .case-file-overlay.visible { display: flex; }
+  .case-file-modal { background: white; width: 100%; max-width: 720px; }
+  .case-file-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+  .case-file-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--navy); }
+  .case-file-subtitle { font-size: 12px; color: var(--gray-light); margin-top: 4px; }
+  .case-file-body { padding: 32px 28px; }
+  .case-file-section { margin-bottom: 28px; }
+  .case-file-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .case-file-row { display: flex; gap: 16px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+  .case-file-label { color: var(--gray); width: 160px; flex-shrink: 0; }
+  .case-file-value { color: var(--navy); font-weight: 500; }
+  .case-file-fake-item {
+    padding: 12px 14px;
+    border-left: 3px solid var(--error);
+    background: rgba(192,57,43,0.04);
+    margin-bottom: 8px;
+  }
+  .case-file-fake-platform { font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 2px; }
+  .case-file-fake-handle { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--error); }
+  .case-file-fake-notes { font-size: 12px; color: var(--gray); margin-top: 4px; line-height: 1.5; }
+
   @media (max-width: 640px) {
     nav { padding: 0 20px; }
     .main { padding: 24px 16px 60px; }
@@ -793,6 +862,26 @@
         Add a platform
       </button>
       <p class="platform-lock-msg" id="platformLockMsg">Complete identity verification above before linking your platforms.</p>
+    </div>
+  </div>
+
+  <!-- STEP 3: IMPERSONATION REPORTS -->
+  <div class="section-card" id="step3Card">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="step-badge">3</div>
+        <div>
+          <div class="section-title">Impersonation Reports</div>
+          <div class="section-subtitle">Track fake accounts using your name or brand across platforms</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button class="btn-secondary" style="font-size:12px; padding:9px 18px;" onclick="openCaseFile()">View case file →</button>
+        <button class="btn-primary" style="font-size:13px; padding:10px 20px;" onclick="openReportFakeModal()">+ Report a fake account</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div id="impersonationList" class="impersonation-list"></div>
     </div>
   </div>
 
@@ -1050,6 +1139,70 @@
   </div>
 </div>
 
+<!-- REPORT FAKE ACCOUNT MODAL -->
+<div class="modal-overlay" id="reportFakeModalOverlay" onclick="closeReportFakeModalOnOverlay(event)">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">Report a Fake Account</div>
+      <button class="modal-close" onclick="closeReportFakeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6;">Log a fake or impersonating account. This creates a record you can share with platforms or legal contacts.</p>
+      <div class="modal-field">
+        <label class="modal-label">Platform</label>
+        <select class="modal-input" id="fakeReportPlatform" style="cursor:pointer; appearance:auto;">
+          <option value="">Select a platform…</option>
+          <option value="Instagram">Instagram</option>
+          <option value="TikTok">TikTok</option>
+          <option value="X / Twitter">X / Twitter</option>
+          <option value="Facebook">Facebook</option>
+          <option value="LinkedIn">LinkedIn</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Email">Email</option>
+          <option value="Website / Domain">Website / Domain</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Fake handle or username</label>
+        <input type="text" class="modal-input" id="fakeReportHandle" placeholder="@fakehandle or profile URL">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Date noticed</label>
+        <input type="date" class="modal-input" id="fakeReportDate">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Notes <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:10px; color:var(--gray-light);">(optional)</span></label>
+        <textarea class="modal-input" id="fakeReportNotes" rows="3" placeholder="Screenshots, context, links — anything that helps your case…" style="resize:vertical;"></textarea>
+      </div>
+      <div id="reportFakeMsg" class="msg"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeReportFakeModal()">Cancel</button>
+        <button class="btn-primary" id="reportFakeSubmitBtn" onclick="submitFakeReport()">Submit report →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASE FILE FULL-SCREEN MODAL -->
+<div class="case-file-overlay" id="caseFileOverlay" onclick="closeCaseFileOnOverlay(event)">
+  <div class="case-file-modal">
+    <div class="case-file-header">
+      <div>
+        <div class="case-file-title">REAL Identity Case File</div>
+        <div class="case-file-subtitle" id="caseFileSubtitle">Generated · realverified.co.uk</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+        <button class="btn-secondary" style="font-size:12px; padding:8px 16px;" onclick="selectAllCaseFile()">Select all</button>
+        <button class="btn-primary" id="caseFileCopyBtn" style="font-size:12px; padding:8px 16px;" onclick="copyAllCaseFile()">Copy all</button>
+        <button class="modal-close" onclick="closeCaseFile()" style="margin-left:4px;">✕</button>
+      </div>
+    </div>
+    <div class="case-file-body" id="caseFileBody">
+      <!-- Populated dynamically by openCaseFile() -->
+    </div>
+  </div>
+</div>
+
 <script>
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
@@ -1090,6 +1243,7 @@
   let profileData = { display_name: '', bio: '', location: '', contact_link: '', profile_theme: 'navy' };
   let profileModalNewAvatarUrl = null;
   let compromiseRowId = null;
+  let impersonationReports = [];
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -1413,6 +1567,7 @@
     } else {
       loadMemberData(token, user.id);
       loadPlatforms(token);
+      loadImpersonationReports(token);
       // Refresh platform statuses every 15 seconds
       setInterval(() => loadPlatforms(token), 15000);
       // Refresh immediately when the member returns to this tab
@@ -2365,9 +2520,273 @@
     }
   }
 
+  // ─── DATE HELPER ───
+  function formatDate(ts) {
+    if (!ts) return '—';
+    // For plain date strings (YYYY-MM-DD) avoid UTC midnight timezone drift
+    if (typeof ts === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ts)) {
+      const [y, m, d] = ts.split('-').map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  // ─── IMPERSONATION REPORTS ───
+  async function loadImpersonationReports(token) {
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/impersonation_reports?user_id=eq.${currentUser.id}&order=created_at.desc`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY } }
+      );
+      const data = await r.json();
+      if (!r.ok) {
+        console.error('loadImpersonationReports error:', data);
+        impersonationReports = [];
+      } else {
+        impersonationReports = Array.isArray(data) ? data : [];
+      }
+      renderImpersonationReports();
+    } catch (e) {
+      console.error('loadImpersonationReports exception:', e);
+      impersonationReports = [];
+      renderImpersonationReports();
+    }
+  }
+
+  function renderImpersonationReports() {
+    const list = document.getElementById('impersonationList');
+    if (!list) return;
+    if (!impersonationReports.length) {
+      list.innerHTML = `<div class="impersonation-empty"><p>No fake accounts reported yet.<br>If you spot someone impersonating you, use the button above to log it.</p></div>`;
+      return;
+    }
+    list.innerHTML = impersonationReports.map(rep => `
+      <div class="impersonation-item">
+        <div class="impersonation-item-header">
+          <span class="impersonation-platform">${escapeHtml(rep.platform)}</span>
+          <span class="impersonation-handle">${escapeHtml(rep.fake_handle)}</span>
+          <span class="impersonation-date">Noticed ${formatDate(rep.date_noticed)}</span>
+        </div>
+        ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function openReportFakeModal() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fakeReportDate').value = today;
+    document.getElementById('fakeReportPlatform').value = '';
+    document.getElementById('fakeReportHandle').value = '';
+    document.getElementById('fakeReportNotes').value = '';
+    const msg = document.getElementById('reportFakeMsg');
+    msg.className = 'msg'; msg.textContent = '';
+    const btn = document.getElementById('reportFakeSubmitBtn');
+    btn.disabled = false; btn.textContent = 'Submit report →';
+    document.getElementById('reportFakeModalOverlay').classList.add('visible');
+  }
+
+  function closeReportFakeModal() {
+    document.getElementById('reportFakeModalOverlay').classList.remove('visible');
+  }
+
+  function closeReportFakeModalOnOverlay(e) {
+    if (e.target === document.getElementById('reportFakeModalOverlay')) closeReportFakeModal();
+  }
+
+  async function submitFakeReport() {
+    const platform   = document.getElementById('fakeReportPlatform').value;
+    const fakeHandle = document.getElementById('fakeReportHandle').value.trim();
+    const dateNoticed = document.getElementById('fakeReportDate').value;
+    const notes      = document.getElementById('fakeReportNotes').value.trim();
+    const msg        = document.getElementById('reportFakeMsg');
+
+    if (!platform) {
+      msg.textContent = 'Please select a platform.';
+      msg.className = 'msg error visible';
+      return;
+    }
+    if (!fakeHandle) {
+      msg.textContent = 'Please enter the fake handle or URL.';
+      msg.className = 'msg error visible';
+      return;
+    }
+    if (!dateNoticed) {
+      msg.textContent = 'Please select the date you noticed the fake account.';
+      msg.className = 'msg error visible';
+      return;
+    }
+
+    const btn = document.getElementById('reportFakeSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    msg.className = 'msg';
+
+    try {
+      // Insert the report
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/impersonation_reports`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+          'apikey': SUPABASE_KEY,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          user_id: currentUser.id,
+          platform,
+          fake_handle: fakeHandle,
+          date_noticed: dateNoticed,
+          notes: notes || null
+        })
+      });
+      if (!r.ok) {
+        const errData = await r.json().catch(() => ({}));
+        throw new Error(errData.message || errData.hint || 'Failed to save report');
+      }
+
+      // Increment impersonation_count on members
+      try {
+        const mRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/members?user_id=eq.${currentUser.id}&select=impersonation_count&limit=1`,
+          { headers: { 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY } }
+        );
+        const mData = await mRes.json();
+        if (mRes.ok && Array.isArray(mData) && mData.length > 0) {
+          const newCount = (mData[0].impersonation_count || 0) + 1;
+          await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${currentUser.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+              'apikey': SUPABASE_KEY,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ impersonation_count: newCount })
+          });
+        }
+      } catch (e) {
+        console.warn('Failed to increment impersonation_count:', e);
+      }
+
+      closeReportFakeModal();
+      await loadImpersonationReports(accessToken);
+    } catch (e) {
+      console.error('submitFakeReport error:', e);
+      msg.textContent = 'Failed to save: ' + e.message;
+      msg.className = 'msg error visible';
+      btn.disabled = false; btn.textContent = 'Submit report →';
+    }
+  }
+
+  // ─── CASE FILE ───
+  function openCaseFile() {
+    const now = new Date();
+    const generatedStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('caseFileSubtitle').textContent =
+      `Generated on ${generatedStr} · realverified.co.uk`;
+
+    const realId     = document.getElementById('realId').textContent || '—';
+    const memberName = document.getElementById('memberName').textContent || '—';
+    const memberSince = memberVerifiedSince ? formatDate(memberVerifiedSince) : '—';
+    const govIdStatus = idVerified ? 'Confirmed ✓' : 'Not yet verified';
+    const tierLabel  = memberTier === 'founding' ? 'Founding Member'
+                     : memberTier ? (memberTier.charAt(0).toUpperCase() + memberTier.slice(1))
+                     : '—';
+
+    // Verified platforms
+    const verified = (userPlatforms || []).filter(p => p.status === 'verified');
+    const platformsHtml = verified.length
+      ? verified.map(p => `
+          <div class="case-file-row">
+            <span class="case-file-label">${escapeHtml(p.platform)}${p.is_backup ? ' <span style="font-weight:400;color:var(--gray-light);">(Backup)</span>' : ''}</span>
+            <span class="case-file-value">${escapeHtml(p.handle)} — verified ${formatDate(p.verified_at)}</span>
+          </div>`).join('')
+      : '<p style="font-size:13px; color:var(--gray-light); font-style:italic;">No platforms verified yet.</p>';
+
+    // Reported fake accounts
+    const fakeHtml = impersonationReports.length
+      ? impersonationReports.map(rep => `
+          <div class="case-file-fake-item">
+            <div class="case-file-fake-platform">${escapeHtml(rep.platform)}</div>
+            <div class="case-file-fake-handle">${escapeHtml(rep.fake_handle)}</div>
+            <div style="font-size:12px; color:var(--gray); margin-top:3px;">
+              Noticed: ${formatDate(rep.date_noticed)} &nbsp;·&nbsp; Reported: ${formatDate(rep.created_at)}
+            </div>
+            ${rep.notes ? `<div class="case-file-fake-notes">${escapeHtml(rep.notes)}</div>` : ''}
+          </div>`).join('')
+      : '<p style="font-size:13px; color:var(--gray-light); font-style:italic;">No fake accounts reported.</p>';
+
+    document.getElementById('caseFileBody').innerHTML = `
+      <div id="caseFileDocument">
+        <div class="case-file-section">
+          <div class="case-file-section-title">Identity</div>
+          <div class="case-file-row"><span class="case-file-label">REAL ID</span><span class="case-file-value">${escapeHtml(realId)}</span></div>
+          <div class="case-file-row"><span class="case-file-label">Name</span><span class="case-file-value">${escapeHtml(memberName)}</span></div>
+          <div class="case-file-row"><span class="case-file-label">Member since</span><span class="case-file-value">${escapeHtml(memberSince)}</span></div>
+          <div class="case-file-row"><span class="case-file-label">Membership tier</span><span class="case-file-value">${escapeHtml(tierLabel)}</span></div>
+          <div class="case-file-row"><span class="case-file-label">Government ID</span><span class="case-file-value">${govIdStatus}</span></div>
+        </div>
+
+        <div class="case-file-section">
+          <div class="case-file-section-title">Verified Platforms (${verified.length})</div>
+          ${platformsHtml}
+        </div>
+
+        <div class="case-file-section">
+          <div class="case-file-section-title">Reported Fake Accounts (${impersonationReports.length})</div>
+          ${fakeHtml}
+        </div>
+
+        <div class="case-file-section" style="margin-top:32px; padding-top:20px; border-top:1px solid var(--border);">
+          <p style="font-size:11px; color:var(--gray-light); line-height:1.8;">This document was generated from the REAL verified identity platform (realverified.co.uk). It confirms the verified identity and platform ownership of the above individual. This file is suitable for use in platform abuse reports, legal correspondence, or solicitor reference.</p>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('caseFileOverlay').classList.add('visible');
+  }
+
+  function closeCaseFile() {
+    document.getElementById('caseFileOverlay').classList.remove('visible');
+  }
+
+  function closeCaseFileOnOverlay(e) {
+    if (e.target === document.getElementById('caseFileOverlay')) closeCaseFile();
+  }
+
+  function selectAllCaseFile() {
+    const doc = document.getElementById('caseFileDocument');
+    if (!doc) return;
+    const range = document.createRange();
+    range.selectNodeContents(doc);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function copyAllCaseFile() {
+    const doc = document.getElementById('caseFileDocument');
+    if (!doc) return;
+    const text = doc.innerText;
+    const btn = document.getElementById('caseFileCopyBtn');
+    navigator.clipboard.writeText(text).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }).finally(() => {
+      if (btn) {
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy all'; }, 2000);
+      }
+    });
+  }
+
   // Keyboard: close modal on Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); }
+    if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); }
   });
 </script>
 </body>
