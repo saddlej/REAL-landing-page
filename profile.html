@@ -389,6 +389,45 @@
     .profile-card--navy .badge-founding { background: rgba(255,208,7,0.12); color: rgba(255,208,7,0.9); border-color: rgba(255,208,7,0.25); }
     .profile-card--navy .badge-standard { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.15); }
 
+    /* TRUST TIMELINE */
+    .trust-timeline {
+      margin-left: 6px;
+    }
+    .timeline-event {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 7px 0 7px 14px;
+      border-left: 1.5px solid rgba(255,208,7,0.25);
+      position: relative;
+    }
+    .timeline-event::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,208,7,0.65);
+    }
+    .timeline-desc {
+      font-size: 12px;
+      color: #4b5563;
+      flex: 1;
+      line-height: 1.4;
+    }
+    .timeline-date {
+      font-size: 11px;
+      color: #9ca3af;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .profile-card--navy .timeline-event { border-left-color: rgba(255,208,7,0.2); }
+    .profile-card--navy .timeline-event::before { background: rgba(255,208,7,0.55); }
+    .profile-card--navy .timeline-desc { color: rgba(255,255,255,0.65); }
+    .profile-card--navy .timeline-date { color: rgba(255,255,255,0.35); }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -523,6 +562,27 @@
       profileMetaHTML += '</div>';
     }
 
+    // Build trust timeline events
+    const tlEvents = [];
+    if (member.verified_since) {
+      const joinTs = new Date(member.verified_since).getTime();
+      tlEvents.push({ ts: joinTs, desc: 'Member since' });
+      tlEvents.push({ ts: joinTs, desc: member.membership_tier === 'founding' ? 'Founding Member status granted' : 'Standard membership assigned' });
+      if (member.id_verified) tlEvents.push({ ts: joinTs, desc: 'Government ID confirmed' });
+    }
+    if (platforms) {
+      platforms.forEach(p => {
+        if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
+      });
+    }
+    tlEvents.sort((a, b) => a.ts - b.ts);
+    const timelineHTML = tlEvents.length > 0 ? `
+      <hr class="divider">
+      <div class="section-label">Trust Timeline</div>
+      <div class="trust-timeline">
+        ${tlEvents.map(e => `<div class="timeline-event"><span class="timeline-desc">${escapeHtml(e.desc)}</span><span class="timeline-date">${formatDate(e.ts)}</span></div>`).join('')}
+      </div>` : '';
+
     document.getElementById('content').innerHTML = `
       <div class="profile-card ${themeClass}">
         <div class="profile-card-header">
@@ -546,6 +606,7 @@
         <hr class="divider">
         <div class="section-label">Verified Platforms</div>
         ${platformsHTML}
+        ${timelineHTML}
         <hr class="divider">
         ${impersonationLine}
       </div>`;
