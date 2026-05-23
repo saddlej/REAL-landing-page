@@ -571,6 +571,51 @@
   .footer-links a { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
   .footer-links a:hover { color: var(--gold); }
 
+  /* ─── STEP 9 — BACKUP & COMPROMISE ─── */
+  .platform-tag.backup { background: rgba(255,208,7,0.1); color: #9a7c00; border: 1px solid rgba(255,208,7,0.28); }
+  .btn-compromise {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    background: transparent;
+    border: 1px solid rgba(192,57,43,0.4);
+    color: var(--error);
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    line-height: 1.4;
+  }
+  .btn-compromise:hover { opacity: 0.7; }
+  .btn-recover {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    background: transparent;
+    border: 1px solid rgba(34,163,102,0.45);
+    color: var(--success);
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    line-height: 1.4;
+  }
+  .btn-recover:hover { opacity: 0.7; }
+  .compromise-notice-label  { font-size: 11px; color: var(--error);   font-weight: 500; }
+  .recovered-notice-label   { font-size: 11px; color: var(--success); font-weight: 500; }
+  .backup-checkbox-field {
+    display: none;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    background: rgba(255,208,7,0.05);
+    border: 1px solid rgba(255,208,7,0.22);
+  }
+  .backup-checkbox-field.visible { display: block; }
+
   @media (max-width: 640px) {
     nav { padding: 0 20px; }
     .main { padding: 24px 16px 60px; }
@@ -850,6 +895,16 @@
           <input type="text" class="modal-input" id="urlInput" placeholder="https://...">
           <p class="handle-helper" id="handleHelper"></p>
         </div>
+        <!-- Backup account checkbox — only shown when a primary already exists for this platform -->
+        <div class="backup-checkbox-field" id="backupCheckField">
+          <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+            <input type="checkbox" id="isBackupCheck" style="margin-top:3px; width:14px; height:14px; flex-shrink:0; accent-color:var(--navy);">
+            <span>
+              <span style="font-size:13px; font-weight:600; color:var(--navy); display:block; margin-bottom:2px;">This is a backup account</span>
+              <span style="font-size:12px; color:var(--gray-light); line-height:1.5;">Mark this as a secondary account alongside your primary verified one on this platform.</span>
+            </span>
+          </label>
+        </div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="goToStepA()">← Back</button>
           <button class="btn-primary" id="stepBPrimaryBtn" onclick="goToStepC()">Generate code →</button>
@@ -953,6 +1008,47 @@
   </div>
 </div>
 
+<!-- COMPROMISE MODAL -->
+<div class="modal-overlay" id="compromiseModalOverlay" onclick="closeCompromiseModalOnOverlay(event)">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title" id="compromiseModalTitle">Report Compromise</div>
+      <button class="modal-close" onclick="closeCompromiseModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6;">Select what happened to this account. A warning will appear on your public REAL profile so visitors know the account may be compromised.</p>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px;">
+        <label id="cLabel_hacked" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+          <input type="radio" name="compromiseReason" value="hacked" style="accent-color:var(--error); flex-shrink:0;" onchange="highlightCompromiseLabel()">
+          <span>
+            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Hacked</strong>
+            <span style="font-size:12px; color:var(--gray);">Someone gained access to this account without your permission</span>
+          </span>
+        </label>
+        <label id="cLabel_banned" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+          <input type="radio" name="compromiseReason" value="banned" style="accent-color:var(--error); flex-shrink:0;" onchange="highlightCompromiseLabel()">
+          <span>
+            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Banned</strong>
+            <span style="font-size:12px; color:var(--gray);">The account was suspended or banned by the platform</span>
+          </span>
+        </label>
+        <label id="cLabel_disputed" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+          <input type="radio" name="compromiseReason" value="disputed" style="accent-color:var(--error); flex-shrink:0;" onchange="highlightCompromiseLabel()">
+          <span>
+            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Disputed</strong>
+            <span style="font-size:12px; color:var(--gray);">The account is being impersonated or its ownership is disputed</span>
+          </span>
+        </label>
+      </div>
+      <div id="compromiseModalMsg" class="msg"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeCompromiseModal()">Cancel</button>
+        <button class="btn-primary" id="compromiseConfirmBtn" onclick="confirmCompromise()" style="background:var(--error);">Report →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
@@ -992,6 +1088,7 @@
   let currentProfileTheme = 'navy';
   let profileData = { display_name: '', bio: '', location: '', contact_link: '', profile_theme: 'navy' };
   let profileModalNewAvatarUrl = null;
+  let compromiseRowId = null;
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -1561,10 +1658,14 @@
     statusEl.textContent = `${verifiedCount} verified`;
 
     grid.innerHTML = userPlatforms.map(p => {
-      const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
-      const dotClass = safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold';
-      const hasNotice = safeStatus === 'pending' || safeStatus === 'failed';
-      const rowAttrs = hasNotice
+      const safeStatus    = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
+      const isBackup      = p.is_backup === true;
+      const cs            = p.compromise_status || null;
+      const isCompromised = ['hacked', 'banned', 'disputed'].includes(cs);
+      const isRecovered   = cs === 'recovered';
+      const dotClass      = isCompromised ? 'red' : (safeStatus === 'verified' ? 'green' : safeStatus === 'failed' ? 'red' : 'gold');
+      const hasNotice     = safeStatus === 'pending' || safeStatus === 'failed';
+      const rowAttrs      = (hasNotice || safeStatus === 'verified')
         ? `data-row-id="${p.id}" data-platform="${escapeHtml(p.platform)}" data-icon="${escapeHtml(p.platform)}" data-handle="${escapeHtml(p.handle)}" data-code="${escapeHtml(p.verification_code || '')}"`
         : '';
 
@@ -1637,16 +1738,30 @@
           </div>`;
       }
 
+      const hasAnyNotice = hasNotice || isCompromised || isRecovered;
       return `
-        <div class="platform-row${hasNotice ? ' has-notice' : ''}" ${rowAttrs}>
+        <div class="platform-row${hasAnyNotice ? ' has-notice' : ''}" ${rowAttrs}>
           <div class="platform-status-dot ${dotClass}"></div>
           <div class="platform-icon">${getPlatformIcon(p.platform)}</div>
           <div class="platform-info">
             <div class="platform-name">${escapeHtml(p.platform)}</div>
             <div class="platform-handle">${escapeHtml(p.handle) || '—'}</div>
           </div>
+          ${isBackup ? '<div class="platform-tag backup">Backup</div>' : ''}
           <div class="platform-tag ${safeStatus}">${safeStatus}</div>
+          ${safeStatus === 'verified' && !isCompromised && !isRecovered
+            ? `<button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">⚠ Report</button>`
+            : ''}
           ${notice}
+          ${isCompromised ? `
+          <div class="platform-notice" style="border-top-color:rgba(192,57,43,0.15); flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span class="compromise-notice-label">⚠ Reported as ${escapeHtml(cs)}</span>
+            <button class="btn-recover" onclick="markRecovered('${escapeHtml(String(p.id))}')">✓ Mark as Recovered</button>
+          </div>` : ''}
+          ${isRecovered ? `
+          <div class="platform-notice" style="border-top-color:rgba(34,163,102,0.15); flex-direction:row; align-items:center; gap:8px;">
+            <span class="recovered-notice-label">✓ Account marked as recovered</span>
+          </div>` : ''}
         </div>
       `;
     }).join('');
@@ -1722,6 +1837,14 @@
         if (!r.ok) throw new Error(data.error || 'Failed');
 
         currentRowId = data.row_id || null;
+        // Set is_backup flag if checked
+        if (document.getElementById('isBackupCheck').checked && currentRowId) {
+          await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${currentRowId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ is_backup: true })
+          });
+        }
         await loadPlatforms(accessToken);
 
         if (data.success) {
@@ -1752,7 +1875,8 @@
             profile_url: profileUrl,
             verification_code: generatedCode,
             member_confirmed: false,
-            status: 'pending'
+            status: 'pending',
+            is_backup: document.getElementById('isBackupCheck').checked === true
           })
         });
         const responseData = await r.json().catch(() => null);
@@ -1866,7 +1990,7 @@
           const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=representation' },
-            body: JSON.stringify({ user_id: currentUser.id, platform: 'Email', handle, verification_code: generatedCode, member_confirmed: false, status: 'pending' })
+            body: JSON.stringify({ user_id: currentUser.id, platform: 'Email', handle, verification_code: generatedCode, member_confirmed: false, status: 'pending', is_backup: document.getElementById('isBackupCheck').checked === true })
           });
           const rowData = await r.json();
           currentRowId = Array.isArray(rowData) ? (rowData[0]?.id || null) : null;
@@ -1897,6 +2021,14 @@
       stepBBtn.textContent = 'Generate code →';
       stepBBtn.onclick = goToStepC;
     }
+    // Show backup checkbox only if member already has a verified primary for this platform
+    const hasPrimary = userPlatforms.some(
+      p => p.platform === name && p.status === 'verified' && !p.is_backup
+    );
+    const backupField = document.getElementById('backupCheckField');
+    document.getElementById('isBackupCheck').checked = false;
+    backupField.classList.toggle('visible', hasPrimary);
+
     // Seed helper text for this platform
     updateHandleHelper();
     // Wire live update (remove old listener first to avoid duplicates)
@@ -2163,9 +2295,75 @@
     window.location.href = 'login.html';
   }
 
+  // ─── COMPROMISE MODAL ───
+  function openCompromiseModal(rowId, platformName) {
+    compromiseRowId = rowId;
+    document.getElementById('compromiseModalTitle').textContent = 'Report — ' + platformName;
+    document.querySelectorAll('input[name="compromiseReason"]').forEach(r => r.checked = false);
+    highlightCompromiseLabel();
+    const msg = document.getElementById('compromiseModalMsg');
+    msg.className = 'msg'; msg.textContent = '';
+    const btn = document.getElementById('compromiseConfirmBtn');
+    btn.disabled = false; btn.textContent = 'Report →';
+    document.getElementById('compromiseModalOverlay').classList.add('visible');
+  }
+  function closeCompromiseModal() {
+    document.getElementById('compromiseModalOverlay').classList.remove('visible');
+  }
+  function closeCompromiseModalOnOverlay(e) {
+    if (e.target === document.getElementById('compromiseModalOverlay')) closeCompromiseModal();
+  }
+  function highlightCompromiseLabel() {
+    ['hacked','banned','disputed'].forEach(v => {
+      const lbl = document.getElementById('cLabel_' + v);
+      const inp = lbl ? lbl.querySelector('input') : null;
+      if (lbl) lbl.style.borderColor = inp && inp.checked ? 'var(--error)' : 'var(--border)';
+    });
+  }
+  async function confirmCompromise() {
+    const selected = document.querySelector('input[name="compromiseReason"]:checked');
+    const msg = document.getElementById('compromiseModalMsg');
+    if (!selected) {
+      msg.textContent = 'Please select a reason.';
+      msg.className = 'msg error visible';
+      return;
+    }
+    const btn = document.getElementById('compromiseConfirmBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    msg.className = 'msg';
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${compromiseRowId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ compromise_status: selected.value })
+      });
+      if (!r.ok) throw new Error('Update failed');
+      closeCompromiseModal();
+      await loadPlatforms(accessToken);
+    } catch (e) {
+      msg.textContent = 'Failed to save. Please try again.';
+      msg.className = 'msg error visible';
+      btn.disabled = false; btn.textContent = 'Report →';
+    }
+  }
+  async function markRecovered(rowId) {
+    if (!confirm('Mark this account as recovered? This will update your public REAL profile.')) return;
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${rowId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ compromise_status: 'recovered' })
+      });
+      if (!r.ok) throw new Error('Update failed');
+      await loadPlatforms(accessToken);
+    } catch (e) {
+      alert('Failed to update. Please try again.');
+    }
+  }
+
   // Keyboard: close modal on Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); }
   });
 </script>
 </body>

@@ -428,6 +428,45 @@
     .profile-card--navy .timeline-desc { color: rgba(255,255,255,0.65); }
     .profile-card--navy .timeline-date { color: rgba(255,255,255,0.35); }
 
+    /* PLATFORM TYPE & COMPROMISE */
+    .plat-type {
+      font-size: 9px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .plat-type-primary { background: rgba(10,25,60,0.05); color: #9ca3af; }
+    .plat-type-backup  { background: rgba(255,208,7,0.12); color: #9a7c00; }
+    .platform-row--compromised {
+      border-left-color: #c0392b;
+      background: rgba(192,57,43,0.04);
+      flex-wrap: wrap;
+    }
+    .plat-compromise-warning {
+      width: 100%;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(192,57,43,0.12);
+      font-size: 11px;
+      color: #c0392b;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .plat-recovered {
+      color: #22a366;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .profile-card--navy .plat-type-primary { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35); }
+    .profile-card--navy .plat-type-backup  { background: rgba(255,208,7,0.1);  color: rgba(255,208,7,0.75); }
+    .profile-card--navy .platform-row--compromised { background: rgba(192,57,43,0.08); }
+    .profile-card--navy .plat-compromise-warning   { color: #e57373; border-top-color: rgba(192,57,43,0.2); }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -528,13 +567,38 @@
     let platformsHTML = '';
     if (platforms && platforms.length > 0) {
       platforms.forEach(p => {
+        const isBackup     = p.is_backup === true;
+        const cs           = p.compromise_status || null;
+        const isCompromised = ['hacked', 'banned', 'disputed'].includes(cs);
+        const isRecovered  = cs === 'recovered';
+
+        const typeLabel = isBackup
+          ? `<span class="plat-type plat-type-backup">Backup</span>`
+          : `<span class="plat-type plat-type-primary">Primary</span>`;
+
+        let rightArea = '';
+        if (isCompromised) {
+          rightArea = ''; // warning shown as wrapped row below
+        } else if (isRecovered) {
+          rightArea = `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="plat-recovered">✓ Recovered</span>`;
+        } else {
+          rightArea = `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="platform-tick">✓</span>`;
+        }
+
+        const compromiseWarning = isCompromised
+          ? `<span class="plat-compromise-warning">⚠ Compromised — ${escapeHtml(cs)} — last verified owner: ${escapeHtml(p.handle)} as of ${formatDate(p.verified_at)}</span>`
+          : '';
+
+        const rowClass = `platform-row${isCompromised ? ' platform-row--compromised' : ''}`;
+
         platformsHTML += `
-          <div class="platform-row">
+          <div class="${rowClass}">
             ${getPlatformIcon(p.platform)}
-            <span class="platform-name">${p.platform}</span>
-            <span class="platform-handle">${p.handle}</span>
-            <span class="platform-date">${formatDate(p.verified_at)}</span>
-            <span class="platform-tick">✓</span>
+            <span class="platform-name">${escapeHtml(p.platform)}</span>
+            ${typeLabel}
+            <span class="platform-handle">${escapeHtml(p.handle)}</span>
+            ${rightArea}
+            ${compromiseWarning}
           </div>`;
       });
     } else {
@@ -573,6 +637,15 @@
     if (platforms) {
       platforms.forEach(p => {
         if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
+        const cs = p.compromise_status || null;
+        if (cs && p.updated_at) {
+          const csTs = new Date(p.updated_at).getTime();
+          if (['hacked', 'banned', 'disputed'].includes(cs)) {
+            tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${cs}` });
+          } else if (cs === 'recovered') {
+            tlEvents.push({ ts: csTs, desc: `${p.platform} account recovered` });
+          }
+        }
       });
     }
     tlEvents.sort((a, b) => a.ts - b.ts);
@@ -653,7 +726,7 @@
 
     const { data: platforms } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at')
+      .select('platform, handle, verified_at, is_backup, compromise_status, updated_at')
       .eq('user_id', member.user_id)
       .eq('status', 'verified')
       .order('verified_at', { ascending: true });
