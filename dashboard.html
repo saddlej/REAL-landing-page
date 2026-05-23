@@ -155,54 +155,6 @@
     border: 1px solid var(--gold);
     color: var(--gold);
   }
-  .score-badge-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-  }
-  .score-level-pill {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold);
-    background: rgba(255,208,7,0.1);
-    padding: 4px 10px;
-    border-radius: 20px;
-    cursor: default;
-    white-space: nowrap;
-  }
-  .score-tooltip {
-    display: none;
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0F2044;
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    line-height: 1.55;
-    padding: 10px 14px;
-    border-radius: 8px;
-    width: 240px;
-    pointer-events: none;
-    z-index: 20;
-    text-align: center;
-    border: 1px solid rgba(255,208,7,0.35);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-  }
-  .score-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: rgba(255,208,7,0.35);
-  }
-  .score-badge-wrap:hover .score-tooltip { display: block; }
   .identity-status-row {
     display: flex;
     align-items: center;
@@ -688,10 +640,6 @@
         <div class="identity-id-row">
           <div class="real-id-badge" id="realId">RL-PENDING</div>
           <div class="tier-pill" id="tierPill">Founding Member</div>
-          <div class="score-badge-wrap">
-            <span class="score-level-pill" id="realScoreLevel">—</span>
-            <div class="score-tooltip">Your REAL Score reflects how long you've been a member and how many platforms you've verified. Add more platforms to increase your score.</div>
-          </div>
         </div>
         <div class="identity-status-row">
           <div class="status-pill pending" id="verificationStatus">
@@ -1376,36 +1324,6 @@
     }
   }
 
-  // ─── REAL SCORE ───
-  function calculateRealScore() {
-    let score = 0;
-    if (idVerified) score += 40;
-    const verifiedCount = userPlatforms.filter(p => p.status === 'verified').length;
-    score += Math.min(verifiedCount * 8, 30);
-    if (memberTier === 'founding') score += 10;
-    if (memberVerifiedSince) {
-      const days = (Date.now() - new Date(memberVerifiedSince)) / 86400000;
-      if (days > 180) score += 20;
-      else if (days > 90) score += 10;
-      else if (days > 30) score += 5;
-    }
-    return Math.min(score, 100);
-  }
-
-  function getScoreLevel(score) {
-    if (score >= 70) return 'Verified Authority';
-    if (score >= 40) return 'Verified Established';
-    return 'Verified Foundation';
-  }
-
-  function updateRealScore() {
-    const score = calculateRealScore();
-    const levelEl = document.getElementById('realScoreLevel');
-    const barEl = document.getElementById('realScoreBarFill');
-    if (levelEl) levelEl.textContent = getScoreLevel(score);
-    if (barEl) barEl.style.width = score + '%';
-  }
-
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
@@ -1474,7 +1392,6 @@
           idBtn.disabled = true;
           idBtn.textContent = 'Verification complete';
         }
-        updateRealScore();
       }
     } catch (e) {
       console.error('loadMemberData error:', e);
@@ -1636,14 +1553,12 @@
       grid.innerHTML = '';
       empty.style.display = 'block';
       statusEl.textContent = '0 verified';
-      updateRealScore();
       return;
     }
 
     empty.style.display = 'none';
     const verifiedCount = userPlatforms.filter(p => p.status === 'verified').length;
     statusEl.textContent = `${verifiedCount} verified`;
-    updateRealScore();
 
     grid.innerHTML = userPlatforms.map(p => {
       const safeStatus = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
