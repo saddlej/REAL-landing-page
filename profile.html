@@ -771,23 +771,43 @@
       return;
     }
 
-    let { data: allRows, error: platError } = await supabaseClient
+    const cols = 'platform, handle, verified_at, compromised_at, recovered_at, is_backup, compromise_status, status';
+    const colsFallback = 'platform, handle, verified_at, is_backup, compromise_status, status';
+
+    let { data: verifiedRows, error: verErr } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at, updated_at, compromised_at, recovered_at, is_backup, compromise_status, status')
+      .select(cols)
       .eq('user_id', member.user_id)
-      .in('status', ['verified', 'removed'])
+      .eq('status', 'verified')
       .order('verified_at', { ascending: true });
-    if (platError || !allRows) {
-      const { data: platformsFallback } = await supabaseClient
+    if (verErr || !verifiedRows) {
+      const { data: fb } = await supabaseClient
         .from('platform_verifications')
-        .select('platform, handle, verified_at, is_backup, compromise_status, status')
+        .select(colsFallback)
         .eq('user_id', member.user_id)
-        .in('status', ['verified', 'removed'])
+        .eq('status', 'verified')
         .order('verified_at', { ascending: true });
-      allRows = platformsFallback;
+      verifiedRows = fb;
     }
-    const platforms = (allRows || []).filter(p => p.status === 'verified');
-    const removedPlatforms = (allRows || []).filter(p => p.status === 'removed');
+
+    let { data: removedRows, error: remErr } = await supabaseClient
+      .from('platform_verifications')
+      .select(cols)
+      .eq('user_id', member.user_id)
+      .eq('status', 'removed')
+      .order('verified_at', { ascending: true });
+    if (remErr || !removedRows) {
+      const { data: fb } = await supabaseClient
+        .from('platform_verifications')
+        .select(colsFallback)
+        .eq('user_id', member.user_id)
+        .eq('status', 'removed')
+        .order('verified_at', { ascending: true });
+      removedRows = fb;
+    }
+
+    const platforms = verifiedRows || [];
+    const removedPlatforms = removedRows || [];
 
     renderProfile(member, platforms, removedPlatforms);
   }
