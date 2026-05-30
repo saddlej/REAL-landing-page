@@ -675,11 +675,12 @@
         if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
         const cs = p.compromise_status || null;
         if (cs) {
-          const csTs = new Date(p.updated_at || p.verified_at).getTime();
-          if (['hacked', 'banned', 'disputed'].includes(cs)) {
+          if (['hacked', 'banned', 'disputed'].includes(cs) && (p.compromised_at || p.updated_at)) {
+            const csTs = new Date(p.compromised_at || p.updated_at).getTime();
             tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${cs} — last verified owner: ${p.handle}` });
-          } else if (cs === 'recovered') {
-            tlEvents.push({ ts: csTs, desc: `${p.platform} account recovered` });
+          } else if (cs === 'recovered' && (p.recovered_at || p.updated_at)) {
+            const rcTs = new Date(p.recovered_at || p.updated_at).getTime();
+            tlEvents.push({ ts: rcTs, desc: `${p.platform} account recovered` });
           }
         }
       });
@@ -766,7 +767,7 @@
 
     let { data: platforms, error: platError } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at, updated_at, is_backup, compromise_status')
+      .select('platform, handle, verified_at, updated_at, compromised_at, recovered_at, is_backup, compromise_status')
       .eq('user_id', member.user_id)
       .eq('status', 'verified')
       .order('verified_at', { ascending: true });
