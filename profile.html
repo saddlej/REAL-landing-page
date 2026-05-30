@@ -595,7 +595,7 @@
     return n.slice(0, 2).toUpperCase() || '?';
   }
 
-  function renderProfile(member, platforms) {
+  function renderProfile(member, platforms, removedPlatforms) {
     const tierBadge = member.membership_tier === 'founding'
       ? '<span class="badge badge-founding">Founding Member</span>'
       : '<span class="badge badge-standard">Standard Member</span>';
@@ -685,6 +685,12 @@
         }
       });
     }
+    if (removedPlatforms) {
+      removedPlatforms.forEach(p => {
+        if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
+        if (p.compromised_at) tlEvents.push({ ts: new Date(p.compromised_at).getTime(), desc: `${p.platform} — account lost — removed from profile` });
+      });
+    }
     tlEvents.sort((a, b) => a.ts - b.ts);
 
     document.getElementById('content').innerHTML = `
@@ -765,23 +771,25 @@
       return;
     }
 
-    let { data: platforms, error: platError } = await supabaseClient
+    let { data: allRows, error: platError } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at, updated_at, compromised_at, recovered_at, is_backup, compromise_status')
+      .select('platform, handle, verified_at, updated_at, compromised_at, recovered_at, is_backup, compromise_status, status')
       .eq('user_id', member.user_id)
-      .eq('status', 'verified')
+      .in('status', ['verified', 'removed'])
       .order('verified_at', { ascending: true });
-    if (platError || !platforms) {
+    if (platError || !allRows) {
       const { data: platformsFallback } = await supabaseClient
         .from('platform_verifications')
-        .select('platform, handle, verified_at, is_backup, compromise_status')
+        .select('platform, handle, verified_at, is_backup, compromise_status, status')
         .eq('user_id', member.user_id)
-        .eq('status', 'verified')
+        .in('status', ['verified', 'removed'])
         .order('verified_at', { ascending: true });
-      platforms = platformsFallback;
+      allRows = platformsFallback;
     }
+    const platforms = (allRows || []).filter(p => p.status === 'verified');
+    const removedPlatforms = (allRows || []).filter(p => p.status === 'removed');
 
-    renderProfile(member, platforms);
+    renderProfile(member, platforms, removedPlatforms);
   }
 
   async function doSearch() {

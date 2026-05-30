@@ -1803,7 +1803,9 @@
       return map[platform] || `<div style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#4B5563"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="8"/></svg></div>`;
     }
 
-    if (!Array.isArray(userPlatforms) || userPlatforms.length === 0) {
+    const visiblePlatforms = Array.isArray(userPlatforms) ? userPlatforms.filter(p => p.status !== 'removed') : [];
+
+    if (visiblePlatforms.length === 0) {
       grid.innerHTML = '';
       empty.style.display = 'block';
       statusEl.textContent = '0 verified';
@@ -1811,10 +1813,10 @@
     }
 
     empty.style.display = 'none';
-    const verifiedCount = userPlatforms.filter(p => p.status === 'verified').length;
+    const verifiedCount = visiblePlatforms.filter(p => p.status === 'verified').length;
     statusEl.textContent = `${verifiedCount} verified`;
 
-    grid.innerHTML = userPlatforms.map(p => {
+    grid.innerHTML = visiblePlatforms.map(p => {
       const safeStatus    = ['verified', 'pending', 'failed'].includes(p.status) ? p.status : 'pending';
       const isBackup      = p.is_backup === true;
       const cs            = p.compromise_status || null;
@@ -2489,21 +2491,15 @@
     btn.disabled = true; btn.textContent = 'Saving…';
     msg.className = 'msg';
     try {
-      if (selected.value === 'permanently_lost') {
-        const r = await fetch('/api/delete-platform', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: currentUser.id, platform: compromisePlatformName, token: localStorage.getItem('real_access_token') })
-        });
-        if (!r.ok) throw new Error('Delete failed');
-      } else {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${compromiseRowId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ compromise_status: selected.value, compromised_at: new Date().toISOString() })
-        });
-        if (!r.ok) throw new Error('Update failed');
-      }
+      const patchBody = selected.value === 'permanently_lost'
+        ? { status: 'removed', compromise_status: 'lost_access', compromised_at: new Date().toISOString() }
+        : { compromise_status: selected.value, compromised_at: new Date().toISOString() };
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${compromiseRowId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(patchBody)
+      });
+      if (!r.ok) throw new Error('Update failed');
       closeCompromiseModal();
       await loadPlatforms(accessToken);
     } catch (e) {
