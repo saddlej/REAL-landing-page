@@ -86,7 +86,7 @@
 
     /* PAGE */
     .page {
-      max-width: 520px;
+      max-width: 820px;
       margin: 0 auto;
       padding: 40px 20px 60px;
     }
@@ -480,6 +480,11 @@
     overflow-y: auto;
   }
 
+  @media (max-width: 720px) {
+    .profile-lower { grid-template-columns: 1fr; gap: 0; }
+    .profile-lower-col { max-height: none; overflow-y: visible; }
+  }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -492,8 +497,6 @@
     .platform-handle { flex: 1; }
     .platform-date { width: calc(100% - 42px); margin-left: 42px; margin-top: 2px; font-size: 11px; color: #9ca3af; order: 4; }
     .platform-tick { margin-left: auto; order: 3; align-self: flex-start; padding-top: 2px; }
-    .profile-lower { grid-template-columns: 1fr; }
-    .profile-lower-col { max-height: none; overflow-y: visible; }
   }
   </style>
 </head>
@@ -582,27 +585,23 @@
     let platformsHTML = '';
     if (platforms && platforms.length > 0) {
       platforms.forEach(p => {
-        const isBackup     = p.is_backup === true;
-        const cs           = p.compromise_status || null;
-        const isCompromised = ['hacked', 'banned', 'disputed'].includes(cs);
-        const isRecovered  = cs === 'recovered';
+        const isBackup      = p.is_backup === true;
+        const cs            = p.compromise_status || null;
+        const activeCompromise = ['hacked', 'banned', 'disputed'].includes(cs);
 
         const typeLabel = isBackup
           ? `<span class="plat-type plat-type-backup">Backup</span>`
           : `<span class="plat-type plat-type-primary">Primary</span>`;
 
-        let rightArea = '';
-        if (isCompromised) {
-          rightArea = ''; // warning shown as wrapped row below
-        } else {
-          rightArea = `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="platform-tick">✓</span>`;
-        }
+        const rightArea = activeCompromise
+          ? ''
+          : `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="platform-tick">✓</span>`;
 
-        const compromiseWarning = isCompromised
+        const compromiseWarning = activeCompromise
           ? `<span class="plat-compromise-warning">⚠ This account may not be in my control right now. Do not interact with it or send money. Check back here for updates.</span>`
           : '';
 
-        const rowClass = `platform-row${isCompromised ? ' platform-row--compromised' : ''}`;
+        const rowClass = `platform-row${activeCompromise ? ' platform-row--compromised' : ''}`;
 
         platformsHTML += `
           <div class="${rowClass}">
