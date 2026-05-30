@@ -1125,8 +1125,15 @@
         <label id="cLabel_disputed" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
           <input type="radio" name="compromiseReason" value="disputed" style="accent-color:var(--error); flex-shrink:0;" onchange="highlightCompromiseLabel()">
           <span>
-            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Disputed</strong>
-            <span style="font-size:12px; color:var(--gray);">The account is being impersonated or its ownership is disputed</span>
+            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Lost access</strong>
+            <span style="font-size:12px; color:var(--gray);">I can no longer access this account and cannot recover it</span>
+          </span>
+        </label>
+        <label id="cLabel_permanently_lost" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+          <input type="radio" name="compromiseReason" value="permanently_lost" style="accent-color:var(--error); flex-shrink:0;" onchange="highlightCompromiseLabel()">
+          <span>
+            <strong style="font-size:13px; color:var(--navy); display:block; margin-bottom:2px;">Permanently lost</strong>
+            <span style="font-size:12px; color:var(--gray);">This account is gone and will not be recovered — remove it from my profile entirely</span>
           </span>
         </label>
       </div>
@@ -1243,6 +1250,7 @@
   let profileData = { display_name: '', bio: '', location: '', contact_link: '', profile_theme: 'navy' };
   let profileModalNewAvatarUrl = null;
   let compromiseRowId = null;
+  let compromisePlatformName = null;
   let impersonationReports = [];
 
   // ─── AVATAR ───
@@ -1908,7 +1916,7 @@
           ${isBackup ? '<div class="platform-tag backup">Backup</div>' : ''}
           <div class="platform-tag ${safeStatus}">${safeStatus}</div>
           ${notice}
-          ${safeStatus === 'verified' && !isCompromised && !isRecovered ? `
+          ${safeStatus === 'verified' && !isCompromised ? `
           <div class="platform-notice" style="border-top-color:rgba(10,25,60,0.07); flex-direction:row; padding-top:7px; margin-top:0; gap:0;">
             <button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">⚠ Report Compromise</button>
           </div>` : ''}
@@ -1916,10 +1924,6 @@
           <div class="platform-notice" style="border-top-color:rgba(192,57,43,0.15); flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <span class="compromise-notice-label">⚠ Reported as ${escapeHtml(cs)}</span>
             <button class="btn-recover" onclick="markRecovered('${escapeHtml(String(p.id))}')">✓ Mark as Recovered</button>
-          </div>` : ''}
-          ${isRecovered ? `
-          <div class="platform-notice" style="border-top-color:rgba(34,163,102,0.15); flex-direction:row; align-items:center; gap:8px;">
-            <span class="recovered-notice-label">✓ Account marked as recovered</span>
           </div>` : ''}
         </div>
       `;
@@ -2457,6 +2461,7 @@
   // ─── COMPROMISE MODAL ───
   function openCompromiseModal(rowId, platformName) {
     compromiseRowId = rowId;
+    compromisePlatformName = platformName;
     document.getElementById('compromiseModalTitle').textContent = 'Report — ' + platformName;
     document.querySelectorAll('input[name="compromiseReason"]').forEach(r => r.checked = false);
     highlightCompromiseLabel();
@@ -2473,7 +2478,7 @@
     if (e.target === document.getElementById('compromiseModalOverlay')) closeCompromiseModal();
   }
   function highlightCompromiseLabel() {
-    ['hacked','banned','disputed'].forEach(v => {
+    ['hacked','banned','disputed','permanently_lost'].forEach(v => {
       const lbl = document.getElementById('cLabel_' + v);
       const inp = lbl ? lbl.querySelector('input') : null;
       if (lbl) lbl.style.borderColor = inp && inp.checked ? 'var(--error)' : 'var(--border)';
@@ -2491,12 +2496,21 @@
     btn.disabled = true; btn.textContent = 'Saving…';
     msg.className = 'msg';
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${compromiseRowId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ compromise_status: selected.value })
-      });
-      if (!r.ok) throw new Error('Update failed');
+      if (selected.value === 'permanently_lost') {
+        const r = await fetch('/api/delete-platform', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: currentUser.id, platform: compromisePlatformName, token: localStorage.getItem('real_access_token') })
+        });
+        if (!r.ok) throw new Error('Delete failed');
+      } else {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/platform_verifications?id=eq.${compromiseRowId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ compromise_status: selected.value })
+        });
+        if (!r.ok) throw new Error('Update failed');
+      }
       closeCompromiseModal();
       await loadPlatforms(accessToken);
     } catch (e) {
@@ -2514,7 +2528,16 @@
         body: JSON.stringify({ compromise_status: 'recovered' })
       });
       if (!r.ok) throw new Error('Update failed');
-      await loadPlatforms(accessToken);
+      // Show brief confirmation on the card before re-render clears it
+      const row = document.querySelector(`[data-row-id="${rowId}"]`);
+      if (row) {
+        const strip = document.createElement('div');
+        strip.className = 'platform-notice';
+        strip.style.cssText = 'border-top-color:rgba(34,163,102,0.15); flex-direction:row; align-items:center; gap:8px;';
+        strip.innerHTML = '<span class="recovered-notice-label">✓ Account marked as recovered</span>';
+        row.appendChild(strip);
+      }
+      setTimeout(() => loadPlatforms(accessToken), 1800);
     } catch (e) {
       alert('Failed to update. Please try again.');
     }

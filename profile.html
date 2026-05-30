@@ -467,6 +467,19 @@
     .profile-card--navy .platform-row--compromised { background: rgba(192,57,43,0.08); }
     .profile-card--navy .plat-compromise-warning   { color: #e57373; border-top-color: rgba(192,57,43,0.2); }
 
+  /* TWO-COLUMN LOWER SECTION */
+  .profile-lower {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .profile-lower-col {
+    min-width: 0;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
   @media (max-width: 600px) {
     nav { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
     .nav-brand { order: 1; }
@@ -479,6 +492,8 @@
     .platform-handle { flex: 1; }
     .platform-date { width: calc(100% - 42px); margin-left: 42px; margin-top: 2px; font-size: 11px; color: #9ca3af; order: 4; }
     .platform-tick { margin-left: auto; order: 3; align-self: flex-start; padding-top: 2px; }
+    .profile-lower { grid-template-columns: 1fr; }
+    .profile-lower-col { max-height: none; overflow-y: visible; }
   }
   </style>
 </head>
@@ -579,14 +594,12 @@
         let rightArea = '';
         if (isCompromised) {
           rightArea = ''; // warning shown as wrapped row below
-        } else if (isRecovered) {
-          rightArea = `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="plat-recovered">✓ Recovered</span>`;
         } else {
           rightArea = `<span class="platform-date">${formatDate(p.verified_at)}</span><span class="platform-tick">✓</span>`;
         }
 
         const compromiseWarning = isCompromised
-          ? `<span class="plat-compromise-warning">⚠ Compromised — ${escapeHtml(cs)} — last verified owner: ${escapeHtml(p.handle)} as of ${formatDate(p.verified_at)}</span>`
+          ? `<span class="plat-compromise-warning">⚠ This account may not be in my control right now. Do not interact with it or send money. Check back here for updates.</span>`
           : '';
 
         const rowClass = `platform-row${isCompromised ? ' platform-row--compromised' : ''}`;
@@ -641,7 +654,7 @@
         if (cs && p.updated_at) {
           const csTs = new Date(p.updated_at).getTime();
           if (['hacked', 'banned', 'disputed'].includes(cs)) {
-            tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${cs}` });
+            tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${cs} — last verified owner: ${p.handle}` });
           } else if (cs === 'recovered') {
             tlEvents.push({ ts: csTs, desc: `${p.platform} account recovered` });
           }
@@ -649,12 +662,6 @@
       });
     }
     tlEvents.sort((a, b) => a.ts - b.ts);
-    const timelineHTML = tlEvents.length > 0 ? `
-      <hr class="divider">
-      <div class="section-label">Trust Timeline</div>
-      <div class="trust-timeline">
-        ${tlEvents.map(e => `<div class="timeline-event"><span class="timeline-desc">${escapeHtml(e.desc)}</span><span class="timeline-date">${formatDate(e.ts)}</span></div>`).join('')}
-      </div>` : '';
 
     document.getElementById('content').innerHTML = `
       <div class="profile-card ${themeClass}">
@@ -677,9 +684,19 @@
         </div>
         ${profileMetaHTML ? `<hr class="divider">${profileMetaHTML}` : ''}
         <hr class="divider">
-        <div class="section-label">Verified Platforms</div>
-        ${platformsHTML}
-        ${timelineHTML}
+        <div class="profile-lower">
+          <div class="profile-lower-col">
+            <div class="section-label">Verified Platforms</div>
+            ${platformsHTML}
+          </div>
+          <div class="profile-lower-col">
+            ${tlEvents.length > 0 ? `
+            <div class="section-label">Trust Timeline</div>
+            <div class="trust-timeline">
+              ${tlEvents.map(e => `<div class="timeline-event"><span class="timeline-desc">${escapeHtml(e.desc)}</span><span class="timeline-date">${formatDate(e.ts)}</span></div>`).join('')}
+            </div>` : ''}
+          </div>
+        </div>
         <hr class="divider">
         ${impersonationLine}
       </div>`;
@@ -726,7 +743,7 @@
 
     const { data: platforms } = await supabaseClient
       .from('platform_verifications')
-      .select('platform, handle, verified_at, is_backup, compromise_status')
+      .select('platform, handle, verified_at, is_backup, compromise_status, updated_at')
       .eq('user_id', member.user_id)
       .eq('status', 'verified')
       .order('verified_at', { ascending: true });
