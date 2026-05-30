@@ -179,6 +179,10 @@
       color: var(--navy);
       font-weight: 500;
       flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .platform-date {
@@ -471,15 +475,18 @@
   .profile-lower {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    column-gap: 36px;
+    row-gap: 0;
     align-items: start;
   }
   .profile-lower-col {
     min-width: 0;
+    overflow: hidden;
   }
   /* Only the timeline column scrolls vertically */
   .profile-lower-col:last-child {
     max-height: 600px;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 
