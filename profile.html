@@ -476,13 +476,16 @@
   }
   .profile-lower-col {
     min-width: 0;
+  }
+  /* Only the timeline column scrolls vertically */
+  .profile-lower-col:last-child {
     max-height: 600px;
     overflow-y: auto;
   }
 
   @media (max-width: 720px) {
     .profile-lower { grid-template-columns: 1fr; gap: 0; }
-    .profile-lower-col { max-height: none; overflow-y: visible; }
+    .profile-lower-col:last-child { max-height: none; overflow-y: visible; }
   }
 
   @media (max-width: 600px) {
