@@ -595,7 +595,7 @@
     return n.slice(0, 2).toUpperCase() || '?';
   }
 
-  function renderProfile(member, platforms, removedPlatforms) {
+  function renderProfile(member, platforms, removedPlatforms, impersonationCount) {
     const tierBadge = member.membership_tier === 'founding'
       ? '<span class="badge badge-founding">Founding Member</span>'
       : '<span class="badge badge-standard">Standard Member</span>';
@@ -641,8 +641,8 @@
       platformsHTML = '<p style="font-size:13px;color:#9ca3af;">No platforms verified yet.</p>';
     }
 
-    const impersonationLine = member.impersonation_count > 0
-      ? `<div class="impersonation-box">${member.impersonation_count} impersonation attempt${member.impersonation_count === 1 ? '' : 's'} documented by REAL</div>`
+    const impersonationLine = impersonationCount > 0
+      ? `<div class="impersonation-box">${impersonationCount} impersonation attempt${impersonationCount === 1 ? '' : 's'} documented by REAL</div>`
       : '';
 
     const avatarUrl = member.avatar_url || `${SUPABASE_URL}/storage/v1/object/public/avatars/${member.user_id}`;
@@ -809,7 +809,12 @@
     const platforms = verifiedRows || [];
     const removedPlatforms = removedRows || [];
 
-    renderProfile(member, platforms, removedPlatforms);
+    const { count: impersonationCount } = await supabaseClient
+      .from('impersonation_reports')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', member.user_id);
+
+    renderProfile(member, platforms, removedPlatforms, impersonationCount || 0);
   }
 
   async function doSearch() {
