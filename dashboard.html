@@ -1254,6 +1254,7 @@
   let impersonationReports = [];
   let dnsRetryInterval = null;
   let dnsRetryRowId = null;
+  let dnsLastChecked = null;
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -1943,7 +1944,7 @@
           const btn = row.querySelector('.notice-action-btn');
           if (!btn) return;
           if (dnsRetryInterval !== null && dnsRetryRowId === String(p.id)) {
-            setDnsCheckingVisual(p.id);
+            setDnsCheckingVisual(p.id, dnsLastChecked);
           } else if (dnsRetryInterval === null) {
             checkDomainFromCard(String(p.id), p.handle, p.verification_code || '', btn);
           }
@@ -1964,6 +1965,7 @@
       dnsRetryInterval = null;
     }
     dnsRetryRowId = null;
+    dnsLastChecked = null;
   }
 
   function setDnsCheckingVisual(rowId, lastChecked) {
@@ -2361,7 +2363,8 @@
           await loadPlatforms(accessToken);
         } else {
           const isFirst = dnsRetryInterval === null;
-          setDnsCheckingVisual(rowId, new Date());
+          dnsLastChecked = new Date();
+          setDnsCheckingVisual(rowId, dnsLastChecked);
           if (isFirst) dnsRetryInterval = setInterval(doCheck, 60000);
         }
       } catch(e) {
