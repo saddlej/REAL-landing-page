@@ -2460,6 +2460,8 @@
     document.getElementById('compromiseModalTitle').textContent = 'Report — ' + platformName;
     document.querySelectorAll('input[name="compromiseReason"]').forEach(r => r.checked = false);
     highlightCompromiseLabel();
+    const socialPlatforms = ['Instagram', 'TikTok', 'X / Twitter', 'Facebook', 'LinkedIn', 'YouTube'];
+    document.getElementById('cLabel_banned').style.display = socialPlatforms.includes(platformName) ? '' : 'none';
     const msg = document.getElementById('compromiseModalMsg');
     msg.className = 'msg'; msg.textContent = '';
     const btn = document.getElementById('compromiseConfirmBtn');

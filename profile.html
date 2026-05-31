@@ -674,14 +674,14 @@
       platforms.forEach(p => {
         if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
         const cs = p.compromise_status || null;
-        if (cs) {
-          if (['hacked', 'banned', 'disputed'].includes(cs) && (p.compromised_at || p.updated_at)) {
-            const csTs = new Date(p.compromised_at || p.updated_at).getTime();
-            tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${cs} — last verified owner: ${p.handle}` });
-          } else if (cs === 'recovered' && (p.recovered_at || p.updated_at)) {
-            const rcTs = new Date(p.recovered_at || p.updated_at).getTime();
-            tlEvents.push({ ts: rcTs, desc: `${p.platform} account recovered` });
-          }
+        if (cs && p.compromised_at) {
+          const csTs = new Date(p.compromised_at).getTime();
+          const csLabel = ['hacked', 'banned', 'disputed'].includes(cs) ? cs : 'compromised';
+          tlEvents.push({ ts: csTs, desc: `${p.platform} reported as ${csLabel} — last verified owner: ${p.handle}` });
+        }
+        if (cs === 'recovered' && p.recovered_at) {
+          const rcTs = new Date(p.recovered_at).getTime();
+          tlEvents.push({ ts: rcTs, desc: `${p.platform} account recovered` });
         }
       });
     }
