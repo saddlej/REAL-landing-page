@@ -23,10 +23,14 @@ export default async function handler(req, res) {
     .trim();
 
   try {
+    const dohUrl = `https://dns.google/resolve?name=${encodeURIComponent(cleanDomain)}&type=TXT`;
+    console.log('[domain-verify] checking domain:', cleanDomain);
+    console.log('[domain-verify] fetching:', dohUrl);
+
     // Look up TXT records via Google DNS-over-HTTPS (works in Vercel serverless)
     let dohRes;
     try {
-      dohRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(cleanDomain)}&type=TXT`);
+      dohRes = await fetch(dohUrl);
     } catch (fetchError) {
       return res.status(200).json({
         verified: false,
@@ -42,6 +46,7 @@ export default async function handler(req, res) {
     }
 
     const dohData = await dohRes.json();
+    console.log('[domain-verify] raw response:', JSON.stringify(dohData));
 
     // Answer is an array of records; status 0 = NOERROR, 3 = NXDOMAIN
     if (dohData.Status !== 0 || !Array.isArray(dohData.Answer)) {
@@ -55,6 +60,7 @@ export default async function handler(req, res) {
     const found = dohData.Answer.some(record =>
       String(record.data).replace(/"/g, '').includes(verification_code)
     );
+    console.log('[domain-verify] code found:', found);
 
     if (found) {
       const { error } = await supabase
