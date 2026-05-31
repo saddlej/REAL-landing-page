@@ -444,6 +444,22 @@
   .notice-action-btn { align-self: flex-start; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; background: transparent; color: var(--navy); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s, opacity 0.2s; white-space: nowrap; }
   .notice-action-btn:hover { border-color: var(--navy); }
   .notice-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .notice-action-btn--checking { opacity: 1 !important; cursor: default !important; color: var(--gray) !important; border-color: var(--border) !important; }
+  .notice-action-btn--checking::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gray);
+    margin-right: 7px;
+    vertical-align: middle;
+    animation: dns-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes dns-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
   .notice-action-btn--error { color: var(--error); border-color: var(--error); }
   .notice-action-btn--error:hover { opacity: 0.75; }
 
@@ -2308,10 +2324,12 @@
         await loadPlatforms(accessToken);
       } else {
         btn.disabled = true;
+        btn.classList.add('notice-action-btn--checking');
         btn.textContent = 'Checking automatically — check back soon';
       }
     } catch(e) {
       btn.disabled = false;
+      btn.classList.remove('notice-action-btn--checking');
       btn.textContent = 'Check my DNS';
     }
   }
