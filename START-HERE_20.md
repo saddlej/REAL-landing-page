@@ -334,6 +334,9 @@ Steps 1–96 from version 19 remain complete ✅
 120. Website DNS verification — @ symbol stripped from domain before lookup ✅
 121. Website DNS verification — switched to Google DNS-over-HTTPS for reliable lookups ✅
 122. Website DNS verification — debug logs removed, code clean ✅
+123. Website DNS verification — modal auto-closes after failed check, card handles all retrying ✅
+124. Automatic platform cards (Website, Email, YouTube) — "Having trouble? Contact us →" mailto link added for support ✅
+125. Dashboard footer — permanent "Need help? Contact us →" mailto link added ✅
 
 **Needs doing next session:**
 * Re-add Instagram and TikTok to your own profile (removed during testing)
@@ -342,6 +345,7 @@ Steps 1–96 from version 19 remain complete ✅
 
 ## FUTURE BUILDS — AGREED
 
+* **Scheduled alert email to admin when automatic verification (Website, Email, YouTube) has been pending for more than 2 hours**
 * **Member statement on lost accounts** — text field in timeline entry: "Anyone using this account is not me" — timestamped, government ID verified declaration
 * **Handle change re-verification flow**
 * **Rebrand flow**
