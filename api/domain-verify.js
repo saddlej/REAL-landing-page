@@ -1,8 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import dns from 'dns';
-
-const resolver = new dns.promises.Resolver();
-resolver.setServers(['8.8.8.8']);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -27,26 +23,40 @@ export default async function handler(req, res) {
     .trim();
 
   try {
-    // Look up all TXT records on the domain
-    let records;
+    // Look up TXT records via Google DNS-over-HTTPS (works in Vercel serverless)
+    let dohRes;
     try {
-      records = await resolver.resolveTxt(cleanDomain);
-    } catch (dnsError) {
-      // Domain doesn't exist or DNS lookup failed
+      dohRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(cleanDomain)}&type=TXT`);
+    } catch (fetchError) {
+      return res.status(200).json({
+        verified: false,
+        message: 'Could not reach DNS. Please try again in a moment.'
+      });
+    }
+
+    if (!dohRes.ok) {
       return res.status(200).json({
         verified: false,
         message: 'Could not find DNS records for that domain. Make sure you entered the domain correctly and the TXT record has been saved.'
       });
     }
 
-    // records is an array of arrays — flatten to a simple list of strings
-    const allRecords = records.flat();
+    const dohData = await dohRes.json();
 
-    // Check if any TXT record matches the verification code
-    const found = allRecords.some(record => record.includes(verification_code));
+    // Answer is an array of records; status 0 = NOERROR, 3 = NXDOMAIN
+    if (dohData.Status !== 0 || !Array.isArray(dohData.Answer)) {
+      return res.status(200).json({
+        verified: false,
+        message: 'Could not find DNS records for that domain. Make sure you entered the domain correctly and the TXT record has been saved.'
+      });
+    }
+
+    // Each Answer entry has a `data` field with the TXT value (may be quoted)
+    const found = dohData.Answer.some(record =>
+      String(record.data).replace(/"/g, '').includes(verification_code)
+    );
 
     if (found) {
-      // Mark as verified in Supabase
       const { error } = await supabase
         .from('platform_verifications')
         .update({
