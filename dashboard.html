@@ -1783,6 +1783,12 @@
   }
 
   // ─── RENDER PLATFORMS ───
+  function helpLink(platform, handle) {
+    const subject = encodeURIComponent(`Verification issue — ${platform}`);
+    const body = encodeURIComponent(`Hi, I'm having trouble verifying my ${platform} account (${handle}). Please can you help?`);
+    return `<a href="mailto:info@realverified.co.uk?subject=${subject}&body=${body}" style="display:inline-block;margin-top:8px;font-size:11px;color:var(--gray-light);text-decoration:none;font-family:'DM Mono',monospace;letter-spacing:0.04em;" onmouseover="this.style.color='var(--navy)'" onmouseout="this.style.color='var(--gray-light)'">Having trouble? Contact us →</a>`;
+  }
+
   function escapeHtml(str) {
     if (str == null) return '';
     return String(str)
@@ -1847,6 +1853,7 @@
               <div class="platform-notice">
                 <span class="notice-label">We've sent a confirmation link to this address. Click it to verify you own it. Can't see it? Check your spam folder.</span>
                 <button class="notice-action-btn" onclick="resendEmailFromCard(this)">Resend confirmation email</button>
+                ${helpLink(p.platform, p.handle)}
               </div>`;
           } else if (p.platform === 'Website') {
             notice = `
@@ -1857,6 +1864,7 @@
                   <span class="code-copy-hint">Copy</span>
                 </div>
                 <button class="notice-action-btn" onclick="checkDomainFromCard('${escapeHtml(String(p.id))}', '${escapeHtml(p.handle)}', '${escapeHtml(p.verification_code || '')}')">Check my DNS</button>
+                ${helpLink(p.platform, p.handle)}
               </div>`;
           } else {
             const label = p.platform === 'YouTube'
@@ -1870,6 +1878,7 @@
                   <span class="code-copy-hint">Copy</span>
                 </div>
                 <button class="notice-action-btn" onclick="confirmFromCard(this)">I've added it — check my bio</button>
+                ${p.platform === 'YouTube' ? helpLink(p.platform, p.handle) : ''}
               </div>`;
           }
         } else if (p.platform === 'YouTube') {
@@ -1881,6 +1890,7 @@
                 <span class="code-copy-hint">Copy</span>
               </div>
               <button class="notice-action-btn" onclick="recheckYouTube(this)">Check again</button>
+              ${helpLink(p.platform, p.handle)}
             </div>`;
         } else {
           notice = `
