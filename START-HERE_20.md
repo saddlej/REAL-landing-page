@@ -337,6 +337,8 @@ Steps 1–96 from version 19 remain complete ✅
 123. Website DNS verification — modal auto-closes after failed check, card handles all retrying ✅
 124. Automatic platform cards (Website, Email, YouTube) — "Having trouble? Contact us →" mailto link added for support ✅
 125. Dashboard footer — permanent "Need help? Contact us →" mailto link added ✅
+129. Impersonation report — overlay click no longer saves the report, only Submit button saves ✅
+130. Impersonation report — "Get report pack →" button added to each logged report card so members can always access the pre-written text and platform report link ✅
 
 **Needs doing next session:**
 * Re-add Instagram and TikTok to your own profile (removed during testing)
