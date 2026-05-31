@@ -331,10 +331,12 @@ Steps 1–96 from version 19 remain complete ✅
 117. Website DNS verification — auto-retry every 60 seconds, no manual clicking needed ✅
 118. Website DNS verification — silent fails, no browser alert popup ✅
 119. Website DNS verification — checking status shows pulsing dot, timestamp, survives re-renders ✅
+120. Website DNS verification — @ symbol stripped from domain before lookup ✅
+121. Website DNS verification — switched to Google DNS-over-HTTPS for reliable lookups ✅
+122. Website DNS verification — debug logs removed, code clean ✅
 
 **Needs doing next session:**
 * Re-add Instagram and TikTok to your own profile (removed during testing)
-* Re-add website to your own profile once DNS propagates (in progress)
 
 ---
 
