@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import dns from 'dns';
-import { promisify } from 'util';
 
-const resolveTxt = promisify(dns.resolveTxt);
+const resolver = new dns.promises.Resolver();
+resolver.setServers(['8.8.8.8']);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     // Look up all TXT records on the domain
     let records;
     try {
-      records = await resolveTxt(cleanDomain);
+      records = await resolver.resolveTxt(cleanDomain);
     } catch (dnsError) {
       // Domain doesn't exist or DNS lookup failed
       return res.status(200).json({
