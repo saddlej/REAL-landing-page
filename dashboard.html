@@ -1851,7 +1851,7 @@
           } else if (p.platform === 'Website') {
             notice = `
               <div class="platform-notice">
-                <span class="notice-label">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below. <a href="/dns-guide.html" target="_blank" style="color:var(--navy);">How to do this →</a></span>
+                <span class="notice-label"><span class="dns-instruction-text">Add this code as a TXT record in your domain's DNS settings, then click Check my DNS below.</span> <a href="/dns-guide.html" target="_blank" style="color:var(--navy);">How to do this →</a></span>
                 <div class="code-copy-block" onclick="copyCode(this)">
                   <span class="code-copy-text">${escapeHtml(p.verification_code || '')}</span>
                   <span class="code-copy-hint">Copy</span>
@@ -1976,6 +1976,8 @@
     const timeStr = lastChecked
       ? lastChecked.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       : '';
+    const instructionEl = notice.querySelector('.dns-instruction-text');
+    if (instructionEl) instructionEl.style.display = 'none';
     const existing = notice.querySelector('.dns-status-row');
     if (existing) {
       const timeEl = existing.querySelector('.dns-status-time');
