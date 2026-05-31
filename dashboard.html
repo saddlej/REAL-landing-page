@@ -1262,6 +1262,7 @@
   let compromisePlatformName = null;
   let impersonationReports = [];
   let dnsRetryInterval = null;
+  let dnsRetryRowId = null;
 
   // ─── AVATAR ───
   const AVATAR_BUCKET = 'avatars';
@@ -1940,6 +1941,27 @@
         </div>
       `;
     }).join('');
+
+    // Auto-start DNS checking for any Website platform still pending
+    if (!isPreview && accessToken) {
+      setTimeout(() => {
+        visiblePlatforms.forEach(p => {
+          if (p.platform !== 'Website' || p.status !== 'pending') return;
+          const row = document.querySelector(`[data-row-id="${p.id}"]`);
+          if (!row) return;
+          const btn = row.querySelector('.notice-action-btn');
+          if (!btn) return;
+          if (dnsRetryInterval !== null && dnsRetryRowId === String(p.id)) {
+            // Interval already running — restore visual state on the freshly rendered button
+            btn.disabled = true;
+            btn.classList.add('notice-action-btn--checking');
+            btn.textContent = 'Checking automatically — check back soon';
+          } else if (dnsRetryInterval === null) {
+            checkDomainFromCard(String(p.id), p.handle, p.verification_code || '', btn);
+          }
+        });
+      }, 0);
+    }
   }
 
   // ─── MODAL ───
@@ -1953,6 +1975,7 @@
       clearInterval(dnsRetryInterval);
       dnsRetryInterval = null;
     }
+    dnsRetryRowId = null;
   }
 
   function closeModal() {
@@ -2308,30 +2331,43 @@
     }
   }
 
-  async function checkDomainFromCard(rowId, domain, code) {
-    const btn = event.target;
+  async function checkDomainFromCard(rowId, domain, code, btnEl) {
+    const btn = btnEl !== undefined ? btnEl : event.target;
+    dnsRetryRowId = String(rowId);
     btn.disabled = true;
     btn.textContent = 'Checking…';
-    try {
-      const r = await fetch('/api/domain-verify', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: rowId, domain: domain, verification_code: code })
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data.error || 'Failed');
-      if (data.verified) {
-        await loadPlatforms(accessToken);
-      } else {
-        btn.disabled = true;
-        btn.classList.add('notice-action-btn--checking');
-        btn.textContent = 'Checking automatically — check back soon';
+
+    const doCheck = async () => {
+      const liveRow = document.querySelector(`[data-row-id="${rowId}"]`);
+      const liveBtn = (liveRow && liveRow.querySelector('.notice-action-btn')) || btn;
+      try {
+        const r = await fetch('/api/domain-verify', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: rowId, domain, verification_code: code })
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || 'Failed');
+        if (data.verified) {
+          clearDnsRetry();
+          await loadPlatforms(accessToken);
+        } else if (dnsRetryInterval === null) {
+          liveBtn.disabled = true;
+          liveBtn.classList.add('notice-action-btn--checking');
+          liveBtn.textContent = 'Checking automatically — check back soon';
+          dnsRetryInterval = setInterval(doCheck, 60000);
+        }
+      } catch(e) {
+        if (dnsRetryInterval === null) {
+          liveBtn.disabled = false;
+          liveBtn.classList.remove('notice-action-btn--checking');
+          liveBtn.textContent = 'Check my DNS';
+          dnsRetryRowId = null;
+        }
       }
-    } catch(e) {
-      btn.disabled = false;
-      btn.classList.remove('notice-action-btn--checking');
-      btn.textContent = 'Check my DNS';
-    }
+    };
+
+    await doCheck();
   }
 
   async function checkDomainVerification() {
