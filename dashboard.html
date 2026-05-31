@@ -1172,6 +1172,19 @@
             <option value="Website / Domain">Website / Domain</option>
           </select>
         </div>
+        <div class="modal-field" id="fakeReportSituationField" style="display:none;">
+          <label class="modal-label">Which best describes your situation?</label>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:2px;">
+            <label id="rfSitLabel_1" style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+              <input type="radio" name="rfSituation" value="1" style="margin-top:3px; flex-shrink:0; accent-color:var(--navy);" onchange="onFakeSituationChange()">
+              <span style="font-size:13px; color:var(--navy); line-height:1.5;">I have an account on this platform and someone is impersonating me</span>
+            </label>
+            <label id="rfSitLabel_2" style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s;">
+              <input type="radio" name="rfSituation" value="2" style="margin-top:3px; flex-shrink:0; accent-color:var(--navy);" onchange="onFakeSituationChange()">
+              <span style="font-size:13px; color:var(--navy); line-height:1.5;">I don't have an account on this platform but someone is using my identity there</span>
+            </label>
+          </div>
+        </div>
         <div class="modal-field" id="fakeReportMyAccountField" style="display:none;">
           <label class="modal-label">Your verified account on this platform</label>
           <select class="modal-input" id="fakeReportMyAccount" style="cursor:pointer; appearance:auto;">
@@ -2721,16 +2734,40 @@
     `).join('');
   }
 
+  function highlightSituationLabels() {
+    [1, 2].forEach(n => {
+      const lbl = document.getElementById('rfSitLabel_' + n);
+      const inp = lbl && lbl.querySelector('input');
+      if (lbl) lbl.style.borderColor = inp && inp.checked ? 'var(--navy)' : 'var(--border)';
+    });
+  }
+
   function onFakePlatformChange() {
     const platform = document.getElementById('fakeReportPlatform').value;
-    const field = document.getElementById('fakeReportMyAccountField');
+    document.querySelectorAll('input[name="rfSituation"]').forEach(r => r.checked = false);
+    highlightSituationLabels();
+    document.getElementById('fakeReportMyAccountField').style.display = 'none';
+    document.getElementById('fakeReportSituationField').style.display = platform ? 'block' : 'none';
+  }
+
+  function onFakeSituationChange() {
+    highlightSituationLabels();
+    const val = document.querySelector('input[name="rfSituation"]:checked')?.value;
+    const accountField = document.getElementById('fakeReportMyAccountField');
     const select = document.getElementById('fakeReportMyAccount');
-    if (!platform) { field.style.display = 'none'; return; }
-    const verified = (userPlatforms || []).filter(p => p.platform === platform && p.status === 'verified');
-    if (verified.length === 0) { field.style.display = 'none'; return; }
-    select.innerHTML = '<option value="">Select your account…</option>' +
-      verified.map(p => `<option value="${escapeHtml(p.handle)}">${escapeHtml(p.handle)}${p.is_backup ? ' (backup)' : ''}</option>`).join('');
-    field.style.display = 'block';
+    if (val === '1') {
+      const platform = document.getElementById('fakeReportPlatform').value;
+      const verified = (userPlatforms || []).filter(p => p.platform === platform && p.status === 'verified');
+      if (verified.length > 0) {
+        select.innerHTML = '<option value="">Select your account…</option>' +
+          verified.map(p => `<option value="${escapeHtml(p.handle)}">${escapeHtml(p.handle)}${p.is_backup ? ' (backup)' : ''}</option>`).join('');
+        accountField.style.display = 'block';
+      } else {
+        accountField.style.display = 'none';
+      }
+    } else {
+      accountField.style.display = 'none';
+    }
   }
 
   function openReportFakeModal() {
@@ -2739,6 +2776,9 @@
     document.getElementById('fakeReportPlatform').value = '';
     document.getElementById('fakeReportHandle').value = '';
     document.getElementById('fakeReportNotes').value = '';
+    document.getElementById('fakeReportSituationField').style.display = 'none';
+    document.querySelectorAll('input[name="rfSituation"]').forEach(r => r.checked = false);
+    highlightSituationLabels();
     document.getElementById('fakeReportMyAccountField').style.display = 'none';
     document.getElementById('fakeReportMyAccount').innerHTML = '<option value="">Select your account…</option>';
     const msg = document.getElementById('reportFakeMsg');
@@ -2763,9 +2803,12 @@
     const realId = document.getElementById('realId').textContent || '';
     const match = (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified' && !p.is_backup)
                || (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified');
-    const myHandle = match ? match.handle : '';
-    const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
-    const reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+    let reportText;
+    if (match) {
+      reportText = `This account ${fakeHandle} is impersonating me on ${platform}. I am the verified owner of ${match.handle}. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+    } else {
+      reportText = `This account ${fakeHandle} is using my identity on ${platform} without my consent. I do not currently have an account on this platform. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+    }
     document.getElementById('rfReportTextContent').textContent = reportText;
     document.getElementById('rfRealIdInChecklist').textContent = realId;
     const reportUrl = PLATFORM_REPORT_URLS[platform] || null;
@@ -2804,11 +2847,17 @@
     const fakeHandle  = document.getElementById('fakeReportHandle').value.trim();
     const dateNoticed = document.getElementById('fakeReportDate').value;
     const notes       = document.getElementById('fakeReportNotes').value.trim();
-    const myHandle    = document.getElementById('fakeReportMyAccount').value.trim();
+    const situation   = document.querySelector('input[name="rfSituation"]:checked')?.value || '';
+    const myHandle    = situation === '1' ? document.getElementById('fakeReportMyAccount').value.trim() : '';
     const msg         = document.getElementById('reportFakeMsg');
 
     if (!platform) {
       msg.textContent = 'Please select a platform.';
+      msg.className = 'msg error visible';
+      return;
+    }
+    if (!situation) {
+      msg.textContent = 'Please select which situation applies.';
       msg.className = 'msg error visible';
       return;
     }
@@ -2877,8 +2926,13 @@
 
       // Build and show success screen
       const realId = document.getElementById('realId').textContent || '';
-      const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
-      const reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+      let reportText;
+      if (situation === '2') {
+        reportText = `This account ${fakeHandle} is using my identity on ${platform} without my consent. I do not currently have an account on this platform. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+      } else {
+        const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
+        reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+      }
       document.getElementById('rfReportTextContent').textContent = reportText;
       document.getElementById('rfRealIdInChecklist').textContent = realId;
       const reportUrl = PLATFORM_REPORT_URLS[platform] || null;
