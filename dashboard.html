@@ -444,18 +444,8 @@
   .notice-action-btn { align-self: flex-start; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; background: transparent; color: var(--navy); border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s, opacity 0.2s; white-space: nowrap; }
   .notice-action-btn:hover { border-color: var(--navy); }
   .notice-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .notice-action-btn--checking { opacity: 1 !important; cursor: default !important; color: var(--gray) !important; border-color: var(--border) !important; }
-  .notice-action-btn--checking::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--gray);
-    margin-right: 7px;
-    vertical-align: middle;
-    animation: dns-pulse 1.4s ease-in-out infinite;
-  }
+  .dns-status-row { display: flex; align-items: center; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--gray); }
+  .dns-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; animation: dns-pulse 1.4s ease-in-out infinite; }
   @keyframes dns-pulse {
     0%, 100% { opacity: 0.2; }
     50% { opacity: 1; }
@@ -1952,10 +1942,7 @@
           const btn = row.querySelector('.notice-action-btn');
           if (!btn) return;
           if (dnsRetryInterval !== null && dnsRetryRowId === String(p.id)) {
-            // Interval already running — restore visual state on the freshly rendered button
-            btn.disabled = true;
-            btn.classList.add('notice-action-btn--checking');
-            btn.textContent = 'Checking automatically — check back soon';
+            setDnsCheckingVisual(p.id);
           } else if (dnsRetryInterval === null) {
             checkDomainFromCard(String(p.id), p.handle, p.verification_code || '', btn);
           }
@@ -1976,6 +1963,19 @@
       dnsRetryInterval = null;
     }
     dnsRetryRowId = null;
+  }
+
+  function setDnsCheckingVisual(rowId) {
+    const row = document.querySelector(`[data-row-id="${rowId}"]`);
+    if (!row) return;
+    const notice = row.querySelector('.platform-notice');
+    if (!notice) return;
+    const btn = notice.querySelector('.notice-action-btn');
+    if (!btn) return;
+    const status = document.createElement('div');
+    status.className = 'dns-status-row';
+    status.innerHTML = '<span class="dns-status-dot"></span>Checking DNS automatically...';
+    btn.replaceWith(status);
   }
 
   function closeModal() {
@@ -2338,8 +2338,6 @@
     btn.textContent = 'Checking…';
 
     const doCheck = async () => {
-      const liveRow = document.querySelector(`[data-row-id="${rowId}"]`);
-      const liveBtn = (liveRow && liveRow.querySelector('.notice-action-btn')) || btn;
       try {
         const r = await fetch('/api/domain-verify', {
           method: 'POST',
@@ -2352,17 +2350,25 @@
           clearDnsRetry();
           await loadPlatforms(accessToken);
         } else if (dnsRetryInterval === null) {
-          liveBtn.disabled = true;
-          liveBtn.classList.add('notice-action-btn--checking');
-          liveBtn.textContent = 'Checking automatically — check back soon';
+          setDnsCheckingVisual(rowId);
           dnsRetryInterval = setInterval(doCheck, 60000);
         }
       } catch(e) {
         if (dnsRetryInterval === null) {
-          liveBtn.disabled = false;
-          liveBtn.classList.remove('notice-action-btn--checking');
-          liveBtn.textContent = 'Check my DNS';
           dnsRetryRowId = null;
+          const liveRow = document.querySelector(`[data-row-id="${rowId}"]`);
+          const notice = liveRow && liveRow.querySelector('.platform-notice');
+          const statusEl = notice && notice.querySelector('.dns-status-row');
+          if (statusEl) {
+            const newBtn = document.createElement('button');
+            newBtn.className = 'notice-action-btn';
+            newBtn.textContent = 'Check my DNS';
+            newBtn.onclick = () => checkDomainFromCard(rowId, domain, code, newBtn);
+            statusEl.replaceWith(newBtn);
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Check my DNS';
+          }
         }
       }
     };
