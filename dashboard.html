@@ -446,6 +446,7 @@
   .notice-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .dns-status-row { display: flex; align-items: center; gap: 8px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--gray); }
   .dns-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; animation: dns-pulse 1.4s ease-in-out infinite; }
+  .dns-status-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-light); margin-left: auto; letter-spacing: 0.04em; }
   @keyframes dns-pulse {
     0%, 100% { opacity: 0.2; }
     50% { opacity: 1; }
@@ -1965,16 +1966,25 @@
     dnsRetryRowId = null;
   }
 
-  function setDnsCheckingVisual(rowId) {
+  function setDnsCheckingVisual(rowId, lastChecked) {
     const row = document.querySelector(`[data-row-id="${rowId}"]`);
     if (!row) return;
     const notice = row.querySelector('.platform-notice');
     if (!notice) return;
+    const timeStr = lastChecked
+      ? lastChecked.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      : '';
+    const existing = notice.querySelector('.dns-status-row');
+    if (existing) {
+      const timeEl = existing.querySelector('.dns-status-time');
+      if (timeEl) timeEl.textContent = `Last checked: ${timeStr}`;
+      return;
+    }
     const btn = notice.querySelector('.notice-action-btn');
     if (!btn) return;
     const status = document.createElement('div');
     status.className = 'dns-status-row';
-    status.innerHTML = '<span class="dns-status-dot"></span>Checking DNS automatically...';
+    status.innerHTML = `<span class="dns-status-dot"></span>Checking DNS automatically...${timeStr ? `<span class="dns-status-time">Last checked: ${timeStr}</span>` : ''}`;
     btn.replaceWith(status);
   }
 
@@ -2349,9 +2359,10 @@
         if (data.verified) {
           clearDnsRetry();
           await loadPlatforms(accessToken);
-        } else if (dnsRetryInterval === null) {
-          setDnsCheckingVisual(rowId);
-          dnsRetryInterval = setInterval(doCheck, 60000);
+        } else {
+          const isFirst = dnsRetryInterval === null;
+          setDnsCheckingVisual(rowId, new Date());
+          if (isFirst) dnsRetryInterval = setInterval(doCheck, 60000);
         }
       } catch(e) {
         if (dnsRetryInterval === null) {
