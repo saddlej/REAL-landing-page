@@ -580,15 +580,15 @@
     text-transform: uppercase;
     padding: 4px 9px;
     background: transparent;
-    border: 1px solid rgba(192,57,43,0.4);
-    color: var(--error);
+    border: 1px solid var(--border);
+    color: var(--navy);
     cursor: pointer;
     flex-shrink: 0;
     white-space: nowrap;
-    transition: opacity 0.2s;
+    transition: border-color 0.2s, color 0.2s;
     line-height: 1.4;
   }
-  .btn-compromise:hover { opacity: 0.7; }
+  .btn-compromise:hover { border-color: var(--navy); }
   .btn-recover {
     font-family: 'DM Mono', monospace;
     font-size: 9px;
@@ -1913,7 +1913,7 @@
           ${notice}
           ${safeStatus === 'verified' && !isCompromised ? `
           <div class="platform-notice" style="border-top-color:rgba(10,25,60,0.07); flex-direction:row; padding-top:7px; margin-top:0; gap:0;">
-            <button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">⚠ Report Compromise</button>
+            <button class="btn-compromise" onclick="openCompromiseModal('${escapeHtml(String(p.id))}','${escapeHtml(p.platform)}')">Report Compromise</button>
           </div>` : ''}
           ${isCompromised ? `
           <div class="platform-notice" style="border-top-color:rgba(192,57,43,0.15); flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
