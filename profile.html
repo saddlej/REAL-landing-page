@@ -681,14 +681,14 @@
         }
         if (cs === 'recovered' && p.recovered_at) {
           const rcTs = new Date(p.recovered_at).getTime();
-          tlEvents.push({ ts: rcTs, desc: `${p.platform} account recovered` });
+          tlEvents.push({ ts: rcTs, desc: `${p.platform} account recovered — ${p.handle}` });
         }
       });
     }
     if (removedPlatforms) {
       removedPlatforms.forEach(p => {
         if (p.verified_at) tlEvents.push({ ts: new Date(p.verified_at).getTime(), desc: `${p.platform} verified — ${p.handle}` });
-        if (p.compromised_at) tlEvents.push({ ts: new Date(p.compromised_at).getTime(), desc: `${p.platform} — account lost — removed from profile` });
+        if (p.compromised_at) tlEvents.push({ ts: new Date(p.compromised_at).getTime(), desc: `${p.platform} — ${p.handle} — account lost — removed from profile` });
       });
     }
     tlEvents.sort((a, b) => a.ts - b.ts);
