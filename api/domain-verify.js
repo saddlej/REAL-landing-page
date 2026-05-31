@@ -18,6 +18,7 @@ export default async function handler(req, res) {
 
   // Clean the domain — strip http/https and trailing slashes
   const cleanDomain = domain
+    .replace(/^@+/, '')
     .replace(/^https?:\/\//, '')
     .replace(/\/.*$/, '')
     .trim();
