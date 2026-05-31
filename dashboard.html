@@ -1148,7 +1148,7 @@
 
 <!-- REPORT FAKE ACCOUNT MODAL -->
 <div class="modal-overlay" id="reportFakeModalOverlay" onclick="closeReportFakeModalOnOverlay(event)">
-  <div class="modal" style="max-width:500px;">
+  <div class="modal" style="max-width:500px;" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="reportFakeModalTitle">Report a Fake Account</div>
       <button class="modal-close" onclick="closeReportFakeModal()">✕</button>
@@ -2716,6 +2716,7 @@
           <span class="impersonation-date">Noticed ${formatDate(rep.date_noticed)}</span>
         </div>
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
+        <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}')" style="font-size:12px; padding:7px 14px; margin-top:10px;">Get report pack →</button>
       </div>
     `).join('');
   }
@@ -2756,6 +2757,31 @@
 
   function closeReportFakeModalOnOverlay(e) {
     if (e.target === document.getElementById('reportFakeModalOverlay')) closeReportFakeModal();
+  }
+
+  function openReportPack(platform, fakeHandle) {
+    const realId = document.getElementById('realId').textContent || '';
+    const match = (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified' && !p.is_backup)
+               || (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified');
+    const myHandle = match ? match.handle : '';
+    const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
+    const reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+    document.getElementById('rfReportTextContent').textContent = reportText;
+    document.getElementById('rfRealIdInChecklist').textContent = realId;
+    const reportUrl = PLATFORM_REPORT_URLS[platform] || null;
+    const reportBtn = document.getElementById('rfPlatformReportBtn');
+    if (reportUrl) {
+      reportBtn.href = reportUrl;
+      reportBtn.textContent = `Report to ${platform} →`;
+      reportBtn.style.display = 'block';
+    } else {
+      reportBtn.style.display = 'none';
+    }
+    document.getElementById('rfCopyBtn').textContent = 'Copy';
+    document.getElementById('rfStep1').style.display = 'none';
+    document.getElementById('rfStep2').style.display = 'block';
+    document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
+    document.getElementById('reportFakeModalOverlay').classList.add('visible');
   }
 
   function copyFakeReportText(btn) {
