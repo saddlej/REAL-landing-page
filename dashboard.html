@@ -2948,7 +2948,14 @@
     // Use stored situation if available, otherwise fall back to match detection
     const scenarioKey = situation ? (situation === '1' ? 'scenario1' : 'scenario2') : (match ? 'scenario1' : 'scenario2');
     let reportText;
-    if (scenarioKey === 'scenario1') {
+    if (platform === 'Website / Domain') {
+      if (scenarioKey === 'scenario1') {
+        const ownershipLine = match ? ` I am the verified owner of ${match.handle}.` : '';
+        reportText = `The website ${fakeHandle} is impersonating me and my business.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please investigate and take action against this domain.`;
+      } else {
+        reportText = `The domain ${fakeHandle} is using my brand name and identity without my consent. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please investigate and take action against this domain.`;
+      }
+    } else if (scenarioKey === 'scenario1') {
       const ownershipLine = match ? ` I am the verified owner of ${match.handle}.` : '';
       reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
     } else {
@@ -3117,7 +3124,14 @@
       // Build and show success screen
       const realId = document.getElementById('realId').textContent || '';
       let reportText;
-      if (situation === '2') {
+      if (platform === 'Website / Domain') {
+        if (situation === '2') {
+          reportText = `The domain ${fakeHandle} is using my brand name and identity without my consent. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please investigate and take action against this domain.`;
+        } else {
+          const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
+          reportText = `The website ${fakeHandle} is impersonating me and my business.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please investigate and take action against this domain.`;
+        }
+      } else if (situation === '2') {
         reportText = `This account ${fakeHandle} is using my identity on ${platform} without my consent. I do not currently have an account on this platform. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
       } else {
         const ownershipLine = myHandle ? ` I am the verified owner of ${myHandle}.` : '';
