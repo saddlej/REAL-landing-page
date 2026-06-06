@@ -2943,32 +2943,46 @@
     const formalBtn = document.getElementById('formalReportBtn');
     const routeNote = document.getElementById('formalRouteNote');
     if (formalBtn) {
-      formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+      if (platform === 'Email' || platform === 'Website / Domain') {
+        formalBtn.href = 'https://lookup.icann.org';
+        formalBtn.textContent = 'Look Up Domain Registrar →';
+      } else {
+        formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+        formalBtn.textContent = 'Open Formal Report Form →';
+      }
     }
     if (routeNote) {
       const notes = {
         scenario1: {
-          'TikTok':      'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
-          'Instagram':   'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
-          'X / Twitter': 'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
-          'Facebook':    'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
-          'LinkedIn':    'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
-          'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.'
+          'TikTok':           'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
+          'Instagram':        'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
+          'X / Twitter':      'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
+          'Facebook':         'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
+          'LinkedIn':         'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
+          'YouTube':          'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.',
+          'Email':            'Email impersonation is reported to the domain registrar who owns that email domain. Use ICANN WHOIS to find the registrar, then report through their abuse contact form. Include your REAL profile link as timestamped evidence.',
+          'Website / Domain': 'Fake websites are reported to the domain registrar who sold that domain. Use ICANN WHOIS to find the registrar, then submit an abuse report through their abuse contact page. Include your REAL profile link as independent timestamped evidence.'
         },
         scenario2: {
-          'TikTok':      'TikTok only requires your email address to report — no TikTok account needed. Select "Report an Impersonation Account", enter your email and the fake account details. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-          'Instagram':   'Use Meta\'s dedicated no-login impostor form — no Instagram account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
-          'X / Twitter': 'X requires an account to submit a formal report. Create a free X account (takes 2 minutes), then select "Me or someone I am authorized to represent" and "I am being impersonated". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-          'Facebook':    'Use Meta\'s dedicated no-login impostor form — no Facebook account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
-          'LinkedIn':    'LinkedIn requires an account to submit a formal report. Create a free basic LinkedIn account (takes 2 minutes), then submit the impersonation report. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-          'YouTube':     'YouTube requires a Google account to submit a formal report. Create a free Google account (takes 2 minutes), then return here and click "report the channel". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.'
+          'TikTok':           'TikTok only requires your email address to report — no TikTok account needed. Select "Report an Impersonation Account", enter your email and the fake account details. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+          'Instagram':        'Use Meta\'s dedicated no-login impostor form — no Instagram account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
+          'X / Twitter':      'X requires an account to submit a formal report. Create a free X account (takes 2 minutes), then select "Me or someone I am authorized to represent" and "I am being impersonated". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+          'Facebook':         'Use Meta\'s dedicated no-login impostor form — no Facebook account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
+          'LinkedIn':         'LinkedIn requires an account to submit a formal report. Create a free basic LinkedIn account (takes 2 minutes), then submit the impersonation report. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+          'YouTube':          'YouTube requires a Google account to submit a formal report. Create a free Google account (takes 2 minutes), then return here and click "report the channel". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+          'Email':            'Someone is using your identity via a fake email address. Use ICANN WHOIS to identify the domain registrar and submit an abuse report. Include your REAL profile link as evidence you are the genuine person.',
+          'Website / Domain': 'A fake website using your identity or brand is reported to the domain registrar. Use ICANN WHOIS to identify who registered it and submit an abuse report. Include your REAL profile link as evidence you are the genuine person.'
         }
       };
       routeNote.textContent = notes[scenarioKey][platform] || 'This dedicated form bypasses the standard queue and reaches the platform\'s identity team directly. Include your REAL profile link as evidence.';
     }
     const inAppNote = document.getElementById('inAppNote');
     if (inAppNote) {
-      if (scenarioKey === 'scenario2') {
+      if (platform === 'Email') {
+        inAppNote.textContent = 'Also report to Action Fraud at actionfraud.police.uk if the fake email has been used to scam or attempt to take money from anyone.';
+      } else if (platform === 'Website / Domain') {
+        inAppNote.textContent = 'Also report to Action Fraud at actionfraud.police.uk — a fake website used to impersonate or defraud people is a criminal matter in the UK.';
+      } else if (scenarioKey === 'scenario2') {
         if (platform === 'Facebook' || platform === 'Instagram') {
           inAppNote.textContent = 'You can also report in-app if you have an account. Go to the fake profile, tap the three dots and select Report → Impersonation. Multiple reports strengthen your case.';
         } else {
@@ -3099,32 +3113,46 @@
       const formalBtn = document.getElementById('formalReportBtn');
       const routeNote = document.getElementById('formalRouteNote');
       if (formalBtn) {
-        formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+        if (platform === 'Email' || platform === 'Website / Domain') {
+          formalBtn.href = 'https://lookup.icann.org';
+          formalBtn.textContent = 'Look Up Domain Registrar →';
+        } else {
+          formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+          formalBtn.textContent = 'Open Formal Report Form →';
+        }
       }
       if (routeNote) {
         const notes = {
           scenario1: {
-            'TikTok':      'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
-            'Instagram':   'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
-            'X / Twitter': 'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
-            'Facebook':    'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
-            'LinkedIn':    'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
-            'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.'
+            'TikTok':           'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
+            'Instagram':        'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
+            'X / Twitter':      'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
+            'Facebook':         'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
+            'LinkedIn':         'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
+            'YouTube':          'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.',
+            'Email':            'Email impersonation is reported to the domain registrar who owns that email domain. Use ICANN WHOIS to find the registrar, then report through their abuse contact form. Include your REAL profile link as timestamped evidence.',
+            'Website / Domain': 'Fake websites are reported to the domain registrar who sold that domain. Use ICANN WHOIS to find the registrar, then submit an abuse report through their abuse contact page. Include your REAL profile link as independent timestamped evidence.'
           },
           scenario2: {
-            'TikTok':      'TikTok only requires your email address to report — no TikTok account needed. Select "Report an Impersonation Account", enter your email and the fake account details. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-            'Instagram':   'Use Meta\'s dedicated no-login impostor form — no Instagram account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
-            'X / Twitter': 'X requires an account to submit a formal report. Create a free X account (takes 2 minutes), then select "Me or someone I am authorized to represent" and "I am being impersonated". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-            'Facebook':    'Use Meta\'s dedicated no-login impostor form — no Facebook account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
-            'LinkedIn':    'LinkedIn requires an account to submit a formal report. Create a free basic LinkedIn account (takes 2 minutes), then submit the impersonation report. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
-            'YouTube':     'YouTube requires a Google account to submit a formal report. Create a free Google account (takes 2 minutes), then return here and click "report the channel". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.'
+            'TikTok':           'TikTok only requires your email address to report — no TikTok account needed. Select "Report an Impersonation Account", enter your email and the fake account details. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+            'Instagram':        'Use Meta\'s dedicated no-login impostor form — no Instagram account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
+            'X / Twitter':      'X requires an account to submit a formal report. Create a free X account (takes 2 minutes), then select "Me or someone I am authorized to represent" and "I am being impersonated". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+            'Facebook':         'Use Meta\'s dedicated no-login impostor form — no Facebook account needed. Fill in your details and include your REAL profile link as independent evidence you are the original.',
+            'LinkedIn':         'LinkedIn requires an account to submit a formal report. Create a free basic LinkedIn account (takes 2 minutes), then submit the impersonation report. Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+            'YouTube':          'YouTube requires a Google account to submit a formal report. Create a free Google account (takes 2 minutes), then return here and click "report the channel". Include your REAL profile link as evidence — it\'s timestamped and government ID confirmed.',
+            'Email':            'Someone is using your identity via a fake email address. Use ICANN WHOIS to identify the domain registrar and submit an abuse report. Include your REAL profile link as evidence you are the genuine person.',
+            'Website / Domain': 'A fake website using your identity or brand is reported to the domain registrar. Use ICANN WHOIS to identify who registered it and submit an abuse report. Include your REAL profile link as evidence you are the genuine person.'
           }
         };
         routeNote.textContent = notes[scenarioKey][platform] || 'This dedicated form bypasses the standard queue and reaches the platform\'s identity team directly. Include your REAL profile link as evidence.';
       }
       const inAppNote = document.getElementById('inAppNote');
       if (inAppNote) {
-        if (scenarioKey === 'scenario2') {
+        if (platform === 'Email') {
+          inAppNote.textContent = 'Also report to Action Fraud at actionfraud.police.uk if the fake email has been used to scam or attempt to take money from anyone.';
+        } else if (platform === 'Website / Domain') {
+          inAppNote.textContent = 'Also report to Action Fraud at actionfraud.police.uk — a fake website used to impersonate or defraud people is a criminal matter in the UK.';
+        } else if (scenarioKey === 'scenario2') {
           if (platform === 'Facebook' || platform === 'Instagram') {
             inAppNote.textContent = 'You can also report in-app if you have an account. Go to the fake profile, tap the three dots and select Report → Impersonation. Multiple reports strengthen your case.';
           } else {
