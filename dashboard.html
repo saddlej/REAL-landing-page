@@ -2764,7 +2764,9 @@
       list.innerHTML = `<div class="impersonation-empty"><p>No fake accounts reported yet.<br>If you spot someone impersonating you, use the button above to log it.</p></div>`;
       return;
     }
-    list.innerHTML = impersonationReports.map(rep => `
+    const recent = impersonationReports.slice(0, 3);
+    const overflow = impersonationReports.length - 3;
+    list.innerHTML = recent.map(rep => `
       <div class="impersonation-item">
         <div class="impersonation-item-header">
           <span class="impersonation-platform">${escapeHtml(rep.platform)}</span>
@@ -2774,7 +2776,7 @@
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
         <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px; margin-top:10px;">Get report pack →</button>
       </div>
-    `).join('');
+    `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openCaseFile(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '');
   }
 
   function highlightSituationLabels() {
