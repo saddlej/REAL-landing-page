@@ -709,6 +709,17 @@
     .id-verify-block { flex-direction: column; align-items: flex-start; }
     .subscription-row { flex-direction: column; align-items: flex-start; }
   }
+  .evidence-list { font-size:12px; color:var(--gray); line-height:1.9; padding-left:18px; }
+  .report-routes { margin-top: 20px; }
+  .routes-intro { font-size: 14px; color: #555; margin-bottom: 16px; }
+  .route-block { padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+  .route-formal { background: #f0faf5; border: 1px solid #22a366; }
+  .route-basic { background: #f9f9f9; border: 1px solid #ddd; }
+  .route-label { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .route-formal .route-label { color: #1a6b45; }
+  .route-basic .route-label { color: #555; }
+  .route-desc { font-size: 13px; color: #444; margin-bottom: 12px; line-height: 1.5; }
+  .route-btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -1225,15 +1236,26 @@
           <button id="rfCopyBtn" onclick="copyFakeReportText(this)" style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 16px; background:var(--gold); color:var(--navy); border:none; cursor:pointer; font-weight:500;">Copy</button>
         </div>
         <div style="background:rgba(10,25,60,0.04); border-left:3px solid var(--gold); padding:12px 16px; margin-bottom:20px;">
-          <p style="font-size:12px; font-weight:600; color:var(--navy); margin-bottom:8px;">Before you click the report link, make sure you have:</p>
-          <ul style="font-size:12px; color:var(--gray); line-height:1.9; padding-left:18px;">
-            <li>The fake account URL</li>
-            <li>At least one screenshot</li>
-            <li>Your REAL profile link (realverified.co.uk/<span id="rfRealIdInChecklist" style="font-family:'DM Mono',monospace;"></span>)</li>
+          <p style="font-size:12px; font-weight:600; color:var(--navy); margin-bottom:8px;">Before you report, make sure you have:</p>
+          <ul class="evidence-list">
+            <li>✓ URL of the fake account</li>
+            <li>✓ Screenshot of the fake profile</li>
+            <li>✓ Your REAL profile link: realverified.co.uk/<span id="rfRealIdInChecklist" style="font-family:'DM Mono',monospace;"></span></li>
           </ul>
         </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <a id="rfPlatformReportBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-decoration:none; text-align:center; display:block; padding:13px 28px;">Report to platform →</a>
+        <div class="report-routes">
+          <p class="routes-intro">Use the <strong>formal route</strong> — it goes directly to a real team, not a general queue.</p>
+          <div class="route-block route-formal">
+            <div class="route-label">✓ Recommended — Formal Report</div>
+            <p class="route-desc">This dedicated form bypasses the standard queue and reaches the platform's identity or IP team directly. Include your REAL profile link as evidence — it's timestamped, government ID backed, and independent proof you are the original.</p>
+            <a class="route-btn btn-primary" href="#" id="formalReportBtn" target="_blank" rel="noopener">Open Formal Report Form →</a>
+          </div>
+          <div class="route-block route-basic">
+            <div class="route-label">Also report in-app</div>
+            <p class="route-desc">Go to the fake account on the platform, tap the three dots, and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
           <button class="btn-secondary" onclick="closeReportFakeModal()" style="width:100%;">Close</button>
         </div>
       </div>
@@ -1267,11 +1289,11 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
 
   const PLATFORM_REPORT_URLS = {
-    'Instagram':   'https://help.instagram.com/contact/636276399721841',
     'TikTok':      'https://www.tiktok.com/legal/report/submit-requests',
+    'Instagram':   'https://help.instagram.com/contact/636276399721841',
     'X / Twitter': 'https://help.twitter.com/forms/impersonation',
     'Facebook':    'https://www.facebook.com/help/1291391774792379',
-    'LinkedIn':    'https://www.linkedin.com/help/linkedin/answer/a1338436',
+    'LinkedIn':    'https://www.linkedin.com/help/linkedin/ask/TSO-DMA-22',
     'YouTube':     'https://support.google.com/youtube/answer/2801947'
   };
 
@@ -2811,15 +2833,9 @@
     }
     document.getElementById('rfReportTextContent').textContent = reportText;
     document.getElementById('rfRealIdInChecklist').textContent = realId;
-    const reportUrl = PLATFORM_REPORT_URLS[platform] || null;
-    const reportBtn = document.getElementById('rfPlatformReportBtn');
-    if (reportUrl) {
-      reportBtn.href = reportUrl;
-      reportBtn.textContent = `Report to ${platform} →`;
-      reportBtn.style.display = 'block';
-    } else {
-      reportBtn.style.display = 'none';
-    }
+    const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
+    const formalBtn = document.getElementById('formalReportBtn');
+    if (formalBtn) formalBtn.href = reportUrl;
     document.getElementById('rfCopyBtn').textContent = 'Copy';
     document.getElementById('rfStep1').style.display = 'none';
     document.getElementById('rfStep2').style.display = 'block';
@@ -2935,15 +2951,9 @@
       }
       document.getElementById('rfReportTextContent').textContent = reportText;
       document.getElementById('rfRealIdInChecklist').textContent = realId;
-      const reportUrl = PLATFORM_REPORT_URLS[platform] || null;
-      const reportBtn = document.getElementById('rfPlatformReportBtn');
-      if (reportUrl) {
-        reportBtn.href = reportUrl;
-        reportBtn.textContent = `Report to ${platform} →`;
-        reportBtn.style.display = 'block';
-      } else {
-        reportBtn.style.display = 'none';
-      }
+      const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
+      const formalBtn = document.getElementById('formalReportBtn');
+      if (formalBtn) formalBtn.href = reportUrl;
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
       document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
