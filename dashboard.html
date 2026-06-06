@@ -2885,9 +2885,15 @@
     }
     const inAppNote = document.getElementById('inAppNote');
     if (inAppNote) {
-      inAppNote.textContent = scenarioKey === 'scenario2'
-        ? 'Once your account is set up, go to the fake profile on the platform, tap the three dots and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.'
-        : 'Go to the fake account on the platform, tap the three dots, and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+      if (scenarioKey === 'scenario2') {
+        if (platform === 'Facebook' || platform === 'Instagram') {
+          inAppNote.textContent = 'You can also report in-app if you have an account. Go to the fake profile, tap the three dots and select Report → Impersonation. Multiple reports strengthen your case.';
+        } else {
+          inAppNote.textContent = 'Once your account is set up, go to the fake profile on the platform, tap the three dots and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+        }
+      } else {
+        inAppNote.textContent = 'Go to the fake account on the platform, tap the three dots, and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+      }
     }
     document.getElementById('rfCopyBtn').textContent = 'Copy';
     document.getElementById('rfStep1').style.display = 'none';
@@ -3034,9 +3040,15 @@
       }
       const inAppNote = document.getElementById('inAppNote');
       if (inAppNote) {
-        inAppNote.textContent = scenarioKey === 'scenario2'
-          ? 'Once your account is set up, go to the fake profile on the platform, tap the three dots and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.'
-          : 'Go to the fake account on the platform, tap the three dots, and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+        if (scenarioKey === 'scenario2') {
+          if (platform === 'Facebook' || platform === 'Instagram') {
+            inAppNote.textContent = 'You can also report in-app if you have an account. Go to the fake profile, tap the three dots and select Report → Impersonation. Multiple reports strengthen your case.';
+          } else {
+            inAppNote.textContent = 'Once your account is set up, go to the fake profile on the platform, tap the three dots and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+          }
+        } else {
+          inAppNote.textContent = 'Go to the fake account on the platform, tap the three dots, and select Report → Impersonation. Do this as well as the formal form — multiple reports strengthen your case.';
+        }
       }
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
