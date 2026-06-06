@@ -104,6 +104,8 @@
   .comparison-inner h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 60px); font-weight: 600; color: var(--navy); letter-spacing: -0.02em; margin-bottom: 12px; line-height: 1.1; }
   .comparison-inner > p { font-size: 17px; color: var(--gray); font-weight: 300; margin-bottom: 52px; line-height: 1.6; }
   .comparison-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); background: white; overflow: hidden; }
+  .table-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; }
+  .table-scroll-wrapper::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.95)); pointer-events: none; transition: opacity 0.3s; }
   .comparison-table th { padding: 16px 20px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); border-bottom: 1px solid var(--border); background: var(--warm-white); }
   .comparison-table th.real-col { background: var(--navy); color: var(--gold); }
   .comparison-table td { padding: 14px 20px; font-size: 14px; color: var(--gray); border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -193,7 +195,7 @@
   .footer-right { font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
-  @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-cta-outline { font-size: 11px; padding: 8px 12px; letter-spacing: 0.02em; white-space: nowrap; } .nav-cta { font-size: 11px; padding: 8px 12px; letter-spacing: 0.02em; white-space: nowrap; } }
 </style>
 </head>
 <body>
@@ -337,7 +339,7 @@
     <span class="section-label">Your entire online business. Verified.</span>
     <h2>One verified home for everything your business runs from.</h2>
     <p>Every platform verification covers one platform. No history. No cross-platform proof. No way to show the public that every account you own is genuinely yours. REAL puts your entire online business — every platform, every account, every contact point — under one verified, publicly accessible profile.</p>
-    <div style="overflow-x:auto;">
+    <div class="table-scroll-wrapper">
       <table class="comparison-table">
         <thead>
           <tr><th style="width:200px">Feature</th><th>Meta Verified</th><th>X Premium</th><th>LinkedIn</th><th class="real-col">REAL ✦</th></tr>
@@ -608,6 +610,14 @@
       }
     }
   })();
+</script>
+<script>
+document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
+  wrapper.addEventListener('scroll', function() {
+    var atEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 10;
+    wrapper.style.setProperty('--fade-opacity', atEnd ? '0' : '1');
+  });
+});
 </script>
 </body>
 </html>
