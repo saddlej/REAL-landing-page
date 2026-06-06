@@ -47,14 +47,14 @@
   .form { display: flex; flex-direction: column; gap: 16px; }
   .field { display: flex; flex-direction: column; gap: 6px; }
   .field label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); }
-  .field input { width: 100%; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; border: 1px solid var(--border); background: white; color: var(--black); outline: none; transition: border-color 0.2s; border-radius: 0; -webkit-appearance: none; }
+  .field input { width: 100%; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; border: 1px solid var(--border); background: white; color: var(--black); outline: none; transition: border-color 0.2s; border-radius: 6px; -webkit-appearance: none; }
   .field input:focus { border-color: var(--navy); }
   .field input::placeholder { color: var(--gray-light); }
   .field input.error { border-color: var(--error); }
 
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .btn-submit { width: 100%; padding: 16px; background: var(--navy); color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; margin-top: 8px; }
+  .btn-submit { width: 100%; padding: 16px; background: var(--navy); color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; margin-top: 8px; border-radius: 6px; }
   .btn-submit:hover { background: var(--navy-mid); transform: translateY(-1px); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
