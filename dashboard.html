@@ -720,6 +720,7 @@
   .route-basic .route-label { color: #555; }
   .route-desc { font-size: 13px; color: #444; margin-bottom: 12px; line-height: 1.5; }
   .route-btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; text-decoration: none; }
+  body.modal-open { overflow: hidden; }
 </style>
 </head>
 <body>
@@ -1405,10 +1406,12 @@
     };
     img.src = dataUrl;
     document.getElementById('cropModal').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
 
   function cancelCrop() {
     document.getElementById('cropModal').classList.remove('visible');
+    document.body.classList.remove('modal-open');
   }
 
   function confirmCrop() {
@@ -1423,6 +1426,7 @@
     ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 400, 400);
     canvas.toBlob(blob => {
       document.getElementById('cropModal').classList.remove('visible');
+      document.body.classList.remove('modal-open');
       uploadAvatar(blob);
     }, 'image/jpeg', 0.88);
   }
@@ -1768,10 +1772,12 @@
     selectProfileTheme(currentProfileTheme);
     document.getElementById('profileModalMsg').className = 'msg';
     document.getElementById('profileModalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
 
   function closeProfileModal() {
     document.getElementById('profileModalOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
   }
 
   function closeProfileModalOnOverlay(event) {
@@ -2050,6 +2056,7 @@
   function openModal() {
     if (!idVerified) return;
     document.getElementById('modalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
     goToStepA();
   }
   function clearDnsRetry() {
@@ -2088,6 +2095,7 @@
   function closeModal() {
     clearDnsRetry();
     document.getElementById('modalOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
     if (!isPreview && accessToken) loadPlatforms(accessToken);
   }
   function closeModalOnOverlay(e) {
@@ -2575,6 +2583,7 @@
       });
       if (!r.ok) throw new Error('Delete failed');
       document.getElementById('modalOverlay').classList.add('visible');
+      document.body.classList.add('modal-open');
       selectPlatform(platform, icon);
     } catch (e) {
       console.error('Resubmit error:', e.message);
@@ -2636,9 +2645,11 @@
     const btn = document.getElementById('compromiseConfirmBtn');
     btn.disabled = false; btn.textContent = 'Report →';
     document.getElementById('compromiseModalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
   function closeCompromiseModal() {
     document.getElementById('compromiseModalOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
   }
   function closeCompromiseModalOnOverlay(e) {
     if (e.target === document.getElementById('compromiseModalOverlay')) closeCompromiseModal();
@@ -2811,10 +2822,12 @@
     document.getElementById('rfStep2').style.display = 'none';
     document.getElementById('reportFakeModalTitle').textContent = 'Report a Fake Account';
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
 
   function closeReportFakeModal() {
     document.getElementById('reportFakeModalOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
   }
 
   function closeReportFakeModalOnOverlay(e) {
@@ -2841,6 +2854,7 @@
     document.getElementById('rfStep2').style.display = 'block';
     document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
 
   function copyFakeReportText(btn) {
@@ -3033,10 +3047,12 @@
     `;
 
     document.getElementById('caseFileOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
   }
 
   function closeCaseFile() {
     document.getElementById('caseFileOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
   }
 
   function closeCaseFileOnOverlay(e) {
