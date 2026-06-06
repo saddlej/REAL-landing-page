@@ -2772,7 +2772,7 @@
           <span class="impersonation-date">Noticed ${formatDate(rep.date_noticed)}</span>
         </div>
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
-        <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}')" style="font-size:12px; padding:7px 14px; margin-top:10px;">Get report pack →</button>
+        <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px; margin-top:10px;">Get report pack →</button>
       </div>
     `).join('');
   }
@@ -2844,19 +2844,21 @@
     if (e.target === document.getElementById('reportFakeModalOverlay')) closeReportFakeModal();
   }
 
-  function openReportPack(platform, fakeHandle) {
+  function openReportPack(platform, fakeHandle, situation) {
     const realId = document.getElementById('realId').textContent || '';
     const match = (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified' && !p.is_backup)
                || (userPlatforms || []).find(p => p.platform === platform && p.status === 'verified');
+    // Use stored situation if available, otherwise fall back to match detection
+    const scenarioKey = situation ? (situation === '1' ? 'scenario1' : 'scenario2') : (match ? 'scenario1' : 'scenario2');
     let reportText;
-    if (match) {
-      reportText = `This account ${fakeHandle} is impersonating me on ${platform}. I am the verified owner of ${match.handle}. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
+    if (scenarioKey === 'scenario1') {
+      const ownershipLine = match ? ` I am the verified owner of ${match.handle}.` : '';
+      reportText = `This account ${fakeHandle} is impersonating me on ${platform}.${ownershipLine} My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
     } else {
       reportText = `This account ${fakeHandle} is using my identity on ${platform} without my consent. I do not currently have an account on this platform. My identity is independently verified at realverified.co.uk/${realId} — government ID confirmed and timestamped. Please review and remove this account.`;
     }
     document.getElementById('rfReportTextContent').textContent = reportText;
     document.getElementById('rfRealIdInChecklist').textContent = realId;
-    const scenarioKey = match ? 'scenario1' : 'scenario2';
     const formalBtn = document.getElementById('formalReportBtn');
     const routeNote = document.getElementById('formalRouteNote');
     if (formalBtn) {
@@ -2966,7 +2968,8 @@
           platform,
           fake_handle: fakeHandle,
           date_noticed: dateNoticed,
-          notes: notes || null
+          notes: notes || null,
+          situation: situation || null
         })
       });
       if (!r.ok) {
