@@ -1290,12 +1290,22 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
 
   const PLATFORM_REPORT_URLS = {
-    'TikTok':      'https://www.tiktok.com/legal/report/submit-requests',
-    'Instagram':   'https://help.instagram.com/contact/636276399721841',
-    'X / Twitter': 'https://help.twitter.com/forms/impersonation',
-    'Facebook':    'https://www.facebook.com/help/1291391774792379',
-    'LinkedIn':    'https://www.linkedin.com/help/linkedin/ask/TSO-DMA-22',
-    'YouTube':     'https://support.google.com/youtube/answer/2801947'
+    scenario1: {
+      'TikTok':      'https://www.tiktok.com/legal/report/submit-requests',
+      'Instagram':   'https://help.instagram.com/contact/636276399721841',
+      'X / Twitter': 'https://help.twitter.com/forms/impersonation',
+      'Facebook':    'https://www.facebook.com/help/1291391774792379',
+      'LinkedIn':    'https://www.linkedin.com/help/linkedin/ask/TSO-DMA-22',
+      'YouTube':     'https://support.google.com/youtube/answer/2801947'
+    },
+    scenario2: {
+      'TikTok':      'https://www.tiktok.com/legal/report/submit-requests',
+      'Instagram':   'https://www.facebook.com/help/contact/295309487309948',
+      'X / Twitter': 'https://help.twitter.com/forms/impersonation',
+      'Facebook':    'https://www.facebook.com/help/contact/295309487309948',
+      'LinkedIn':    'https://www.linkedin.com/help/linkedin/solve',
+      'YouTube':     'https://support.google.com/youtube/answer/2801947'
+    }
   };
 
   // ─── AUTH CHECK ───
@@ -2846,16 +2856,32 @@
     }
     document.getElementById('rfReportTextContent').textContent = reportText;
     document.getElementById('rfRealIdInChecklist').textContent = realId;
-    const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
+    const scenarioKey = match ? 'scenario1' : 'scenario2';
     const formalBtn = document.getElementById('formalReportBtn');
-    if (formalBtn) formalBtn.href = reportUrl;
     const routeNote = document.getElementById('formalRouteNote');
+    if (formalBtn) {
+      formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+    }
     if (routeNote) {
-      if (platform === 'YouTube') {
-        routeNote.textContent = 'This opens YouTube\'s official impersonation policy page. Once there, click "report the channel" to submit your report directly.';
-      } else {
-        routeNote.textContent = 'This dedicated form bypasses the standard queue and reaches the platform\'s identity or IP team directly. Include your REAL profile link as evidence — it\'s timestamped, government ID backed, and independent proof you are the original.';
-      }
+      const notes = {
+        scenario1: {
+          'TikTok':      'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
+          'Instagram':   'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
+          'X / Twitter': 'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
+          'Facebook':    'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
+          'LinkedIn':    'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
+          'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.'
+        },
+        scenario2: {
+          'TikTok':      'This form goes directly to TikTok\'s IP and Safety team. Only your email is required — no TikTok account needed. Include your REAL profile link as evidence.',
+          'Instagram':   'This is Meta\'s dedicated no-login impostor report form — you don\'t need an Instagram account to submit it. Include your REAL profile link as independent evidence.',
+          'X / Twitter': 'This is X\'s formal impersonation form. Select "I don\'t have an X account" when prompted. Include your REAL profile link as evidence.',
+          'Facebook':    'This is Meta\'s dedicated no-login impostor report form — no Facebook account needed. Include your REAL profile link as independent evidence.',
+          'LinkedIn':    'LinkedIn requires a login to submit formal reports. Create a free basic LinkedIn account (takes 2 minutes) then submit the report. Your REAL profile link is your evidence — timestamped and government ID confirmed.',
+          'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" — no YouTube account is required to submit. Include your REAL profile link as evidence.'
+        }
+      };
+      routeNote.textContent = notes[scenarioKey][platform] || 'This dedicated form bypasses the standard queue and reaches the platform\'s identity team directly. Include your REAL profile link as evidence.';
     }
     document.getElementById('rfCopyBtn').textContent = 'Copy';
     document.getElementById('rfStep1').style.display = 'none';
@@ -2973,16 +2999,32 @@
       }
       document.getElementById('rfReportTextContent').textContent = reportText;
       document.getElementById('rfRealIdInChecklist').textContent = realId;
-      const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
+      const scenarioKey = situation === '1' ? 'scenario1' : 'scenario2';
       const formalBtn = document.getElementById('formalReportBtn');
-      if (formalBtn) formalBtn.href = reportUrl;
       const routeNote = document.getElementById('formalRouteNote');
+      if (formalBtn) {
+        formalBtn.href = PLATFORM_REPORT_URLS[scenarioKey][platform] || '#';
+      }
       if (routeNote) {
-        if (platform === 'YouTube') {
-          routeNote.textContent = 'This opens YouTube\'s official impersonation policy page. Once there, click "report the channel" to submit your report directly.';
-        } else {
-          routeNote.textContent = 'This dedicated form bypasses the standard queue and reaches the platform\'s identity or IP team directly. Include your REAL profile link as evidence — it\'s timestamped, government ID backed, and independent proof you are the original.';
-        }
+        const notes = {
+          scenario1: {
+            'TikTok':      'This form goes directly to TikTok\'s IP and Safety team — not the general queue. Only your email is required. Include your REAL profile link as evidence.',
+            'Instagram':   'This is Instagram\'s dedicated impersonation form — it goes to a real review team. You\'ll need to provide your identity and your REAL profile link as evidence.',
+            'X / Twitter': 'This is X\'s formal impersonation report form. You\'ll need to confirm your identity. Include your REAL profile link as evidence.',
+            'Facebook':    'This is Facebook\'s dedicated impersonation report page. Include your REAL profile link as independent, timestamped evidence you are the original.',
+            'LinkedIn':    'This form goes directly to LinkedIn\'s trust team. You\'ll need to be logged into your LinkedIn account. Include your REAL profile link as evidence.',
+            'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" to submit your report directly. Include your REAL profile link as evidence.'
+          },
+          scenario2: {
+            'TikTok':      'This form goes directly to TikTok\'s IP and Safety team. Only your email is required — no TikTok account needed. Include your REAL profile link as evidence.',
+            'Instagram':   'This is Meta\'s dedicated no-login impostor report form — you don\'t need an Instagram account to submit it. Include your REAL profile link as independent evidence.',
+            'X / Twitter': 'This is X\'s formal impersonation form. Select "I don\'t have an X account" when prompted. Include your REAL profile link as evidence.',
+            'Facebook':    'This is Meta\'s dedicated no-login impostor report form — no Facebook account needed. Include your REAL profile link as independent evidence.',
+            'LinkedIn':    'LinkedIn requires a login to submit formal reports. Create a free basic LinkedIn account (takes 2 minutes) then submit the report. Your REAL profile link is your evidence — timestamped and government ID confirmed.',
+            'YouTube':     'This opens YouTube\'s official impersonation policy page. Click "report the channel" — no YouTube account is required to submit. Include your REAL profile link as evidence.'
+          }
+        };
+        routeNote.textContent = notes[scenarioKey][platform] || 'This dedicated form bypasses the standard queue and reaches the platform\'s identity team directly. Include your REAL profile link as evidence.';
       }
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
