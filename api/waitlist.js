@@ -14,10 +14,25 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email address' });
   }
 
-  // Insert into Supabase Waitlist table
+  // Check for duplicate email in Supabase Waitlist table
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+  const checkRes = await fetch(`${supabaseUrl}/rest/v1/Waitlist?email=eq.${encodeURIComponent(email)}&select=email&limit=1`, {
+    headers: {
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`
+    }
+  });
+
+  if (checkRes.ok) {
+    const existing = await checkRes.json().catch(() => []);
+    if (existing.length > 0) {
+      return res.status(200).json({ success: true });
+    }
+  }
+
+  // Insert into Supabase Waitlist table
   const insertRes = await fetch(`${supabaseUrl}/rest/v1/Waitlist`, {
     method: 'POST',
     headers: {
