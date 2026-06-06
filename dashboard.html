@@ -1248,7 +1248,7 @@
           <p class="routes-intro">Use the <strong>formal route</strong> — it goes directly to a real team, not a general queue.</p>
           <div class="route-block route-formal">
             <div class="route-label">✓ Recommended — Formal Report</div>
-            <p class="route-desc">This dedicated form bypasses the standard queue and reaches the platform's identity or IP team directly. Include your REAL profile link as evidence — it's timestamped, government ID backed, and independent proof you are the original.</p>
+            <p class="route-desc" id="formalRouteNote">This dedicated form bypasses the standard queue and reaches the platform's identity or IP team directly. Include your REAL profile link as evidence — it's timestamped, government ID backed, and independent proof you are the original.</p>
             <a class="route-btn btn-primary" href="#" id="formalReportBtn" target="_blank" rel="noopener">Open Formal Report Form →</a>
           </div>
           <div class="route-block route-basic">
@@ -2849,6 +2849,14 @@
     const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
     const formalBtn = document.getElementById('formalReportBtn');
     if (formalBtn) formalBtn.href = reportUrl;
+    const routeNote = document.getElementById('formalRouteNote');
+    if (routeNote) {
+      if (platform === 'YouTube') {
+        routeNote.textContent = 'This opens YouTube\'s official impersonation policy page. Once there, click "report the channel" to submit your report directly.';
+      } else {
+        routeNote.textContent = 'This dedicated form bypasses the standard queue and reaches the platform\'s identity or IP team directly. Include your REAL profile link as evidence — it\'s timestamped, government ID backed, and independent proof you are the original.';
+      }
+    }
     document.getElementById('rfCopyBtn').textContent = 'Copy';
     document.getElementById('rfStep1').style.display = 'none';
     document.getElementById('rfStep2').style.display = 'block';
@@ -2968,6 +2976,14 @@
       const reportUrl = PLATFORM_REPORT_URLS[platform] || '#';
       const formalBtn = document.getElementById('formalReportBtn');
       if (formalBtn) formalBtn.href = reportUrl;
+      const routeNote = document.getElementById('formalRouteNote');
+      if (routeNote) {
+        if (platform === 'YouTube') {
+          routeNote.textContent = 'This opens YouTube\'s official impersonation policy page. Once there, click "report the channel" to submit your report directly.';
+        } else {
+          routeNote.textContent = 'This dedicated form bypasses the standard queue and reaches the platform\'s identity or IP team directly. Include your REAL profile link as evidence — it\'s timestamped, government ID backed, and independent proof you are the original.';
+        }
+      }
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
       document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
