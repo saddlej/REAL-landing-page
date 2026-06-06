@@ -757,11 +757,10 @@
     background: var(--warm-white);
     z-index: 10;
   }
-  .all-reports-body { padding: 88px 28px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .all-reports-body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px; }
   .all-reports-item {
-    padding: 14px 16px;
+    padding: 10px 12px;
     background: white;
-    border-left: 3px solid var(--gold);
     border: 1px solid var(--border);
     border-left: 3px solid var(--gold);
   }
@@ -3244,16 +3243,15 @@
     } else {
       body.innerHTML = impersonationReports.map((rep, i) => `
         <div class="all-reports-item">
-          <div class="impersonation-item-header">
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
             <span class="impersonation-platform">${escapeHtml(rep.platform)}</span>
             <span class="impersonation-handle">${escapeHtml(rep.fake_handle)}</span>
-            <span class="impersonation-date">Noticed ${formatDate(rep.date_noticed)}</span>
+            <span style="font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-light); margin-left:auto; white-space:nowrap;">Noticed ${formatDate(rep.date_noticed)} · Logged ${formatDate(rep.created_at)}</span>
           </div>
-          ${rep.notes ? `<div class="impersonation-notes" style="margin-top:6px;">${escapeHtml(rep.notes)}</div>` : ''}
-          <div style="font-size:11px; color:var(--gray-light); margin-top:6px; font-family:'DM Mono',monospace;">Logged ${formatDate(rep.created_at)}</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
-            <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
-            <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:12px; padding:7px 14px;">Generate case file →</button>
+          ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+            <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
+            <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate case file →</button>
           </div>
         </div>
       `).join('');
