@@ -505,7 +505,7 @@
   }
   .modal-close:hover { color: var(--navy); }
   #profileModalAvatarWrap:hover #profileModalAvatarOverlay { opacity: 1; }
-  .modal-body { padding: 28px; }
+  .modal-body { padding: 72px 28px 28px; }
   .modal-step { display: none; }
   .modal-step.active { display: block; }
 
@@ -652,11 +652,10 @@
     justify-content: center;
     z-index: 2000;
     padding: 24px;
-    overflow-y: auto;
     backdrop-filter: blur(3px);
   }
   .case-file-overlay.visible { display: flex; }
-  .case-file-modal { background: white; width: 100%; max-width: 720px; }
+  .case-file-modal { background: white; width: 100%; max-width: 720px; max-height: calc(100vh - 48px); overflow-y: auto; }
   .case-file-header {
     padding: 24px 28px 20px;
     border-bottom: 1px solid var(--border);
@@ -671,7 +670,7 @@
   }
   .case-file-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--navy); }
   .case-file-subtitle { font-size: 12px; color: var(--gray-light); margin-top: 4px; }
-  .case-file-body { padding: 32px 28px; }
+  .case-file-body { padding: 88px 28px 32px; }
   .case-file-section { margin-bottom: 28px; }
   .case-file-section-title {
     font-family: 'DM Mono', monospace;
@@ -736,7 +735,6 @@
     justify-content: center;
     z-index: 1500;
     padding: 24px;
-    overflow-y: auto;
     backdrop-filter: blur(2px);
   }
   .all-reports-overlay.visible { display: flex; }
@@ -745,6 +743,8 @@
     width: 100%;
     max-width: 600px;
     margin: auto;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
   }
   .all-reports-header {
     padding: 22px 28px;
@@ -757,7 +757,7 @@
     background: var(--warm-white);
     z-index: 10;
   }
-  .all-reports-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+  .all-reports-body { padding: 88px 28px 24px; display: flex; flex-direction: column; gap: 12px; }
   .all-reports-item {
     padding: 14px 16px;
     background: white;
