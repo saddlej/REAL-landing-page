@@ -1253,8 +1253,8 @@
           </select>
         </div>
         <div class="modal-field">
-          <label class="modal-label">Fake handle or username</label>
-          <input type="text" class="modal-input" id="fakeReportHandle" placeholder="@fakehandle or profile URL">
+          <label class="modal-label" id="reportFakeHandleLabel">Fake handle or username</label>
+          <input type="text" class="modal-input" id="reportFakeHandleInput" placeholder="@fakehandle or profile URL">
         </div>
         <div class="modal-field">
           <label class="modal-label">Date noticed</label>
@@ -2854,11 +2854,24 @@
   }
 
   function onFakePlatformChange() {
-    const platform = document.getElementById('fakeReportPlatform').value;
+    const platformValue = document.getElementById('fakeReportPlatform').value;
     document.querySelectorAll('input[name="rfSituation"]').forEach(r => r.checked = false);
     highlightSituationLabels();
     document.getElementById('fakeReportMyAccountField').style.display = 'none';
-    document.getElementById('fakeReportSituationField').style.display = platform ? 'block' : 'none';
+    document.getElementById('fakeReportSituationField').style.display = platformValue ? 'block' : 'none';
+    const platformLabels = {
+      'Instagram': { label: 'FAKE USERNAME', placeholder: '@fakeusername' },
+      'TikTok': { label: 'FAKE USERNAME', placeholder: '@fakeusername' },
+      'X / Twitter': { label: 'FAKE USERNAME', placeholder: '@fakeusername' },
+      'YouTube': { label: 'FAKE CHANNEL NAME OR HANDLE', placeholder: '@handle or channel name' },
+      'Facebook': { label: 'FAKE PAGE NAME OR URL', placeholder: 'Page name or facebook.com/pagename' },
+      'LinkedIn': { label: 'FAKE PROFILE URL', placeholder: 'linkedin.com/in/fakename' },
+      'Email': { label: 'FAKE EMAIL ADDRESS', placeholder: 'fake@example.com' },
+      'Website': { label: 'FAKE DOMAIN OR URL', placeholder: 'https://fakeyourbrand.com' }
+    };
+    const selected = platformLabels[platformValue] || { label: 'FAKE HANDLE OR USERNAME', placeholder: '@fakehandle or profile URL' };
+    document.getElementById('reportFakeHandleLabel').textContent = selected.label;
+    document.getElementById('reportFakeHandleInput').placeholder = selected.placeholder;
   }
 
   function onFakeSituationChange() {
@@ -2885,7 +2898,7 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('fakeReportDate').value = today;
     document.getElementById('fakeReportPlatform').value = '';
-    document.getElementById('fakeReportHandle').value = '';
+    document.getElementById('reportFakeHandleInput').value = '';
     document.getElementById('fakeReportNotes').value = '';
     document.getElementById('fakeReportSituationField').style.display = 'none';
     document.querySelectorAll('input[name="rfSituation"]').forEach(r => r.checked = false);
@@ -2990,7 +3003,7 @@
 
   async function submitFakeReport() {
     const platform    = document.getElementById('fakeReportPlatform').value;
-    const fakeHandle  = document.getElementById('fakeReportHandle').value.trim();
+    const fakeHandle  = document.getElementById('reportFakeHandleInput').value.trim();
     const dateNoticed = document.getElementById('fakeReportDate').value;
     const notes       = document.getElementById('fakeReportNotes').value.trim();
     const situation   = document.querySelector('input[name="rfSituation"]:checked')?.value || '';
