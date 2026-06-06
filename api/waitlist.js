@@ -61,8 +61,9 @@ module.exports = async function handler(req, res) {
         <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; width:100%;">
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <p style="margin:0 0 8px; font-size:28px; font-weight:700; color:#FFD007; letter-spacing:0.2em; font-family:Georgia,serif;">REAL</p>
-              <p style="margin:0; font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.2em; text-transform:uppercase;">Identity Infrastructure for the Internet</p>
+              <img src="https://realverified.co.uk/shield-email.png" width="60" height="60" alt="REAL" style="display:block; margin:0 auto 16px;">
+              <p style="margin:0; font-size:22px; font-weight:700; color:#ffffff; letter-spacing:0.15em; font-family:Georgia,serif;">REAL</p>
+              <p style="margin:6px 0 0; font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.2em; text-transform:uppercase;">Identity Infrastructure for the Internet</p>
             </td>
           </tr>
           <tr>
