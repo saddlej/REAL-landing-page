@@ -34,21 +34,21 @@
   .nav-cta:hover { background: var(--navy-mid); }
   .nav-cta-outline { background: transparent; color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; padding: 10px 22px; border: 1.5px solid var(--navy); cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; border-radius: 6px; }
   .nav-cta-outline:hover { background: var(--navy); color: white; }
-  .hero-search-wrap { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fadeUp 0.8s ease 0.75s forwards; }
-  .hero-search-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
-  .hero-search-row { display: flex; gap: 0; width: 100%; max-width: 480px; border: 1.5px solid rgba(255,255,255,0.25); }
-  .hero-search-input { flex: 1; padding: 14px 18px; font-family: 'DM Mono', monospace; font-size: 14px; color: white; background: rgba(255,255,255,0.07); border: none; outline: none; min-width: 0; }
-  .hero-search-input::placeholder { color: rgba(255,255,255,0.35); }
-  .hero-search-btn { padding: 14px 20px; background: var(--navy-mid); color: white; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; border: none; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
-  .hero-search-btn:hover { background: #1e4090; }
-  .hero-search-results { width: 100%; max-width: 480px; display: none; }
+  .hero-search-wrap { margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; }
+  .hero-search-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; }
+  .hero-search-row { display: flex; gap: 0; width: 100%; max-width: 500px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+  .hero-search-input { flex: 1; padding: 14px 18px; font-family: 'DM Mono', monospace; font-size: 14px; color: white; background: transparent; border: none; outline: none; min-width: 0; }
+  .hero-search-input::placeholder { color: rgba(255,255,255,0.4); }
+  .hero-search-btn { padding: 14px 22px; background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; border: none; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; }
+  .hero-search-btn:hover { opacity: 0.88; }
+  .hero-search-results { width: 100%; max-width: 500px; display: none; text-align: center; }
   .hero-search-results.visible { display: block; }
-  .hero-search-card { display: block; padding: 14px 18px; background: rgba(255,255,255,0.06); border-left: 3px solid var(--gold); margin-bottom: 6px; text-decoration: none; transition: background 0.15s; cursor: pointer; }
+  .hero-search-card { display: block; padding: 14px 18px; background: rgba(255,255,255,0.06); border-left: 3px solid var(--gold); margin-bottom: 6px; text-decoration: none; transition: background 0.15s; cursor: pointer; text-align: left; }
   .hero-search-card:hover { background: rgba(255,255,255,0.12); }
   .hero-search-card-id { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 3px; }
   .hero-search-card-name { font-size: 14px; font-weight: 600; color: white; }
   .hero-search-card-date { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-  .hero-search-msg { padding: 14px 18px; font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); }
+  .hero-search-msg { padding: 10px 0; font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; }
   .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; position: relative; overflow: hidden; background: var(--navy); }
   .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,53,112,0.8) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(255,208,7,0.06) 0%, transparent 60%); pointer-events: none; }
   .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
@@ -235,10 +235,6 @@
   </div>
   <h1>Prove you are<br><em>genuinely you.</em></h1>
   <p class="hero-sub">The independent verification platform that proves every account you own is really yours. Across every platform. With a permanent timestamped history. Fakes can copy the link — but it always opens yours.</p>
-  <div class="hero-actions">
-    <a href="#waitlist" class="btn-primary">Join the founding waitlist</a>
-    <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works →</button>
-  </div>
   <div class="hero-search-wrap">
     <span class="hero-search-label">Check if someone is REAL verified</span>
     <div class="hero-search-row">
@@ -246,6 +242,10 @@
       <button class="hero-search-btn" id="heroSearchBtn" onclick="doHeroSearch()">Search →</button>
     </div>
     <div class="hero-search-results" id="heroSearchResults"></div>
+  </div>
+  <div class="hero-actions">
+    <a href="#waitlist" class="btn-primary">Join the founding waitlist</a>
+    <button class="btn-secondary" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works →</button>
   </div>
   <div class="hero-scroll">
     <div class="scroll-line"></div>
