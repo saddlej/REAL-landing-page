@@ -3384,7 +3384,7 @@
       ? 'I do not have an account on this platform — someone is using my identity there'
       : '—';
     const fullName = profileData.full_name || '';
-    const caseRef  = rep.id ? `REAL-${rep.id}` : '—';
+    const caseRef  = rep.id ? `REAL-${rep.id.slice(0, 8).toUpperCase()}` : '—';
 
     const html = `<!DOCTYPE html>
 <html lang="en" style="width:100%;margin:0;padding:0">
