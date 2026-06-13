@@ -196,7 +196,6 @@
   @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
   #heroSearchInput { background: transparent !important; color: white !important; border: none !important; outline: none !important; }
   #heroSearchInput { background: transparent !important; -webkit-appearance: none !important; background-color: transparent !important; }
-  #heroSearchBtn { border-radius: 50px; }
   @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } }
 </style>
 </head>
@@ -240,9 +239,9 @@
   <p class="hero-sub">The independent verification platform for your entire online business.</p>
   <div style="max-width: 500px; margin: 0 auto; margin-top: 32px; margin-bottom: 40px;">
     <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px;">CHECK IF SOMEONE IS REAL VERIFIED</div>
-    <div style="border: 1px solid rgba(255,255,255,0.3); display: flex;">
-      <input id="heroSearchInput" type="text" placeholder="Name or REAL ID" autocomplete="off" style="background: transparent; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 16px 20px; flex: 1; border: none; outline: none; min-width: 0;">
-      <button id="heroSearchBtn" onclick="doHeroSearch()" style="background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; padding: 16px 24px; border: none; cursor: pointer; white-space: nowrap;">Search →</button>
+    <div style="border: 1px solid rgba(255,255,255,0.3); display: flex; border-radius: 50px; overflow: hidden;">
+      <input id="heroSearchInput" type="text" placeholder="Name or REAL ID" autocomplete="off" style="background: transparent; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 16px 20px; flex: 1; border: none; outline: none; min-width: 0; border-radius: 50px 0 0 50px;">
+      <button id="heroSearchBtn" onclick="doHeroSearch()" style="background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; padding: 16px 24px; border: none; cursor: pointer; white-space: nowrap; border-radius: 0 50px 50px 0;">Search →</button>
     </div>
     <div id="heroSearchResults" style="display: none;"></div>
   </div>
