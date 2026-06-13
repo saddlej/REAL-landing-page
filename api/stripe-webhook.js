@@ -136,6 +136,37 @@ async function handler(req, res) {
     } catch (e) {
       console.error('Failed to update Supabase user:', e.message);
     }
+
+    // Save verified full_name from Stripe Identity into the members table
+    const firstName = session.verified_outputs?.first_name || '';
+    const lastName  = session.verified_outputs?.last_name  || '';
+    const fullName  = [firstName, lastName].filter(Boolean).join(' ');
+
+    if (fullName) {
+      try {
+        const nameRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ full_name: fullName })
+          }
+        );
+        if (!nameRes.ok) {
+          const err = await nameRes.json().catch(() => ({}));
+          console.error('Failed to save full_name to members table:', err);
+        } else {
+          console.log(`full_name "${fullName}" saved for user ${userId}`);
+        }
+      } catch (e) {
+        console.error('Failed to save full_name:', e.message);
+      }
+    }
   }
 
   // Always return 200 — Stripe retries on anything else

@@ -1751,7 +1751,7 @@
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link,profile_theme&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link,profile_theme,full_name&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
