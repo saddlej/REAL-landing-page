@@ -3330,7 +3330,7 @@
           </div>
           ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-            <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
+            <button class="btn-secondary" onclick="closeAllReportsModal(); openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate case file →</button>
           </div>
         </div>
