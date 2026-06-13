@@ -1844,6 +1844,7 @@
     profileModalNewAvatarUrl = null;
     selectProfileTheme(currentProfileTheme);
     document.getElementById('profileModalMsg').className = 'msg';
+    history.pushState({ modal: true }, '');
     document.getElementById('profileModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -2128,6 +2129,7 @@
   // ─── MODAL ───
   function openModal() {
     if (!idVerified) return;
+    history.pushState({ modal: true }, '');
     document.getElementById('modalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
     goToStepA();
@@ -2717,6 +2719,7 @@
     msg.className = 'msg'; msg.textContent = '';
     const btn = document.getElementById('compromiseConfirmBtn');
     btn.disabled = false; btn.textContent = 'Report →';
+    history.pushState({ modal: true }, '');
     document.getElementById('compromiseModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -2928,6 +2931,7 @@
     document.getElementById('rfStep1').style.display = 'block';
     document.getElementById('rfStep2').style.display = 'none';
     document.getElementById('reportFakeModalTitle').textContent = 'Report a Fake Account';
+    history.pushState({ modal: true }, '');
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -3019,6 +3023,7 @@
     document.getElementById('rfStep1').style.display = 'none';
     document.getElementById('rfStep2').style.display = 'block';
     document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
+    history.pushState({ modal: true }, '');
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -3270,6 +3275,7 @@
       </div>
     `;
 
+    history.pushState({ modal: true }, '');
     document.getElementById('caseFileOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -3336,6 +3342,7 @@
         </div>
       `).join('');
     }
+    history.pushState({ modal: true }, '');
     document.getElementById('allReportsOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -3488,6 +3495,11 @@
   // Keyboard: close modal on Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal(); }
+  });
+
+  // Back button: close any open modal instead of navigating away
+  window.addEventListener('popstate', () => {
+    closeModal(); closeProfileModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal();
   });
 </script>
 </body>
