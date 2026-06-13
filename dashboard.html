@@ -1763,6 +1763,7 @@
 
         // Store in profileData
         profileData.display_name = d.display_name || '';
+        profileData.full_name = d.full_name || '';
         profileData.bio = d.bio || '';
         profileData.location = d.location || '';
         profileData.contact_link = d.contact_link || '';
@@ -3382,6 +3383,8 @@
       : rep.situation === '2'
       ? 'I do not have an account on this platform — someone is using my identity there'
       : '—';
+    const fullName = profileData.full_name || '';
+    const caseRef  = rep.id ? `REAL-${rep.id}` : '—';
 
     const html = `<!DOCTYPE html>
 <html lang="en" style="width:100%;margin:0;padding:0">
@@ -3449,6 +3452,7 @@
         <div class="brand">REAL Identity Registry</div>
         <div class="doc-title">Identity Case File</div>
         <div class="doc-subtitle">realverified.co.uk &nbsp;·&nbsp; Generated ${generatedStr}</div>
+        <div class="doc-subtitle" style="margin-top:4px;">Case reference: ${escapeHtmlStatic(caseRef)}</div>
       </div>
       <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
     </div>
@@ -3459,6 +3463,7 @@
     <div class="section">
       <div class="section-title">Verified Member</div>
       <div class="row"><span class="lbl">Display name</span><span class="val">${escapeHtmlStatic(memberName)}</span></div>
+      <div class="row"><span class="lbl">Legal name</span><span class="val">${fullName ? escapeHtmlStatic(fullName) : 'Verified against government-issued ID — held securely by REAL'}</span></div>
       <div class="row"><span class="lbl">REAL ID</span><span class="val">${escapeHtmlStatic(realId)}</span></div>
       <div class="row"><span class="lbl">Member since</span><span class="val">${escapeHtmlStatic(memberSince)}</span></div>
       <div class="row"><span class="lbl">Government ID verification</span><span class="val">${govIdStatus}</span></div>
@@ -3481,6 +3486,7 @@
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Situation</span><span class="val" style="font-weight:400; color:#333;">${escapeHtmlStatic(situationLabel)}</span></div>
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Date noticed</span><span class="val">${formatDate(rep.date_noticed)}</span></div>
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Date logged with REAL</span><span class="val">${formatDate(rep.created_at)}</span></div>
+        <div class="row" style="margin-bottom:5px;"><span class="lbl">Evidence</span><span class="val" style="font-weight:400; color:#333;">Screenshots and supporting documentation held by member.</span></div>
         ${rep.notes ? `<div class="row" style="margin-bottom:0;"><span class="lbl">Notes</span><span class="val" style="font-weight:400; color:#333;">${escapeHtmlStatic(rep.notes)}</span></div>` : ''}
       </div>
     </div>
@@ -3491,6 +3497,13 @@
         This incident has been recorded on the REAL Identity Registry. The verified identity above predates this report.
         The REAL ID <strong>${escapeHtmlStatic(realId)}</strong> has been confirmed against government-issued identity documentation.
         Registry record: <a class="registry-link" href="https://realverified.co.uk/${escapeHtmlStatic(realId)}" target="_blank">realverified.co.uk/${escapeHtmlStatic(realId)}</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Action Requested</div>
+      <div class="registry-box">
+        The member requests the immediate review and removal of the impersonating account identified above.
       </div>
     </div>
 
