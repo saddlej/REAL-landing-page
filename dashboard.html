@@ -3415,6 +3415,22 @@
   .doc-footer { background: #0F2044; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
   .doc-footer-left { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
   .doc-footer-right { font-size: 11px; color: rgba(255,255,255,0.25); font-family: 'Courier New', monospace; }
+  @media (max-width: 600px) {
+    body { background: white; }
+    .doc { margin: 0; max-width: 100%; }
+    .doc-header { padding: 24px 20px 20px; }
+    .doc-header-top { flex-direction: column; gap: 14px; }
+    .doc-title { font-size: 20px; }
+    .print-btn { width: 100%; text-align: center; }
+    .divider { margin: 0 20px; }
+    .doc-body { padding: 24px 20px; }
+    .row { flex-direction: column; gap: 2px; }
+    .lbl { width: auto; font-size: 11px; color: #9B9B9B; }
+    .val { font-size: 14px; }
+    .incident-box { padding: 14px 14px; }
+    .registry-box { padding: 14px 14px; }
+    .doc-footer { padding: 16px 20px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
   @media print {
     body { background: white; }
     .doc { margin: 0; max-width: 100%; }
