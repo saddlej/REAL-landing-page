@@ -3384,13 +3384,16 @@
       : '—';
 
     const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="width:100%;margin:0;padding:0">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REAL Identity Case File — ${rep.platform} · ${rep.fake_handle}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
+  body { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 16px !important; }
+  .doc { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
   body { font-family: Arial, Helvetica, sans-serif; background: #F0EDE6; color: #0A0A0A; }
   .doc { max-width: 720px; margin: 40px auto; background: white; }
   .doc-header { background: #0F2044; padding: 36px 40px 28px; border-top: 4px solid #FFD007; }
@@ -3438,7 +3441,7 @@
   }
 </style>
 </head>
-<body>
+<body style="width:100%;margin:0;padding:0;box-sizing:border-box">
 <div class="doc">
   <div class="doc-header">
     <div class="doc-header-top">
