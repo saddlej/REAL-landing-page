@@ -57,7 +57,7 @@
   .hero h1 em { font-style: italic; color: var(--gold); }
   .hero-sub { font-size: clamp(16px, 2.5vw, 20px); font-weight: 300; color: rgba(255,255,255,0.65); max-width: 540px; line-height: 1.6; margin-bottom: 32px; opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards; }
   .hero-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; opacity: 0; animation: fadeUp 0.8s ease 0.7s forwards; }
-  .btn-primary { background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; padding: 18px 44px; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.2s, box-shadow 0.2s; }
+  .btn-primary { background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.04em; padding: 18px 44px; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.2s, box-shadow 0.2s; border-radius: 50px; }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,208,7,0.3); }
   .btn-secondary { color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 400; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
   .btn-secondary:hover { color: rgba(255,255,255,0.8); }
@@ -196,6 +196,7 @@
   @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
   #heroSearchInput { background: transparent !important; color: white !important; border: none !important; outline: none !important; }
   #heroSearchInput { background: transparent !important; -webkit-appearance: none !important; background-color: transparent !important; }
+  #heroSearchBtn { border-radius: 50px; }
   @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } }
 </style>
 </head>
