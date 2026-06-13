@@ -3510,11 +3510,9 @@
 </body>
 </html>`;
 
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.write(html);
-      win.document.close();
-    }
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
   }
 
   // helper used inside generateCaseFile template literals (runs in parent window context)
