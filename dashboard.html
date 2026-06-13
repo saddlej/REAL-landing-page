@@ -3320,7 +3320,7 @@
   }
 
   // ─── ALL REPORTS MODAL ───
-  function openAllReportsModal() {
+  function showAllReportsModal() {
     const body = document.getElementById('allReportsBody');
     const subtitle = document.getElementById('allReportsSubtitle');
     subtitle.textContent = `${impersonationReports.length} report${impersonationReports.length !== 1 ? 's' : ''} logged`;
@@ -3336,15 +3336,24 @@
           </div>
           ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-            <button class="btn-secondary" onclick="closeAllReportsModal(); openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
+            <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate case file →</button>
           </div>
         </div>
       `).join('');
     }
-    history.pushState({ modal: true }, '');
     document.getElementById('allReportsOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
+  }
+  function openAllReportsModal() {
+    history.pushState({ modal: 'allReports' }, '');
+    showAllReportsModal();
+  }
+  function openReportPackFromAllReports(platform, fakeHandle, situation) {
+    // Close All Reports visually, push its state so back returns to it, then open report pack
+    closeAllReportsModal();
+    history.pushState({ modal: 'allReports' }, '');
+    openReportPack(platform, fakeHandle, situation);
   }
 
   function closeAllReportsModal() {
@@ -3498,8 +3507,11 @@
   });
 
   // Back button: close any open modal instead of navigating away
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', (e) => {
     closeModal(); closeProfileModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal();
+    if (e.state && e.state.modal === 'allReports') {
+      showAllReportsModal();
+    }
   });
 </script>
 </body>
