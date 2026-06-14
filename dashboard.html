@@ -2844,8 +2844,8 @@
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
           ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-            ? `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px; color:#22a366; border-color:#22a366; font-weight:600;">Evidence report logged ✓</button>`
-            : `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate evidence report →</button>`
+            ? `<button class="evidence-btn" style="color:#22a366;border-color:#22a366;font-weight:600;" onclick="generateCaseFile(rep)">Evidence report logged ✓</button>`
+            : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
           }
         </div>
       </div>
@@ -3347,8 +3347,8 @@
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-              ? `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px; color:#22a366; border-color:#22a366; font-weight:600;">Evidence report logged ✓</button>`
-              : `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate evidence report →</button>`
+              ? `<button class="evidence-btn" style="color:#22a366;border-color:#22a366;font-weight:600;" onclick="generateCaseFile(rep)">Evidence report logged ✓</button>`
+              : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
             }
           </div>
         </div>
@@ -3393,7 +3393,7 @@
       const countEl = document.getElementById('evidence-report-count');
       const linkEl = document.getElementById('view-evidence-reports-link');
 
-      window.loggedReportIds = records && records.length > 0 ? records.map(r => r.report_id) : [];
+      window.loggedReportIds = records.map(r => r.report_id);
 
       if (records && records.length > 0) {
         countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
