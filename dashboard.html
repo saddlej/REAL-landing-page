@@ -2845,7 +2845,7 @@
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
           ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
             ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged</span>`
-            : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
+            : `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
           }
         </div>
       </div>
@@ -3348,7 +3348,7 @@
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
               ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged</span>`
-              : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
+              : `<button class="btn-secondary evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
             }
           </div>
         </div>
@@ -3399,17 +3399,6 @@
         countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
         linkEl.style.display = 'inline';
         linkEl.dataset.records = JSON.stringify(records);
-
-        // Update buttons for already-logged reports
-        records.forEach(r => {
-          const btns = document.querySelectorAll(`[data-report-id="${r.report_id}"] .evidence-btn`);
-          btns.forEach(btn => {
-            btn.textContent = 'Evidence report logged ✓';
-            btn.style.color = '#22a366';
-            btn.style.borderColor = '#22a366';
-            btn.style.fontWeight = '600';
-          });
-        });
       } else {
         countEl.textContent = 'No evidence reports logged yet.';
       }
