@@ -2844,7 +2844,7 @@
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
           ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-            ? `<button class="evidence-btn" style="color:#22a366;border-color:#22a366;font-weight:600;" onclick="generateCaseFile(rep)">Evidence report logged ✓</button>`
+            ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged</span>`
             : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
           }
         </div>
@@ -3347,7 +3347,7 @@
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-              ? `<button class="evidence-btn" style="color:#22a366;border-color:#22a366;font-weight:600;" onclick="generateCaseFile(rep)">Evidence report logged ✓</button>`
+              ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged</span>`
               : `<button class="evidence-btn" onclick="generateCaseFile(rep)">Generate evidence report →</button>`
             }
           </div>
