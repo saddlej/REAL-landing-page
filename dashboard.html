@@ -1333,7 +1333,7 @@
   <div class="case-file-modal">
     <div class="case-file-header">
       <div>
-        <div class="case-file-title">REAL Identity Case File</div>
+        <div class="case-file-title">REAL Identity Evidence Report</div>
         <div class="case-file-subtitle" id="caseFileSubtitle">Generated · realverified.co.uk</div>
       </div>
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
@@ -2843,7 +2843,7 @@
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
-          <button class="btn-secondary" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate case file →</button>
+          <button class="btn-secondary" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate evidence report →</button>
         </div>
       </div>
     `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '');
@@ -3338,7 +3338,7 @@
           ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
-            <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate case file →</button>
+            <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate evidence report →</button>
           </div>
         </div>
       `).join('');
@@ -3391,7 +3391,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REAL Identity Case File — ${rep.platform} · ${rep.fake_handle}</title>
+<title>REAL Identity Evidence Report — ${rep.platform} · ${rep.fake_handle}</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   * { box-sizing: border-box; }
@@ -3450,7 +3450,7 @@
     <div class="doc-header-top">
       <div>
         <div class="brand">REAL Identity Registry</div>
-        <div class="doc-title">Identity Case File</div>
+        <div class="doc-title">Identity Evidence Report</div>
         <div class="doc-subtitle">realverified.co.uk &nbsp;·&nbsp; Generated ${generatedStr}</div>
         <div class="doc-subtitle" style="margin-top:4px;">Case reference: ${escapeHtmlStatic(caseRef)}</div>
       </div>
