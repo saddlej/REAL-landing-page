@@ -804,7 +804,7 @@
 <div class="main">
 
   <!-- IDENTITY CARD -->
-  <div class="identity-card">
+  <div class="identity-card" id="identityCard" style="visibility:hidden">
     <div class="identity-layout">
 
       <!-- LEFT: circular avatar panel -->
@@ -1690,6 +1690,7 @@
     // Set member name (use email prefix until we have a name field)
     const nameDisplay = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Member';
     document.getElementById('memberName').textContent = nameDisplay;
+    document.getElementById('identityCard').style.visibility = 'visible';
     document.getElementById('avatarInitials').textContent = getInitials(nameDisplay);
     document.getElementById('profileRowName').textContent = nameDisplay;
     document.getElementById('profileRowInitials').textContent = getInitials(nameDisplay);
