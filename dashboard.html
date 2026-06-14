@@ -3367,8 +3367,16 @@
   }
 
   // ─── GENERATE CASE FILE (new tab) ───
-  function generateCaseFile(rep) {
+  async function generateCaseFile(rep) {
     if (!rep) return;
+    try {
+      await supabase.from('case_files').insert({
+        member_id: currentUser.id,
+        report_id: rep.id,
+        case_reference: 'REAL-' + rep.id.substring(0, 8).toUpperCase(),
+        generated_at: new Date().toISOString()
+      });
+    } catch(e) { console.log('Evidence report log error:', e); }
     const realId      = document.getElementById('realId').textContent || '—';
     const memberName  = document.getElementById('memberName').textContent || '—';
     const memberSince = memberVerifiedSince ? formatDate(memberVerifiedSince) : '—';
@@ -3454,6 +3462,9 @@
         <div class="doc-subtitle">realverified.co.uk &nbsp;·&nbsp; Generated ${generatedStr}</div>
         <div class="doc-subtitle" style="margin-top:4px;">Case reference: ${escapeHtmlStatic(caseRef)}</div>
       </div>
+      <div style="text-align:center;margin-bottom:16px;padding:12px 20px;background:#f0f7f0;border:1px solid #22a366;border-radius:4px;font-size:13px;color:#22a366;font-family:'DM Sans',sans-serif;">
+  ✓ This evidence report has been officially logged by REAL — Reference REAL-${rep.id.substring(0, 8).toUpperCase()}
+</div>
       <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
     </div>
   </div>
