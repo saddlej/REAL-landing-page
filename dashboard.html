@@ -802,7 +802,7 @@
   </div>
 </nav>
 
-<div class="main" id="mainContent">
+<div class="main" id="mainContent" style="opacity:0;transition:opacity 0.15s ease;">
 
   <!-- IDENTITY CARD -->
   <div class="identity-card" id="identityCard">
@@ -832,7 +832,7 @@
             <span class="dot"></span>
             <span id="statusText">Verification pending</span>
           </div>
-          <span class="status-meta" id="statusMeta">Complete the steps below to activate your REAL ID</span>
+          <span class="status-meta" id="statusMeta"></span>
         </div>
         <div class="identity-since" id="memberSince"></div>
       </div>
@@ -1965,7 +1965,7 @@
   }
 
   function renderPlatforms() {
-    document.getElementById('mainContent').style.visibility = 'visible';
+    document.getElementById('mainContent').style.opacity = '1';
     const grid = document.getElementById('platformsGrid');
     const empty = document.getElementById('platformEmptyState');
     const statusEl = document.getElementById('platformsStatusText');
