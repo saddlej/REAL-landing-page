@@ -1739,6 +1739,7 @@
       loadMemberData(token, user.id);
       loadPlatforms(token);
       loadImpersonationReports(token);
+      loadEvidenceReportCount();
       // Refresh platform statuses every 15 seconds
       setInterval(() => loadPlatforms(token), 15000);
       // Refresh immediately when the member returns to this tab
@@ -2846,7 +2847,11 @@
           <button class="btn-secondary" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate evidence report →</button>
         </div>
       </div>
-    `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '');
+    `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '') + `
+<div id="logged-evidence-reports" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+  <span id="evidence-report-count" style="font-size:13px; color:var(--gray);"></span>
+  <a id="view-evidence-reports-link" href="#" onclick="openEvidenceReportsModal(); return false;" style="font-size:13px; color:var(--navy); text-decoration:underline; text-underline-offset:3px; margin-left:8px; display:none;">View logged evidence reports →</a>
+</div>`;
   }
 
   function highlightSituationLabels() {
@@ -3364,6 +3369,56 @@
 
   function closeAllReportsModalOnOverlay(e) {
     if (e.target === document.getElementById('allReportsOverlay')) closeAllReportsModal();
+  }
+
+  // ─── EVIDENCE REPORT COUNT ───
+  async function loadEvidenceReportCount() {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=id,case_reference,generated_at`,
+        {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      );
+      const records = await res.json();
+      const countEl = document.getElementById('evidence-report-count');
+      const linkEl = document.getElementById('view-evidence-reports-link');
+      if (records && records.length > 0) {
+        countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
+        linkEl.style.display = 'inline';
+        linkEl.dataset.records = JSON.stringify(records);
+      } else {
+        countEl.textContent = 'No evidence reports logged yet.';
+      }
+    } catch(e) { console.log('Evidence count error:', e); }
+  }
+
+  async function openEvidenceReportsModal() {
+    const linkEl = document.getElementById('view-evidence-reports-link');
+    const records = JSON.parse(linkEl.dataset.records || '[]');
+
+    const rows = records.map(r => `
+      <div style="padding:14px 0; border-bottom:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace; font-size:13px; color:var(--navy); font-weight:600;">${r.case_reference}</div>
+        <div style="font-size:12px; color:var(--gray); margin-top:4px;">Logged ${new Date(r.generated_at).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}</div>
+      </div>
+    `).join('');
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,32,68,0.75);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;';
+    modal.innerHTML = `
+      <div style="background:white;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;border-radius:4px;">
+        <div style="padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--navy);font-weight:600;">Logged Evidence Reports</h3>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">×</button>
+        </div>
+        <div style="padding:0 28px 24px;">${rows}</div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
 
   // ─── GENERATE CASE FILE (new tab) ───
