@@ -2,7 +2,14 @@
   "outputDirectory": ".",
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/RL-:id", "destination": "/profile.html" },
-    { "source": "/profile/RL-:id", "destination": "/profile.html" }
+    { "source": "/RL-:id", "destination": "/profile.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*).html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
   ]
 }
