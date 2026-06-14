@@ -2835,7 +2835,7 @@
     const recent = impersonationReports.slice(0, 3);
     const overflow = impersonationReports.length - 3;
     list.innerHTML = recent.map(rep => `
-      <div class="impersonation-item">
+      <div class="impersonation-item" data-report-id="${escapeHtml(String(rep.id))}">
         <div class="impersonation-item-header">
           <span class="impersonation-platform">${escapeHtml(rep.platform)}</span>
           <span class="impersonation-handle">${escapeHtml(rep.fake_handle)}</span>
@@ -2844,7 +2844,7 @@
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
-          <button class="btn-secondary" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate evidence report →</button>
+          <button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports.find(r=>r.fake_handle==='${escapeHtml(rep.fake_handle)}' && r.platform==='${escapeHtml(rep.platform)}' && r.date_noticed==='${escapeHtml(rep.date_noticed)}'))" style="font-size:12px; padding:7px 14px;">Generate evidence report →</button>
         </div>
       </div>
     `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '') + `
@@ -3334,7 +3334,7 @@
       body.innerHTML = '<p style="font-size:13px; color:var(--gray-light); text-align:center; padding:20px 0;">No reports logged yet.</p>';
     } else {
       body.innerHTML = impersonationReports.map((rep, i) => `
-        <div class="all-reports-item">
+        <div class="all-reports-item" data-report-id="${escapeHtml(String(rep.id))}">
           <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
             <span class="impersonation-platform">${escapeHtml(rep.platform)}</span>
             <span class="impersonation-handle">${escapeHtml(rep.fake_handle)}</span>
@@ -3343,7 +3343,7 @@
           ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
-            <button class="btn-secondary" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate evidence report →</button>
+            <button class="btn-secondary evidence-btn" onclick="generateCaseFile(impersonationReports[${i}])" style="font-size:11px; padding:5px 10px;">Generate evidence report →</button>
           </div>
         </div>
       `).join('');
@@ -3375,7 +3375,7 @@
   async function loadEvidenceReportCount() {
     try {
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=id,case_reference,generated_at`,
+        `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=id,case_reference,generated_at,report_id`,
         {
           headers: {
             'apikey': SUPABASE_KEY,
@@ -3386,10 +3386,22 @@
       const records = await res.json();
       const countEl = document.getElementById('evidence-report-count');
       const linkEl = document.getElementById('view-evidence-reports-link');
+
       if (records && records.length > 0) {
         countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
         linkEl.style.display = 'inline';
         linkEl.dataset.records = JSON.stringify(records);
+
+        // Update buttons for already-logged reports
+        records.forEach(r => {
+          const btns = document.querySelectorAll(`[data-report-id="${r.report_id}"] .evidence-btn`);
+          btns.forEach(btn => {
+            btn.textContent = 'Evidence report logged ✓';
+            btn.style.color = '#22a366';
+            btn.style.borderColor = '#22a366';
+            btn.style.fontWeight = '600';
+          });
+        });
       } else {
         countEl.textContent = 'No evidence reports logged yet.';
       }
