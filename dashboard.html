@@ -801,7 +801,7 @@
   </div>
 </nav>
 
-<div class="main">
+<div class="main" id="mainContent" style="visibility:hidden">
 
   <!-- IDENTITY CARD -->
   <div class="identity-card" id="identityCard" style="visibility:hidden">
@@ -1965,6 +1965,7 @@
   }
 
   function renderPlatforms() {
+    document.getElementById('mainContent').style.visibility = 'visible';
     const grid = document.getElementById('platformsGrid');
     const empty = document.getElementById('platformEmptyState');
     const statusEl = document.getElementById('platformsStatusText');
