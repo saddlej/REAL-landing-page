@@ -801,10 +801,10 @@
   </div>
 </nav>
 
-<div class="main" id="mainContent" style="visibility:hidden">
+<div class="main" id="mainContent">
 
   <!-- IDENTITY CARD -->
-  <div class="identity-card" id="identityCard" style="visibility:hidden">
+  <div class="identity-card" id="identityCard">
     <div class="identity-layout">
 
       <!-- LEFT: circular avatar panel -->
@@ -823,8 +823,8 @@
       <div class="identity-info-panel">
         <div class="identity-name" id="memberName"></div>
         <div class="identity-id-row">
-          <div class="real-id-badge" id="realId">RL-PENDING</div>
-          <div class="tier-pill" id="tierPill">Founding Member</div>
+          <div class="real-id-badge" id="realId"></div>
+          <div class="tier-pill" id="tierPill"></div>
         </div>
         <div class="identity-status-row">
           <div class="status-pill pending" id="verificationStatus">
@@ -833,7 +833,7 @@
           </div>
           <span class="status-meta" id="statusMeta">Complete the steps below to activate your REAL ID</span>
         </div>
-        <div class="identity-since" id="memberSince">Member since —</div>
+        <div class="identity-since" id="memberSince"></div>
       </div>
 
     </div>
@@ -1690,7 +1690,6 @@
     // Set member name (use email prefix until we have a name field)
     const nameDisplay = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Member';
     document.getElementById('memberName').textContent = nameDisplay;
-    document.getElementById('identityCard').style.visibility = 'visible';
     document.getElementById('avatarInitials').textContent = getInitials(nameDisplay);
     document.getElementById('profileRowName').textContent = nameDisplay;
     document.getElementById('profileRowInitials').textContent = getInitials(nameDisplay);
