@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>REAL — Member Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -775,7 +776,7 @@
   }
 </style>
 </head>
-<body>
+<body onpageshow="if(event.persisted){window.location.reload();}">
 
 <!-- PREVIEW BANNER (only shown in preview mode) -->
 <div class="preview-banner" id="previewBanner">⚠ Preview mode — this is dummy data. Auth is bypassed.</div>
@@ -824,7 +825,7 @@
         <div class="identity-name" id="memberName"></div>
         <div class="identity-id-row">
           <div class="real-id-badge" id="realId"></div>
-          <div class="tier-pill" id="tierPill"></div>
+          <div class="tier-pill" id="tierPill">Founding Member</div>
         </div>
         <div class="identity-status-row">
           <div class="status-pill pending" id="verificationStatus">
