@@ -501,7 +501,7 @@
       } else {
         resultsEl.innerHTML = combined.map(m => {
           const date = m.verified_since ? new Date(m.verified_since).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-          return `<a class="hero-search-card" href="/profile/${m.real_id}" target="_blank" rel="noopener">
+          return `<a class="hero-search-card" href="/${m.real_id}" target="_blank" rel="noopener">
             <div class="hero-search-card-id">${m.real_id}${m.membership_tier ? ' · ' + m.membership_tier : ''}</div>
             <div class="hero-search-card-name">${m.display_name || '—'}</div>
             ${date ? `<div class="hero-search-card-date">Verified since ${date}</div>` : ''}
