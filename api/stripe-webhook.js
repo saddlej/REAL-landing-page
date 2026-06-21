@@ -64,19 +64,7 @@ async function handler(req, res) {
         'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
       };
 
-      // Get the highest existing REAL ID to determine the next one
-      const lastRes = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/members?select=real_id&order=real_id.desc&limit=1`,
-        { headers: supabaseHeaders }
-      );
-      const lastRows = await lastRes.json();
-      const lastNum = lastRows.length > 0
-        ? parseInt(lastRows[0].real_id.replace('RL-', ''), 10)
-        : 0;
-      const nextNum = lastNum + 1;
-      const realId = 'RL-' + String(nextNum).padStart(6, '0');
-
-      // Insert the new member row
+      // Insert the new member row — real_id and verified_since are set later, after gov ID verification
       const insertRes = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/members`,
         {
@@ -84,9 +72,7 @@ async function handler(req, res) {
           headers: { ...supabaseHeaders, 'Prefer': 'return=minimal' },
           body: JSON.stringify({
             user_id: userId,
-            real_id: realId,
             membership_tier: tier,
-            verified_since: new Date().toISOString(),
             is_active: true,
           }),
         }
@@ -96,7 +82,7 @@ async function handler(req, res) {
         const err = await insertRes.json().catch(() => ({}));
         console.error('Failed to insert member row:', err);
       } else {
-        console.log(`Member created: ${realId} (${tier}) for user ${userId}`);
+        console.log(`Member row created (${tier}) for user ${userId} — awaiting gov ID verification`);
       }
     } catch (e) {
       console.error('checkout.session.completed handler error:', e.message);
@@ -137,35 +123,51 @@ async function handler(req, res) {
       console.error('Failed to update Supabase user:', e.message);
     }
 
-    // Save verified full_name from Stripe Identity into the members table
-    const firstName = session.verified_outputs?.first_name || '';
-    const lastName  = session.verified_outputs?.last_name  || '';
-    const fullName  = [firstName, lastName].filter(Boolean).join(' ');
+    // Generate and assign REAL ID now that gov ID is confirmed
+    const idHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+    };
 
-    if (fullName) {
-      try {
-        const nameRes = await fetch(
-          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
-          {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ full_name: fullName })
-          }
-        );
-        if (!nameRes.ok) {
-          const err = await nameRes.json().catch(() => ({}));
-          console.error('Failed to save full_name to members table:', err);
-        } else {
-          console.log(`full_name "${fullName}" saved for user ${userId}`);
+    try {
+      const lastRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?select=real_id&real_id=not.is.null&order=real_id.desc&limit=1`,
+        { headers: idHeaders }
+      );
+      const lastRows = await lastRes.json();
+      const lastNum = lastRows.length > 0
+        ? parseInt(lastRows[0].real_id.replace('RL-', ''), 10)
+        : 0;
+      const realId = 'RL-' + String(lastNum + 1).padStart(6, '0');
+
+      // Save real_id, verified_since, and full_name in one PATCH
+      const firstName = session.verified_outputs?.first_name || '';
+      const lastName  = session.verified_outputs?.last_name  || '';
+      const fullName  = [firstName, lastName].filter(Boolean).join(' ');
+
+      const patch = {
+        real_id: realId,
+        verified_since: new Date().toISOString(),
+        ...(fullName ? { full_name: fullName } : {}),
+      };
+
+      const patchRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
+        {
+          method: 'PATCH',
+          headers: { ...idHeaders, 'Prefer': 'return=minimal' },
+          body: JSON.stringify(patch),
         }
-      } catch (e) {
-        console.error('Failed to save full_name:', e.message);
+      );
+      if (!patchRes.ok) {
+        const err = await patchRes.json().catch(() => ({}));
+        console.error('Failed to assign real_id / verified_since / full_name:', err);
+      } else {
+        console.log(`REAL ID ${realId} assigned and verified_since set for user ${userId}${fullName ? ` (${fullName})` : ''}`);
       }
+    } catch (e) {
+      console.error('Failed to assign REAL ID after gov ID verification:', e.message);
     }
   }
 
