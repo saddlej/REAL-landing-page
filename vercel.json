@@ -2,7 +2,8 @@
   "outputDirectory": ".",
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/RL-:id", "destination": "/profile.html" }
+    { "source": "/RL-:id", "destination": "/profile.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" }
   ],
   "headers": [
     {
