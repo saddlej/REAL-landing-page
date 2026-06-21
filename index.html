@@ -489,8 +489,8 @@
 
     try {
       const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` };
-      const idUrl = `${SUPABASE_URL}/rest/v1/members?real_id=ilike.${encodeURIComponent(query)}&select=real_id,display_name,verified_since,membership_tier&limit=10`;
-      const nameUrl = `${SUPABASE_URL}/rest/v1/members?display_name=ilike.*${encodeURIComponent(query)}*&select=real_id,display_name,verified_since,membership_tier&limit=10`;
+      const idUrl = `${SUPABASE_URL}/rest/v1/members?real_id=not.is.null&real_id=ilike.${encodeURIComponent(query)}&select=real_id,display_name,verified_since,membership_tier&limit=10`;
+      const nameUrl = `${SUPABASE_URL}/rest/v1/members?real_id=not.is.null&display_name=ilike.*${encodeURIComponent(query)}*&select=real_id,display_name,verified_since,membership_tier&limit=10`;
 
       const [idRes, nameRes] = await Promise.all([fetch(idUrl, { headers }), fetch(nameUrl, { headers })]);
       const [idData, nameData] = await Promise.all([idRes.json(), nameRes.json()]);
