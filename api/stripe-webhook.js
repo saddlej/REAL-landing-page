@@ -145,7 +145,7 @@ async function handler(req, res) {
     try {
       const session = await stripe.billingPortal.sessions.create({
         customer: stripeCustomerId,
-        return_url: 'https://www.realverified.co.uk/dashboard'
+        return_url: 'https://www.realverified.co.uk/billing'
       });
       return res.status(200).json({ url: session.url });
     } catch (e) {
