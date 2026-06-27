@@ -2712,7 +2712,7 @@
     btn.textContent = 'Loading...';
     try {
       const token = localStorage.getItem('real_access_token');
-      const res = await fetch('/api/create-billing-session', {
+      const res = await fetch('/api/stripe-webhook?create-billing-session', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
