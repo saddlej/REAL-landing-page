@@ -33,6 +33,26 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Could not verify user' });
   }
 
+  // Check that the user has a paid membership row before allowing verification
+  try {
+    const memberRes = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=id&limit=1`,
+      {
+        headers: {
+          'apikey': process.env.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        }
+      }
+    );
+    const members = await memberRes.json();
+    if (!Array.isArray(members) || members.length === 0) {
+      return res.status(403).json({ error: 'Payment required before identity verification' });
+    }
+  } catch (e) {
+    console.error('Member check failed:', e.message);
+    return res.status(500).json({ error: 'Could not verify membership' });
+  }
+
   // Build the return URL — where Stripe sends the user after verification
   const proto = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['x-forwarded-host'] || req.headers['host'];

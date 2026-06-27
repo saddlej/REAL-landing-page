@@ -1762,6 +1762,16 @@
         memberTier = d.membership_tier || null;
         memberVerifiedSince = d.verified_since || null;
 
+        // Update subscription section
+        const tierLabels = { founding: 'Founding Member', standard: 'Standard Member' };
+        const tierPrices = { founding: '£15.00 / month — locked for life', standard: '£25.00 / month' };
+        if (memberTier) {
+          document.getElementById('subTier').textContent =
+            tierLabels[memberTier] || (memberTier.charAt(0).toUpperCase() + memberTier.slice(1));
+          document.getElementById('subPrice').textContent =
+            tierPrices[memberTier] || '';
+        }
+
         // Store in profileData
         profileData.display_name = d.display_name || '';
         profileData.full_name = d.full_name || '';
