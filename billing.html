@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REAL — Billing & Subscription</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0F2044;
+    --navy-mid: #1A3570;
+    --navy-light: #E8EDF7;
+    --gold: #FFD007;
+    --warm-white: #FAFAF8;
+    --black: #0A0A0A;
+    --gray: #6B6B6B;
+    --gray-light: #9B9B9B;
+    --border: #E2DDD6;
+    --error: #c0392b;
+    --success: #22a366;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: #F0EDE6; color: var(--black); min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ─── NAV ─── */
+  nav {
+    background: var(--navy);
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo svg { width: 28px; height: 28px; }
+  .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; color: white; letter-spacing: 0.08em; }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-email { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.04em; }
+  .nav-signout {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 6px;
+  }
+  .nav-signout:hover { color: white; border-color: rgba(255,255,255,0.4); }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main { flex: 1; max-width: 900px; margin: 0 auto; width: 100%; padding: 40px 24px 80px; }
+
+  /* ─── BACK LINK ─── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--navy); }
+
+  /* ─── PAGE TITLE ─── */
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--gray-light);
+    margin-bottom: 32px;
+  }
+
+  /* ─── SECTION CARDS ─── */
+  .section-card { background: var(--warm-white); margin-bottom: 16px; }
+  .section-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .section-header-left { display: flex; align-items: center; gap: 16px; }
+  .step-badge {
+    width: 28px;
+    height: 28px;
+    background: var(--navy);
+    color: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--navy); }
+  .section-subtitle { font-size: 12px; color: var(--gray-light); margin-top: 2px; }
+  .section-body { padding: 28px 32px; }
+
+  /* ─── BILLING DETAILS ─── */
+  .billing-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+  .billing-row:last-child { border-bottom: none; }
+  .billing-label { font-size: 13px; color: var(--gray); }
+  .billing-value { font-size: 14px; font-weight: 500; color: var(--navy); text-align: right; }
+  .billing-note { font-size: 12px; color: var(--gray-light); margin-top: 16px; line-height: 1.6; }
+
+  /* ─── BUTTONS ─── */
+  .btn-primary {
+    padding: 13px 28px;
+    background: var(--navy);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+    border-radius: 6px;
+  }
+  .btn-primary:hover { background: var(--navy-mid); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .btn-secondary {
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    border-radius: 6px;
+  }
+  .btn-secondary:hover { border-color: var(--navy); }
+  .btn-secondary:disabled { opacity: 0.6; cursor: default; }
+  .btn-danger {
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--error);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--error);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+    border-radius: 6px;
+  }
+  .btn-danger:hover { background: var(--error); color: white; }
+  .btn-danger:disabled { opacity: 0.6; cursor: default; }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+
+  /* ─── CANCEL MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,32,68,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal-box {
+    background: var(--warm-white);
+    width: 100%;
+    max-width: 480px;
+    padding: 40px 36px 32px;
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .modal-body { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 28px; }
+  .modal-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ─── CANCELLATION CONFIRMED ─── */
+  .confirmed-screen { display: none; }
+  .confirmed-screen.visible { display: block; }
+  .confirmed-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(192,57,43,0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .confirmed-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .confirmed-body { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 24px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--navy);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-left { display: flex; align-items: center; gap: 12px; }
+  .footer-logo svg { width: 24px; height: 24px; }
+  .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; color: white; letter-spacing: 0.08em; }
+  .footer-tagline { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.25); letter-spacing: 0.06em; margin-left: 16px; }
+  .footer-links { display: flex; gap: 24px; align-items: center; }
+  .footer-links a { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 20px; }
+    .main { padding: 24px 16px 60px; }
+    .nav-email { display: none; }
+    .section-header { padding: 18px 20px; }
+    .section-body { padding: 20px; }
+    footer { padding: 20px; flex-direction: column; align-items: flex-start; }
+    .footer-tagline { display: none; }
+    .btn-row { flex-direction: column; }
+    .modal-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body onpageshow="if(event.persisted){window.location.reload();}">
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
+      <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
+      <g fill="#0F2044">
+        <path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/>
+        <path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+        <path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/>
+        <path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+      </g>
+    </svg>
+    <span class="nav-brand">REAL</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-email" id="navEmail"></span>
+    <button class="nav-signout" onclick="handleSignOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="main" id="mainContent" style="opacity:0;transition:opacity 0.15s ease;">
+
+  <a href="/dashboard" class="back-link">← Back to dashboard</a>
+
+  <div class="page-title">Billing &amp; Subscription</div>
+  <div class="page-subtitle">Manage your membership plan and payment details</div>
+
+  <!-- SUBSCRIPTION DETAILS CARD -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="step-badge" style="background: var(--gold); color: var(--navy);">£</div>
+        <div>
+          <div class="section-title">Your Plan</div>
+          <div class="section-subtitle">Current membership tier and billing</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <!-- Normal plan view -->
+      <div id="planView">
+        <div class="billing-row">
+          <span class="billing-label">Plan</span>
+          <span class="billing-value" id="planName">—</span>
+        </div>
+        <div class="billing-row">
+          <span class="billing-label">Price</span>
+          <span class="billing-value" id="planPrice">—</span>
+        </div>
+        <div class="billing-row">
+          <span class="billing-label">Next billing date</span>
+          <span class="billing-value" id="nextBillingDate">Loading…</span>
+        </div>
+        <p class="billing-note" id="planNote"></p>
+        <div class="btn-row">
+          <button class="btn-primary" id="updatePaymentBtn" onclick="handleUpdatePayment()">Update payment method →</button>
+          <button class="btn-danger" id="cancelBtn" onclick="openCancelModal()">Cancel subscription</button>
+        </div>
+      </div>
+      <!-- Cancellation confirmed screen -->
+      <div class="confirmed-screen" id="confirmedScreen">
+        <div class="confirmed-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="confirmed-title">Cancellation confirmed</div>
+        <div class="confirmed-body" id="confirmedBody">Your subscription has been cancelled. You'll continue to have full access until the end of your current billing period.</div>
+        <a href="/dashboard" class="btn-secondary" style="display:inline-block; text-decoration:none; text-align:center;">Back to dashboard</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CANCEL CONFIRMATION MODAL -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal-box">
+    <div class="modal-title">Are you sure you want to cancel?</div>
+    <div class="modal-body">
+      Your access will continue until the end of your current billing period — you won't be charged again after that. Once cancelled, your REAL membership and verified profile will no longer be active.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="confirmCancelBtn" onclick="handleConfirmCancel()">Confirm cancellation</button>
+      <button class="btn-secondary" onclick="closeCancelModal()">Go back</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
+        <path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/>
+        <g fill="#0F2044">
+          <path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/>
+          <path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+          <path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/>
+          <path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/>
+        </g>
+      </svg>
+    </div>
+    <span class="footer-brand">REAL ™</span>
+    <span class="footer-tagline">Identity Infrastructure for the Internet</span>
+  </div>
+  <div class="footer-links">
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="mailto:info@realverified.co.uk?subject=REAL%20Member%20Support">Need help? Contact us →</a>
+  </div>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
+
+  const TIER_LABELS = { founding: 'Founding Member', standard: 'Standard Member' };
+  const TIER_PRICES = { founding: '£15.00 / month — locked for life', standard: '£25.00 / month' };
+  const TIER_NOTES  = { founding: 'Your founding member rate is permanently protected. It will never increase.', standard: '' };
+
+  let accessToken = null;
+
+  // ─── AUTH ───
+  const token = localStorage.getItem('real_access_token');
+  if (!token) {
+    window.location.href = 'login.html';
+  } else {
+    fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
+    })
+    .then(r => r.json())
+    .then(user => {
+      if (user.error || !user.id) {
+        localStorage.removeItem('real_access_token');
+        localStorage.removeItem('real_refresh_token');
+        window.location.href = 'login.html';
+      } else {
+        accessToken = token;
+        document.getElementById('navEmail').textContent = user.email || '';
+        initBilling(user.id, token);
+      }
+    })
+    .catch(() => { window.location.href = 'login.html'; });
+  }
+
+  async function initBilling(userId, token) {
+    // Load plan details from Supabase members table
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=membership_tier&limit=1`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY } }
+      );
+      const data = await r.json();
+      if (r.ok && Array.isArray(data) && data.length > 0) {
+        const tier = data[0].membership_tier || null;
+        document.getElementById('planName').textContent =
+          tier ? (TIER_LABELS[tier] || (tier.charAt(0).toUpperCase() + tier.slice(1))) : '—';
+        document.getElementById('planPrice').textContent =
+          tier ? (TIER_PRICES[tier] || '—') : '—';
+        const note = tier ? (TIER_NOTES[tier] || '') : '';
+        const noteEl = document.getElementById('planNote');
+        noteEl.textContent = note;
+        noteEl.style.display = note ? '' : 'none';
+      }
+    } catch (e) {
+      console.error('Could not load member tier:', e);
+    }
+
+    // Load next billing date via Stripe billing portal session
+    await loadNextBillingDate(token);
+
+    document.getElementById('mainContent').style.opacity = '1';
+  }
+
+  async function loadNextBillingDate(token) {
+    const el = document.getElementById('nextBillingDate');
+    try {
+      const res = await fetch('/api/stripe-webhook?create-billing-session', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      // The billing portal session URL doesn't expose the next billing date directly.
+      // We surface it via the portal — show a prompt to visit the portal for full details.
+      if (res.ok && data.url) {
+        el.innerHTML = `<a href="${data.url}" target="_blank" style="color:var(--navy);text-decoration:underline;text-underline-offset:3px;">View in billing portal →</a>`;
+      } else {
+        el.textContent = 'Contact us at info@realverified.co.uk';
+      }
+    } catch (e) {
+      el.textContent = 'Contact us at info@realverified.co.uk';
+    }
+  }
+
+  // ─── UPDATE PAYMENT METHOD ───
+  async function handleUpdatePayment() {
+    const btn = document.getElementById('updatePaymentBtn');
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+    try {
+      const res = await fetch('/api/stripe-webhook?create-billing-session', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'No URL');
+      window.location.href = data.url;
+    } catch (e) {
+      alert('Unable to open billing portal. Please try again or contact info@realverified.co.uk');
+      btn.textContent = orig;
+      btn.disabled = false;
+    }
+  }
+
+  // ─── CANCEL MODAL ───
+  function openCancelModal() {
+    document.getElementById('cancelModal').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCancelModal() {
+    document.getElementById('cancelModal').classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  // ─── CONFIRM CANCEL ───
+  async function handleConfirmCancel() {
+    const btn = document.getElementById('confirmCancelBtn');
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+    try {
+      const res = await fetch('/api/stripe-webhook?create-billing-session', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'No URL');
+      // Redirect to Stripe portal — the member completes cancellation there,
+      // then Stripe returns them to /billing
+      window.location.href = data.url;
+    } catch (e) {
+      closeCancelModal();
+      document.getElementById('planView').style.display = 'none';
+      document.getElementById('confirmedScreen').classList.add('visible');
+      document.getElementById('confirmedBody').textContent =
+        'We were unable to process your cancellation automatically. Please contact us at info@realverified.co.uk and we will cancel your subscription immediately.';
+    }
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem('real_access_token');
+    localStorage.removeItem('real_refresh_token');
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

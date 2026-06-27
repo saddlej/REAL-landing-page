@@ -2705,25 +2705,8 @@
     }
   }
 
-  async function handleBilling() {
-    const btn = document.getElementById('billingBtn');
-    const orig = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'Loading...';
-    try {
-      const token = localStorage.getItem('real_access_token');
-      const res = await fetch('/api/stripe-webhook?create-billing-session', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || 'No URL returned');
-      window.location.href = data.url;
-    } catch (e) {
-      alert('Unable to open billing portal. Please try again or contact info@realverified.co.uk');
-      btn.textContent = orig;
-      btn.disabled = false;
-    }
+  function handleBilling() {
+    window.location.href = '/billing';
   }
 
   function handleSignOut() {
