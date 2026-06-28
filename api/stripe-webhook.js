@@ -64,10 +64,11 @@ function buildEmailShell(bodyContent) {
 }
 
 function buildCancellationMemberEmailHtml(fullName, accessDate, realId) {
+  const firstName = fullName.split(' ')[0];
   const body = `
     <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Cancellation Confirmed</p>
     <p style="margin:0 0 28px;font-size:28px;font-weight:700;color:#0F2044;font-family:Georgia,serif;line-height:1.2;">Your cancellation<br>is confirmed.</p>
-    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${firstName},</p>
     <p style="margin:0 0 20px;font-size:15px;color:#0F2044;line-height:1.8;">Your cancellation is confirmed. You have full access to your REAL membership and verified profile until <strong>${accessDate}</strong>. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
       <tr>
@@ -106,10 +107,11 @@ function buildCancellationAdminEmailHtml(fullName, memberEmail, accessDate, real
 }
 
 function buildLapsedMemberEmailHtml(fullName, realId) {
+  const firstName = fullName.split(' ')[0];
   const body = `
     <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Membership Ended</p>
     <p style="margin:0 0 28px;font-size:28px;font-weight:700;color:#0F2044;font-family:Georgia,serif;line-height:1.2;">Your verification<br>has lapsed.</p>
-    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${firstName},</p>
     <p style="margin:0 0 20px;font-size:15px;color:#0F2044;line-height:1.8;">Your REAL membership has now ended. Your profile is still visible but your verification status now shows as unverified.</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
       <tr>
