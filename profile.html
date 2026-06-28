@@ -442,7 +442,7 @@
 
     /* Lapsed verification state */
     .profile-avatar.verification-lapsed { filter: grayscale(100%); opacity: 0.5; }
-    .lapsed-notice { font-size: 12px; color: #c0392b; margin-top: 6px; line-height: 1.5; }
+    .lapsed-banner { background: #FEF3C7; color: #92400E; padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; line-height: 1.5; margin-bottom: 16px; }
 
     /* PLATFORM TYPE & COMPROMISE */
     .plat-type {
@@ -700,6 +700,7 @@
     const isLapsed = member.is_active === false;
 
     document.getElementById('content').innerHTML = `
+      ${isLapsed ? '<div class="lapsed-banner">⚠️ This member\'s REAL verification is not currently active.</div>' : ''}
       <div class="profile-card ${themeClass}">
         <div class="profile-card-header">
           <div class="profile-avatar${isLapsed ? ' verification-lapsed' : ''}">
@@ -716,7 +717,6 @@
               ${!isLapsed && member.id_verified ? '<span class="badge badge-id">✓ Gov ID Confirmed</span>' : ''}
               ${tierBadge}
             </div>
-            ${isLapsed ? '<div class="lapsed-notice">This member\'s REAL verification is not currently active.</div>' : ''}
           </div>
         </div>
         ${profileMetaHTML ? `<hr class="divider">${profileMetaHTML}` : ''}

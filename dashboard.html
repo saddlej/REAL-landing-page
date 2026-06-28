@@ -1848,6 +1848,18 @@
     const banner = document.getElementById('inactiveBanner');
     banner.style.display = 'flex';
 
+    const avatarCircle = document.querySelector('.avatar-circle');
+    if (avatarCircle) { avatarCircle.style.filter = 'grayscale(100%)'; avatarCircle.style.opacity = '0.5'; }
+
+    const vPill = document.getElementById('verificationStatus');
+    if (vPill) {
+      vPill.className = 'status-pill';
+      vPill.style.background = '#FEF3C7';
+      vPill.style.color = '#92400E';
+      vPill.style.border = '1px solid #92400E';
+      vPill.innerHTML = '<span class="dot" style="background:#92400E;"></span><span>Verification lapsed</span>';
+    }
+
     const main = document.getElementById('mainContent');
     const subscriptionCard = document.getElementById('subscriptionCard');
     const interactive = main.querySelectorAll('button, input, textarea, select, a.btn-primary, a.btn-secondary');
