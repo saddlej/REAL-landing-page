@@ -444,10 +444,12 @@
       const data = await res.json();
       // The billing portal session URL doesn't expose the next billing date directly.
       // We surface it via the portal — show a prompt to visit the portal for full details.
-      if (res.ok && data.url) {
-        el.innerHTML = `<a href="${data.url}" target="_blank" style="color:var(--navy);text-decoration:underline;text-underline-offset:3px;">View in billing portal →</a>`;
+      if (res.ok && data.nextBillingDate) {
+        el.textContent = data.nextBillingDate;
+      } else if (res.ok && data.url) {
+        el.textContent = 'See billing portal';
       } else {
-        el.textContent = 'Contact us at info@realverified.co.uk';
+        el.textContent = 'See billing portal';
       }
     } catch (e) {
       el.textContent = 'Contact us at info@realverified.co.uk';

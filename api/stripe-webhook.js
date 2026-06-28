@@ -143,11 +143,22 @@ async function handler(req, res) {
     }
 
     try {
-      const session = await stripe.billingPortal.sessions.create({
-        customer: stripeCustomerId,
-        return_url: 'https://www.realverified.co.uk/billing'
-      });
-      return res.status(200).json({ url: session.url });
+      const [session, subscriptions] = await Promise.all([
+        stripe.billingPortal.sessions.create({
+          customer: stripeCustomerId,
+          return_url: 'https://www.realverified.co.uk/billing'
+        }),
+        stripe.subscriptions.list({ customer: stripeCustomerId, status: 'active', limit: 1 })
+      ]);
+
+      let nextBillingDate = null;
+      const sub = subscriptions.data[0];
+      if (sub && sub.current_period_end) {
+        const d = new Date(sub.current_period_end * 1000);
+        nextBillingDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+
+      return res.status(200).json({ url: session.url, nextBillingDate });
     } catch (e) {
       console.error('Stripe billing portal session failed:', e.message);
       return res.status(500).json({ error: e.message });
