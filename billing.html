@@ -287,8 +287,25 @@
   <div class="page-title">Billing &amp; Subscription</div>
   <div class="page-subtitle">Manage your membership plan and payment details</div>
 
+  <!-- REACTIVATION CARD (shown when is_active === false) -->
+  <div class="section-card" id="reactivateCard" style="display:none;">
+    <div class="section-header">
+      <div class="section-header-left">
+        <div class="step-badge" style="background: var(--gold); color: var(--navy);">£</div>
+        <div>
+          <div class="section-title">Membership ended</div>
+          <div class="section-subtitle">Your verified status is no longer active</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:14px; color:var(--gray); line-height:1.7; margin-bottom:24px;">Your membership ended. Reactivate to restore your verified status. Your REAL ID and profile will remain yours — reactivating restores your verification badge immediately.</p>
+      <button class="btn-primary" id="reactivateBtn" onclick="handleReactivate()">Reactivate membership →</button>
+    </div>
+  </div>
+
   <!-- SUBSCRIPTION DETAILS CARD -->
-  <div class="section-card">
+  <div class="section-card" id="planCard">
     <div class="section-header">
       <div class="section-header-left">
         <div class="step-badge" style="background: var(--gold); color: var(--navy);">£</div>
@@ -409,12 +426,21 @@
     // Load plan details from Supabase members table
     try {
       const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=membership_tier&limit=1`,
+        `${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=membership_tier,is_active&limit=1`,
         { headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY } }
       );
       const data = await r.json();
       if (r.ok && Array.isArray(data) && data.length > 0) {
-        const tier = data[0].membership_tier || null;
+        const row = data[0];
+
+        if (row.is_active === false) {
+          document.getElementById('planCard').style.display = 'none';
+          document.getElementById('reactivateCard').style.display = '';
+          document.getElementById('mainContent').style.opacity = '1';
+          return;
+        }
+
+        const tier = row.membership_tier || null;
         document.getElementById('planName').textContent =
           tier ? (TIER_LABELS[tier] || (tier.charAt(0).toUpperCase() + tier.slice(1))) : '—';
         document.getElementById('planPrice').textContent =
@@ -509,6 +535,28 @@
       document.getElementById('confirmedScreen').classList.add('visible');
       document.getElementById('confirmedBody').textContent =
         'We were unable to process your cancellation automatically. Please contact us at info@realverified.co.uk and we will cancel your subscription immediately.';
+    }
+  }
+
+  // ─── REACTIVATE MEMBERSHIP ───
+  async function handleReactivate() {
+    const btn = document.getElementById('reactivateBtn');
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+    try {
+      const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'apikey': SUPABASE_KEY }
+      });
+      const user = await userRes.json();
+      const userId = user?.id;
+      const STRIPE_LINK = 'https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00';
+      window.location.href = userId
+        ? `${STRIPE_LINK}?client_reference_id=${userId}`
+        : STRIPE_LINK;
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Reactivate membership →';
+      alert('Unable to start checkout. Please try again or contact info@realverified.co.uk');
     }
   }
 

@@ -364,6 +364,140 @@ async function handler(req, res) {
     }
   }
 
+  if (event.type === 'customer.subscription.updated') {
+    const sub = event.data.object;
+    if (sub.cancel_at_period_end === true) {
+      const customerId = sub.customer;
+      const accessDate = new Date(sub.current_period_end * 1000)
+        .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      try {
+        const sbHeaders = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+        };
+        const memberRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,real_id&limit=1`,
+          { headers: sbHeaders }
+        );
+        const members = await memberRes.json();
+        if (!Array.isArray(members) || members.length === 0) {
+          console.error(`customer.subscription.updated: no member found for customer ${customerId}`);
+        } else {
+          const member = members[0];
+          const userRes = await fetch(
+            `${process.env.SUPABASE_URL}/auth/v1/admin/users/${member.user_id}`,
+            { headers: sbHeaders }
+          );
+          const userData = await userRes.json();
+          const memberEmail = userData?.email;
+          const fullName = member.full_name || 'REAL Member';
+          const realId = member.real_id || '';
+
+          if (memberEmail) {
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                from: 'REAL <info@realverified.co.uk>',
+                to: memberEmail,
+                subject: 'Your REAL cancellation is confirmed',
+                text: `Hi ${fullName},\n\nYour cancellation is confirmed. You have full access to your REAL membership and verified profile until ${accessDate}. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.\n\nTo reactivate at any time, visit https://www.realverified.co.uk/billing.\n\nYour REAL ID (${realId}) will not be deleted.\n\n— REAL`,
+              }),
+            });
+            console.log(`Cancellation confirmation email sent to ${memberEmail} for ${realId}`);
+          }
+
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'REAL <info@realverified.co.uk>',
+              to: 'info@realverified.co.uk',
+              subject: `Cancellation scheduled — ${fullName}`,
+              text: `REAL ID: ${realId}. Member email: ${memberEmail || 'unknown'}. Access runs until: ${accessDate}. No action needed.`,
+            }),
+          });
+        }
+      } catch (e) {
+        console.error('customer.subscription.updated handler error:', e.message);
+      }
+    }
+  }
+
+  if (event.type === 'customer.subscription.deleted') {
+    const sub = event.data.object;
+    const customerId = sub.customer;
+    try {
+      const sbHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+      };
+      const memberRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,real_id&limit=1`,
+        { headers: sbHeaders }
+      );
+      const members = await memberRes.json();
+      if (!Array.isArray(members) || members.length === 0) {
+        console.error(`customer.subscription.deleted: no member found for customer ${customerId}`);
+      } else {
+        const member = members[0];
+
+        const patchRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}`,
+          {
+            method: 'PATCH',
+            headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ is_active: false }),
+          }
+        );
+        if (!patchRes.ok) {
+          const err = await patchRes.json().catch(() => ({}));
+          console.error('Failed to set is_active=false:', err);
+        } else {
+          console.log(`is_active set to false for member ${member.real_id || member.user_id}`);
+        }
+
+        const userRes = await fetch(
+          `${process.env.SUPABASE_URL}/auth/v1/admin/users/${member.user_id}`,
+          { headers: sbHeaders }
+        );
+        const userData = await userRes.json();
+        const memberEmail = userData?.email;
+        const fullName = member.full_name || 'REAL Member';
+        const realId = member.real_id || '';
+
+        if (memberEmail) {
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'REAL <info@realverified.co.uk>',
+              to: memberEmail,
+              subject: 'Your REAL verification has lapsed',
+              text: `Hi ${fullName},\n\nYour REAL membership has now ended. Your profile (REAL ID: ${realId}) is still visible at https://www.realverified.co.uk but your verification status now shows as unverified.\n\nTo restore your verified status, reactivate your membership at https://www.realverified.co.uk/billing.\n\n— REAL`,
+            }),
+          });
+          console.log(`Membership ended email sent to ${memberEmail} for ${realId}`);
+        }
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'REAL <info@realverified.co.uk>',
+            to: 'info@realverified.co.uk',
+            subject: `Membership ended — ${fullName}`,
+            text: `REAL ID: ${realId}. Member email: ${memberEmail || 'unknown'}. Membership ended today. is_active set to false in Supabase.`,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error('customer.subscription.deleted handler error:', e.message);
+    }
+  }
+
   // Always return 200 — Stripe retries on anything else
   return res.status(200).json({ received: true });
 }

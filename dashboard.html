@@ -804,6 +804,12 @@
 
 <div class="main" id="mainContent" style="opacity:0;transition:opacity 0.15s ease;">
 
+  <!-- INACTIVE MEMBER BANNER -->
+  <div id="inactiveBanner" style="display:none; background:#FEF3C7; color:#92400E; padding:16px 20px; border-radius:8px; margin-bottom:20px; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    <span style="font-size:14px; font-weight:500;">Your REAL verification has lapsed. Your profile is visible but now shows as unverified.</span>
+    <a href="/billing" style="background:#92400E; color:white; padding:10px 20px; border-radius:6px; font-size:14px; font-weight:600; text-decoration:none; white-space:nowrap;">Reactivate membership →</a>
+  </div>
+
   <!-- IDENTITY CARD -->
   <div class="identity-card" id="identityCard">
     <div class="identity-layout">
@@ -955,7 +961,7 @@
   </div>
 
   <!-- SUBSCRIPTION -->
-  <div class="section-card">
+  <div class="section-card" id="subscriptionCard">
     <div class="section-header">
       <div class="section-header-left">
         <div class="step-badge" style="background: var(--gold); color: var(--navy);">£</div>
@@ -1752,7 +1758,7 @@
   // ─── LOAD MEMBER DATA ───
   async function loadMemberData(token, userId) {
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link,profile_theme,full_name&limit=1`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id,membership_tier,verified_since,display_name,id_verified,bio,location,contact_link,profile_theme,full_name,is_active&limit=1`, {
         headers: { 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY }
       });
       const data = await r.json();
@@ -1828,10 +1834,34 @@
           idBtn.disabled = true;
           idBtn.textContent = 'Verification complete';
         }
+
+        if (d.is_active === false) {
+          applyInactiveMemberState();
+        }
       }
     } catch (e) {
       console.error('loadMemberData error:', e);
     }
+  }
+
+  function applyInactiveMemberState() {
+    const banner = document.getElementById('inactiveBanner');
+    banner.style.display = 'flex';
+
+    const main = document.getElementById('mainContent');
+    const subscriptionCard = document.getElementById('subscriptionCard');
+    const interactive = main.querySelectorAll('button, input, textarea, select, a.btn-primary, a.btn-secondary');
+    interactive.forEach(el => {
+      if (subscriptionCard && subscriptionCard.contains(el)) return;
+      if (el.tagName === 'A') {
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.4';
+        el.style.cursor = 'default';
+      } else {
+        el.disabled = true;
+        el.style.opacity = '0.4';
+      }
+    });
   }
 
   // ─── PROFILE MODAL ───
