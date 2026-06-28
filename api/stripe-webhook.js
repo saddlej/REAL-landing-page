@@ -9,22 +9,30 @@ function buildEmailShell(bodyContent) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin:0;padding:0;background-color:#f5f4ef;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f4ef;padding:48px 20px;">
+<body style="margin:0;padding:0;background-color:#F5F4EF;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F5F4EF;padding:48px 20px;">
     <tr>
       <td align="center">
         <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
           <!-- HEADER -->
           <tr>
-            <td style="background-color:#0a1628;padding:28px 40px;text-align:left;">
-              <span style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#c9a84c;letter-spacing:0.08em;">REAL</span>
-              <span style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.18em;text-transform:uppercase;margin-left:14px;">Identity Infrastructure</span>
+            <td style="background-color:#0F2044;padding:24px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <span style="font-family:Georgia,serif;font-size:26px;font-weight:700;color:#FFD007;letter-spacing:0.1em;">REAL</span>
+                  </td>
+                  <td style="vertical-align:middle;text-align:right;">
+                    <span style="font-family:'Courier New',monospace;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.22em;text-transform:uppercase;">Identity Infrastructure</span>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <!-- GOLD RULE -->
           <tr>
             <td style="font-size:0;line-height:0;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:3px;background-color:#c9a84c;">&nbsp;</td></tr></table>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:3px;background-color:#FFD007;">&nbsp;</td></tr></table>
             </td>
           </tr>
           <!-- BODY -->
@@ -36,13 +44,13 @@ function buildEmailShell(bodyContent) {
           <!-- FOOTER RULE -->
           <tr>
             <td style="padding:0 40px;background-color:#ffffff;font-size:0;line-height:0;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px;background-color:#c9a84c;">&nbsp;</td></tr></table>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px;background-color:#FFD007;">&nbsp;</td></tr></table>
             </td>
           </tr>
           <!-- FOOTER -->
           <tr>
             <td style="padding:20px 40px 0;background-color:#ffffff;">
-              <p style="margin:0;font-size:11px;color:#999;line-height:1.6;">REAL — Identity Infrastructure for the Internet &nbsp;|&nbsp; <a href="https://realverified.co.uk" style="color:#c9a84c;text-decoration:none;">realverified.co.uk</a></p>
+              <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:#999;line-height:1.6;letter-spacing:0.04em;">REAL — Identity Infrastructure for the Internet &nbsp;|&nbsp; <a href="https://realverified.co.uk" style="color:#FFD007;text-decoration:none;">realverified.co.uk</a></p>
             </td>
           </tr>
           <!-- BOTTOM PADDING -->
@@ -57,83 +65,85 @@ function buildEmailShell(bodyContent) {
 
 function buildCancellationMemberEmailHtml(fullName, accessDate, realId) {
   const body = `
-    <p style="margin:0 0 6px;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;font-weight:700;">Cancellation confirmed</p>
-    <p style="margin:0 0 24px;font-size:26px;font-weight:700;color:#0a1628;font-family:Georgia,serif;line-height:1.2;">Your cancellation is confirmed</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Hi ${fullName},</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Your cancellation is confirmed. You have full access to your REAL membership and verified profile until <strong>${accessDate}</strong>. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.</p>
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Cancellation Confirmed</p>
+    <p style="margin:0 0 28px;font-size:28px;font-weight:700;color:#0F2044;font-family:Georgia,serif;line-height:1.2;">Your cancellation<br>is confirmed.</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#0F2044;line-height:1.8;">Your cancellation is confirmed. You have full access to your REAL membership and verified profile until <strong>${accessDate}</strong>. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
       <tr>
-        <td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
-          <p style="margin:0 0 8px;font-size:12px;color:#666;"><strong style="color:#0a1628;">Access ends:</strong> ${accessDate}</p>
-          <p style="margin:0;font-size:12px;color:#666;"><strong style="color:#0a1628;">Your REAL ID:</strong> ${realId}</p>
+        <td style="background-color:#F0EFE9;border-left:3px solid #FFD007;padding:16px 20px;">
+          <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Access ends:</strong> ${accessDate}</p>
+          <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Your REAL ID:</strong> ${realId}</p>
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 28px;font-size:15px;color:#333;line-height:1.8;">Your REAL ID will not be deleted. You can reactivate your membership at any time.</p>
+    <p style="margin:0 0 28px;font-size:15px;color:#0F2044;line-height:1.8;">Your REAL ID will not be deleted. You can reactivate your membership at any time.</p>
     <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
       <tr>
-        <td style="background-color:#0a1628;border-radius:4px;">
-          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:13px 28px;font-size:14px;font-weight:700;color:#c9a84c;text-decoration:none;letter-spacing:0.04em;">Reactivate membership &rarr;</a>
+        <td style="background-color:#FFD007;">
+          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:14px 32px;font-size:13px;font-weight:700;color:#0F2044;text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;font-family:Arial,sans-serif;">Reactivate Membership &rarr;</a>
         </td>
       </tr>
     </table>
-    <p style="margin:0;font-size:14px;color:#555;">The REAL Team</p>`;
+    <p style="margin:0;font-size:14px;color:#0F2044;">The REAL Team</p>`;
   return buildEmailShell(body);
 }
 
 function buildCancellationAdminEmailHtml(fullName, memberEmail, accessDate, realId) {
   const body = `
-    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0a1628;font-family:Georgia,serif;">Cancellation scheduled</p>
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Admin Notification</p>
+    <p style="margin:0 0 24px;font-size:24px;font-weight:700;color:#0F2044;font-family:Georgia,serif;">Cancellation scheduled</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
-      <tr><td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Name:</strong> ${fullName}</p>
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Email:</strong> ${memberEmail}</p>
-        <p style="margin:0;font-size:13px;color:#333;"><strong style="color:#0a1628;">Access until:</strong> ${accessDate}</p>
+      <tr><td style="background-color:#F0EFE9;border-left:3px solid #FFD007;padding:16px 20px;">
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Name:</strong> ${fullName}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>REAL ID:</strong> ${realId}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Email:</strong> ${memberEmail}</p>
+        <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Access until:</strong> ${accessDate}</p>
       </td></tr>
     </table>
-    <p style="margin:0;font-size:14px;color:#555;">No action needed.</p>`;
+    <p style="margin:0;font-size:14px;color:#0F2044;">No action needed.</p>`;
   return buildEmailShell(body);
 }
 
 function buildLapsedMemberEmailHtml(fullName, realId) {
   const body = `
-    <p style="margin:0 0 6px;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;font-weight:700;">Membership ended</p>
-    <p style="margin:0 0 24px;font-size:26px;font-weight:700;color:#0a1628;font-family:Georgia,serif;line-height:1.2;">Your verification has lapsed</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Hi ${fullName},</p>
-    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Your REAL membership has now ended. Your profile is still visible but your verification status now shows as unverified.</p>
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Membership Ended</p>
+    <p style="margin:0 0 28px;font-size:28px;font-weight:700;color:#0F2044;font-family:Georgia,serif;line-height:1.2;">Your verification<br>has lapsed.</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#0F2044;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#0F2044;line-height:1.8;">Your REAL membership has now ended. Your profile is still visible but your verification status now shows as unverified.</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
       <tr>
-        <td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
-          <p style="margin:0;font-size:12px;color:#666;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
+        <td style="background-color:#F0EFE9;border-left:3px solid #FFD007;padding:16px 20px;">
+          <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>REAL ID:</strong> ${realId}</p>
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 28px;font-size:15px;color:#333;line-height:1.8;">You can restore your verified status at any time by reactivating your membership.</p>
+    <p style="margin:0 0 28px;font-size:15px;color:#0F2044;line-height:1.8;">You can restore your verified status at any time by reactivating your membership.</p>
     <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
       <tr>
-        <td style="background-color:#0a1628;border-radius:4px;">
-          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:13px 28px;font-size:14px;font-weight:700;color:#c9a84c;text-decoration:none;letter-spacing:0.04em;">Reactivate membership &rarr;</a>
+        <td style="background-color:#FFD007;">
+          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:14px 32px;font-size:13px;font-weight:700;color:#0F2044;text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;font-family:Arial,sans-serif;">Reactivate Membership &rarr;</a>
         </td>
       </tr>
     </table>
-    <p style="margin:0;font-size:14px;color:#555;">The REAL Team</p>`;
+    <p style="margin:0;font-size:14px;color:#0F2044;">The REAL Team</p>`;
   return buildEmailShell(body);
 }
 
 function buildLapsedAdminEmailHtml(fullName, memberEmail, realId) {
   const endedDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const body = `
-    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0a1628;font-family:Georgia,serif;">Membership ended</p>
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Admin Notification</p>
+    <p style="margin:0 0 24px;font-size:24px;font-weight:700;color:#0F2044;font-family:Georgia,serif;">Membership ended</p>
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
-      <tr><td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Name:</strong> ${fullName}</p>
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
-        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Email:</strong> ${memberEmail}</p>
-        <p style="margin:0;font-size:13px;color:#333;"><strong style="color:#0a1628;">Ended:</strong> ${endedDate}</p>
+      <tr><td style="background-color:#F0EFE9;border-left:3px solid #FFD007;padding:16px 20px;">
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Name:</strong> ${fullName}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>REAL ID:</strong> ${realId}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Email:</strong> ${memberEmail}</p>
+        <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Ended:</strong> ${endedDate}</p>
       </td></tr>
     </table>
-    <p style="margin:0;font-size:14px;color:#555;">is_active set to false in Supabase.</p>`;
+    <p style="margin:0;font-size:14px;color:#0F2044;">is_active set to false in Supabase.</p>`;
   return buildEmailShell(body);
 }
 
@@ -512,7 +522,7 @@ async function handler(req, res) {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
         };
         const memberRes = await fetch(
-          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,display_name,real_id&limit=1`,
+          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,real_id&limit=1`,
           { headers: sbHeaders }
         );
         const members = await memberRes.json();
@@ -527,7 +537,7 @@ async function handler(req, res) {
           );
           const userData = await userRes.json();
           const memberEmail = userData?.email;
-          const fullName = member.full_name || member.display_name || 'REAL Member';
+          const fullName = member.full_name || 'Member';
           const realId = member.real_id || '';
 
           if (memberEmail) {
@@ -602,7 +612,7 @@ async function handler(req, res) {
         );
         const userData = await userRes.json();
         const memberEmail = userData?.email;
-        const fullName = member.full_name || member.display_name || 'REAL Member';
+        const fullName = member.full_name || 'Member';
         const realId = member.real_id || '';
 
         if (memberEmail) {
