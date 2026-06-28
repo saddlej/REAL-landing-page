@@ -2,6 +2,141 @@ const Stripe = require('stripe');
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
+function buildEmailShell(bodyContent) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f4ef;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f4ef;padding:48px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+          <!-- HEADER -->
+          <tr>
+            <td style="background-color:#0a1628;padding:28px 40px;text-align:left;">
+              <span style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#c9a84c;letter-spacing:0.08em;">REAL</span>
+              <span style="font-family:Arial,sans-serif;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.18em;text-transform:uppercase;margin-left:14px;">Identity Infrastructure</span>
+            </td>
+          </tr>
+          <!-- GOLD RULE -->
+          <tr>
+            <td style="font-size:0;line-height:0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:3px;background-color:#c9a84c;">&nbsp;</td></tr></table>
+            </td>
+          </tr>
+          <!-- BODY -->
+          <tr>
+            <td style="background-color:#ffffff;padding:44px 40px 36px;">
+              ${bodyContent}
+            </td>
+          </tr>
+          <!-- FOOTER RULE -->
+          <tr>
+            <td style="padding:0 40px;background-color:#ffffff;font-size:0;line-height:0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px;background-color:#c9a84c;">&nbsp;</td></tr></table>
+            </td>
+          </tr>
+          <!-- FOOTER -->
+          <tr>
+            <td style="padding:20px 40px 0;background-color:#ffffff;">
+              <p style="margin:0;font-size:11px;color:#999;line-height:1.6;">REAL — Identity Infrastructure for the Internet &nbsp;|&nbsp; <a href="https://realverified.co.uk" style="color:#c9a84c;text-decoration:none;">realverified.co.uk</a></p>
+            </td>
+          </tr>
+          <!-- BOTTOM PADDING -->
+          <tr><td style="background-color:#ffffff;height:32px;">&nbsp;</td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildCancellationMemberEmailHtml(fullName, accessDate, realId) {
+  const body = `
+    <p style="margin:0 0 6px;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;font-weight:700;">Cancellation confirmed</p>
+    <p style="margin:0 0 24px;font-size:26px;font-weight:700;color:#0a1628;font-family:Georgia,serif;line-height:1.2;">Your cancellation is confirmed</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Your cancellation is confirmed. You have full access to your REAL membership and verified profile until <strong>${accessDate}</strong>. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+      <tr>
+        <td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
+          <p style="margin:0 0 8px;font-size:12px;color:#666;"><strong style="color:#0a1628;">Access ends:</strong> ${accessDate}</p>
+          <p style="margin:0;font-size:12px;color:#666;"><strong style="color:#0a1628;">Your REAL ID:</strong> ${realId}</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 28px;font-size:15px;color:#333;line-height:1.8;">Your REAL ID will not be deleted. You can reactivate your membership at any time.</p>
+    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+      <tr>
+        <td style="background-color:#0a1628;border-radius:4px;">
+          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:13px 28px;font-size:14px;font-weight:700;color:#c9a84c;text-decoration:none;letter-spacing:0.04em;">Reactivate membership &rarr;</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#555;">The REAL Team</p>`;
+  return buildEmailShell(body);
+}
+
+function buildCancellationAdminEmailHtml(fullName, memberEmail, accessDate, realId) {
+  const body = `
+    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0a1628;font-family:Georgia,serif;">Cancellation scheduled</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+      <tr><td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Name:</strong> ${fullName}</p>
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Email:</strong> ${memberEmail}</p>
+        <p style="margin:0;font-size:13px;color:#333;"><strong style="color:#0a1628;">Access until:</strong> ${accessDate}</p>
+      </td></tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#555;">No action needed.</p>`;
+  return buildEmailShell(body);
+}
+
+function buildLapsedMemberEmailHtml(fullName, realId) {
+  const body = `
+    <p style="margin:0 0 6px;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#c9a84c;font-weight:700;">Membership ended</p>
+    <p style="margin:0 0 24px;font-size:26px;font-weight:700;color:#0a1628;font-family:Georgia,serif;line-height:1.2;">Your verification has lapsed</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Hi ${fullName},</p>
+    <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.8;">Your REAL membership has now ended. Your profile is still visible but your verification status now shows as unverified.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+      <tr>
+        <td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
+          <p style="margin:0;font-size:12px;color:#666;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 28px;font-size:15px;color:#333;line-height:1.8;">You can restore your verified status at any time by reactivating your membership.</p>
+    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+      <tr>
+        <td style="background-color:#0a1628;border-radius:4px;">
+          <a href="https://www.realverified.co.uk/billing" style="display:inline-block;padding:13px 28px;font-size:14px;font-weight:700;color:#c9a84c;text-decoration:none;letter-spacing:0.04em;">Reactivate membership &rarr;</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#555;">The REAL Team</p>`;
+  return buildEmailShell(body);
+}
+
+function buildLapsedAdminEmailHtml(fullName, memberEmail, realId) {
+  const endedDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const body = `
+    <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0a1628;font-family:Georgia,serif;">Membership ended</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+      <tr><td style="background-color:#f5f4ef;border-left:3px solid #c9a84c;padding:16px 20px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Name:</strong> ${fullName}</p>
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">REAL ID:</strong> ${realId}</p>
+        <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong style="color:#0a1628;">Email:</strong> ${memberEmail}</p>
+        <p style="margin:0;font-size:13px;color:#333;"><strong style="color:#0a1628;">Ended:</strong> ${endedDate}</p>
+      </td></tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#555;">is_active set to false in Supabase.</p>`;
+  return buildEmailShell(body);
+}
+
 function buildWelcomeEmailHtml(firstName, realId) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -377,10 +512,11 @@ async function handler(req, res) {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
         };
         const memberRes = await fetch(
-          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,real_id&limit=1`,
+          `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,display_name,real_id&limit=1`,
           { headers: sbHeaders }
         );
         const members = await memberRes.json();
+        console.log(`customer.subscription.updated: member lookup for ${customerId}:`, JSON.stringify(members));
         if (!Array.isArray(members) || members.length === 0) {
           console.error(`customer.subscription.updated: no member found for customer ${customerId}`);
         } else {
@@ -391,7 +527,7 @@ async function handler(req, res) {
           );
           const userData = await userRes.json();
           const memberEmail = userData?.email;
-          const fullName = member.full_name || 'REAL Member';
+          const fullName = member.full_name || member.display_name || 'REAL Member';
           const realId = member.real_id || '';
 
           if (memberEmail) {
@@ -402,7 +538,7 @@ async function handler(req, res) {
                 from: 'REAL <info@realverified.co.uk>',
                 to: memberEmail,
                 subject: 'Your REAL cancellation is confirmed',
-                text: `Hi ${fullName},\n\nYour cancellation is confirmed. You have full access to your REAL membership and verified profile until ${accessDate}. After that, your profile will remain visible but your verification status will show as unverified — meaning anyone checking your profile will see your verification has lapsed.\n\nTo reactivate at any time, visit https://www.realverified.co.uk/billing.\n\nYour REAL ID (${realId}) will not be deleted.\n\n— REAL`,
+                html: buildCancellationMemberEmailHtml(fullName, accessDate, realId),
               }),
             });
             console.log(`Cancellation confirmation email sent to ${memberEmail} for ${realId}`);
@@ -415,7 +551,7 @@ async function handler(req, res) {
               from: 'REAL <info@realverified.co.uk>',
               to: 'info@realverified.co.uk',
               subject: `Cancellation scheduled — ${fullName}`,
-              text: `REAL ID: ${realId}. Member email: ${memberEmail || 'unknown'}. Access runs until: ${accessDate}. No action needed.`,
+              html: buildCancellationAdminEmailHtml(fullName, memberEmail || 'unknown', accessDate, realId),
             }),
           });
         }
@@ -435,10 +571,11 @@ async function handler(req, res) {
         'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
       };
       const memberRes = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,real_id&limit=1`,
+        `${process.env.SUPABASE_URL}/rest/v1/members?stripe_customer_id=eq.${customerId}&select=user_id,full_name,display_name,real_id&limit=1`,
         { headers: sbHeaders }
       );
       const members = await memberRes.json();
+      console.log(`customer.subscription.deleted: member lookup for ${customerId}:`, JSON.stringify(members));
       if (!Array.isArray(members) || members.length === 0) {
         console.error(`customer.subscription.deleted: no member found for customer ${customerId}`);
       } else {
@@ -465,7 +602,7 @@ async function handler(req, res) {
         );
         const userData = await userRes.json();
         const memberEmail = userData?.email;
-        const fullName = member.full_name || 'REAL Member';
+        const fullName = member.full_name || member.display_name || 'REAL Member';
         const realId = member.real_id || '';
 
         if (memberEmail) {
@@ -476,7 +613,7 @@ async function handler(req, res) {
               from: 'REAL <info@realverified.co.uk>',
               to: memberEmail,
               subject: 'Your REAL verification has lapsed',
-              text: `Hi ${fullName},\n\nYour REAL membership has now ended. Your profile (REAL ID: ${realId}) is still visible at https://www.realverified.co.uk but your verification status now shows as unverified.\n\nTo restore your verified status, reactivate your membership at https://www.realverified.co.uk/billing.\n\n— REAL`,
+              html: buildLapsedMemberEmailHtml(fullName, realId),
             }),
           });
           console.log(`Membership ended email sent to ${memberEmail} for ${realId}`);
@@ -489,7 +626,7 @@ async function handler(req, res) {
             from: 'REAL <info@realverified.co.uk>',
             to: 'info@realverified.co.uk',
             subject: `Membership ended — ${fullName}`,
-            text: `REAL ID: ${realId}. Member email: ${memberEmail || 'unknown'}. Membership ended today. is_active set to false in Supabase.`,
+            html: buildLapsedAdminEmailHtml(fullName, memberEmail || 'unknown', realId),
           }),
         });
       }
