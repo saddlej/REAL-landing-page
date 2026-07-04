@@ -419,7 +419,7 @@ async function handler(req, res) {
       console.error('Failed to update Supabase user:', e.message);
     }
 
-    // Generate and assign REAL ID now that gov ID is confirmed
+    // Check whether this member already has a permanent REAL ID before assigning one
     const idHeaders = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
@@ -427,84 +427,115 @@ async function handler(req, res) {
     };
 
     try {
-      const lastRes = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/members?select=real_id&real_id=not.is.null&order=real_id.desc&limit=1`,
-        { headers: idHeaders }
-      );
-      const lastRows = await lastRes.json();
-      const lastNum = lastRows.length > 0
-        ? parseInt(lastRows[0].real_id.replace('RL-', ''), 10)
-        : 0;
-      const realId = 'RL-' + String(lastNum + 1).padStart(6, '0');
-
-      // Save real_id, verified_since, and full_name in one PATCH
       const firstName = session.verified_outputs?.first_name || '';
       const lastName  = session.verified_outputs?.last_name  || '';
       const fullName  = [firstName, lastName].filter(Boolean).join(' ');
 
-      const patch = {
-        real_id: realId,
-        verified_since: new Date().toISOString(),
-        ...(fullName ? { full_name: fullName } : {}),
-      };
-
-      const patchRes = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
-        {
-          method: 'PATCH',
-          headers: { ...idHeaders, 'Prefer': 'return=minimal' },
-          body: JSON.stringify(patch),
-        }
+      const memberRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=real_id&limit=1`,
+        { headers: idHeaders }
       );
-      if (!patchRes.ok) {
-        const err = await patchRes.json().catch(() => ({}));
-        console.error('Failed to assign real_id / verified_since / full_name:', err);
-      } else {
-        console.log(`REAL ID ${realId} assigned and verified_since set for user ${userId}${fullName ? ` (${fullName})` : ''}`);
-      }
+      const memberRows = await memberRes.json();
+      const existingRealId = memberRows[0]?.real_id;
+      const hasRealId = existingRealId && existingRealId !== 'RL-PENDING';
 
-      // Send welcome email now that REAL ID is assigned
-      // Email address is fetched from Supabase auth using the userId already in scope
-      try {
-        const userRes = await fetch(
-          `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-            },
-          }
-        );
-        const userData = await userRes.json();
-        const memberEmail = userData?.email;
-
-        if (memberEmail) {
-          const welcomeRes = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              from: 'REAL <info@realverified.co.uk>',
-              to: memberEmail,
-              subject: `Your REAL ID — ${realId} — is live.`,
-              html: buildWelcomeEmailHtml(firstName, realId),
-            }),
-          });
-
-          if (!welcomeRes.ok) {
-            const emailErr = await welcomeRes.text();
-            console.error(`Failed to send welcome email to ${memberEmail}:`, welcomeRes.status, emailErr);
+      if (hasRealId) {
+        // Re-verification (e.g. legal name change) — REAL ID is permanent, never reassigned.
+        // id_verified is already confirmed true above; only the name may need updating.
+        if (fullName) {
+          const patchRes = await fetch(
+            `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
+            {
+              method: 'PATCH',
+              headers: { ...idHeaders, 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ full_name: fullName }),
+            }
+          );
+          if (!patchRes.ok) {
+            const err = await patchRes.json().catch(() => ({}));
+            console.error('Failed to update full_name on re-verification:', err);
           } else {
-            console.log(`Welcome email sent to ${memberEmail} for ${realId}`);
+            console.log(`Re-verification for user ${userId} (${existingRealId}) — full_name updated (${fullName}), REAL ID unchanged`);
           }
         } else {
-          console.error(`Could not retrieve email for user ${userId} — welcome email not sent`);
+          console.log(`Re-verification for user ${userId} (${existingRealId}) — no name returned, nothing to update, REAL ID unchanged`);
         }
-      } catch (e) {
-        console.error('Welcome email send error:', e.message);
+      } else {
+        const lastRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?select=real_id&real_id=not.is.null&order=real_id.desc&limit=1`,
+          { headers: idHeaders }
+        );
+        const lastRows = await lastRes.json();
+        const lastNum = lastRows.length > 0
+          ? parseInt(lastRows[0].real_id.replace('RL-', ''), 10)
+          : 0;
+        const realId = 'RL-' + String(lastNum + 1).padStart(6, '0');
+
+        // Save real_id, verified_since, and full_name in one PATCH
+        const patch = {
+          real_id: realId,
+          verified_since: new Date().toISOString(),
+          ...(fullName ? { full_name: fullName } : {}),
+        };
+
+        const patchRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}`,
+          {
+            method: 'PATCH',
+            headers: { ...idHeaders, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(patch),
+          }
+        );
+        if (!patchRes.ok) {
+          const err = await patchRes.json().catch(() => ({}));
+          console.error('Failed to assign real_id / verified_since / full_name:', err);
+        } else {
+          console.log(`REAL ID ${realId} assigned and verified_since set for user ${userId}${fullName ? ` (${fullName})` : ''}`);
+        }
+
+        // Send welcome email now that REAL ID is assigned (first-time verification only)
+        // Email address is fetched from Supabase auth using the userId already in scope
+        try {
+          const userRes = await fetch(
+            `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+                'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+              },
+            }
+          );
+          const userData = await userRes.json();
+          const memberEmail = userData?.email;
+
+          if (memberEmail) {
+            const welcomeRes = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                from: 'REAL <info@realverified.co.uk>',
+                to: memberEmail,
+                subject: `Your REAL ID — ${realId} — is live.`,
+                html: buildWelcomeEmailHtml(firstName, realId),
+              }),
+            });
+
+            if (!welcomeRes.ok) {
+              const emailErr = await welcomeRes.text();
+              console.error(`Failed to send welcome email to ${memberEmail}:`, welcomeRes.status, emailErr);
+            } else {
+              console.log(`Welcome email sent to ${memberEmail} for ${realId}`);
+            }
+          } else {
+            console.error(`Could not retrieve email for user ${userId} — welcome email not sent`);
+          }
+        } catch (e) {
+          console.error('Welcome email send error:', e.message);
+        }
       }
     } catch (e) {
       console.error('Failed to assign REAL ID after gov ID verification:', e.message);
