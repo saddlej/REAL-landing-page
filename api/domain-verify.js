@@ -19,6 +19,7 @@ function escapeXml(str) {
 function buildBadgeSvg(state, displayId) {
   const safeId = escapeXml(displayId || '—');
   let bg, outlineFill, checkFill, letterFill, label, subLabel, subFill, labelFill;
+  let showTapLine = false;
 
   if (state === 'verified') {
     bg = '#0F2044';
@@ -29,6 +30,7 @@ function buildBadgeSvg(state, displayId) {
     labelFill = '#ffffff';
     subLabel = safeId;
     subFill = '#FFD007';
+    showTapLine = true;
   } else if (state === 'lapsed') {
     bg = '#6b7280';
     outlineFill = '#e5e7eb';
@@ -38,6 +40,7 @@ function buildBadgeSvg(state, displayId) {
     labelFill = '#e5e7eb';
     subLabel = safeId;
     subFill = '#d1d5db';
+    showTapLine = true;
   } else {
     bg = '#7a1f1f';
     outlineFill = '#9b3a3a';
@@ -49,11 +52,19 @@ function buildBadgeSvg(state, displayId) {
     subFill = '#fca5a5';
   }
 
+  // Three text lines (verified/lapsed) need tighter leading than the two-line layout below.
+  const labelY = showTapLine ? 21 : 27;
+  const subY = showTapLine ? 36 : 44;
+  const tapLine = showTapLine
+    ? `<text x="64" y="49" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="0.2" fill="${subFill}" opacity="0.6">Tap to verify →</text>`
+    : '';
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="64" viewBox="0 0 260 64">` +
     `<rect width="260" height="64" fill="${bg}"/>` +
     `<svg x="12" y="12" width="40" height="40" viewBox="200 200 1100 1100">${shieldPaths(outlineFill, checkFill, letterFill)}</svg>` +
-    `<text x="64" y="27" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="0.4" fill="${labelFill}">${escapeXml(label)}</text>` +
-    `<text x="64" y="44" font-family="'DM Mono', monospace" font-size="11" letter-spacing="0.8" fill="${subFill}">${subLabel}</text>` +
+    `<text x="64" y="${labelY}" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="0.4" fill="${labelFill}">${escapeXml(label)}</text>` +
+    `<text x="64" y="${subY}" font-family="'DM Mono', monospace" font-size="11" letter-spacing="0.8" fill="${subFill}">${subLabel}</text>` +
+    tapLine +
     `</svg>`;
 }
 
