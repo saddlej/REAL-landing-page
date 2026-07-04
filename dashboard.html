@@ -892,7 +892,7 @@
       </div>
     </div>
     <div class="section-body">
-      <div class="id-verify-block">
+      <div class="id-verify-block" id="idVerifyBlock">
         <div class="id-verify-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F2044" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -907,6 +907,10 @@
           <div class="id-verify-desc">We use Stripe Identity — the same technology trusted by banks globally — to verify your government ID and confirm it matches your face. REAL never sees or stores your ID document.</div>
         </div>
         <button class="btn-primary" id="idVerifyBtn" onclick="handleIdVerify()">Start verification →</button>
+      </div>
+      <div id="idVerifiedCollapsed" style="display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="font-size:13px; color:var(--gray);">Verified on <strong style="color:var(--navy); font-weight:600;" id="idVerifiedDate">—</strong></div>
+        <button class="notice-action-btn" onclick="openReverifyModal()">Re-verify identity</button>
       </div>
       <div class="stripe-note">🔒 Secured by Stripe Identity · Your document is verified and immediately discarded · REAL only receives a confirmation</div>
       <div class="msg error" id="idVerifyError"></div>
@@ -1379,6 +1383,23 @@
   </div>
 </div>
 
+<!-- RE-VERIFY IDENTITY MODAL -->
+<div class="modal-overlay" id="reverifyModalOverlay" onclick="closeReverifyModalOnOverlay(event)">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <div class="modal-title">Re-verify your identity</div>
+      <button class="modal-close" onclick="closeReverifyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--gray); line-height:1.7; margin-bottom:24px;">Only needed if your legal name has changed since you joined REAL — for example after marriage, divorce, or a legal name change. You'll need to verify again with a current government ID and a live selfie, exactly like the first time. Your REAL ID number will never change.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeReverifyModal()">Cancel</button>
+        <button class="btn-primary" onclick="closeReverifyModal(); handleIdVerify();">Continue to verification</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
@@ -1757,6 +1778,7 @@
       btn.disabled = true;
       btn.textContent = 'Verification complete';
       document.getElementById('statusMeta').style.display = 'none';
+      showIdVerifiedCollapsed(memberVerifiedSince);
     }
 
     if (preview) {
@@ -1870,6 +1892,7 @@
           const idBtn = document.getElementById('idVerifyBtn');
           idBtn.disabled = true;
           idBtn.textContent = 'Verification complete';
+          showIdVerifiedCollapsed(d.verified_since);
         }
 
         if (d.is_active === false) {
@@ -2818,6 +2841,24 @@
   function closeCompromiseModalOnOverlay(e) {
     if (e.target === document.getElementById('compromiseModalOverlay')) closeCompromiseModal();
   }
+
+  function showIdVerifiedCollapsed(dateStr) {
+    document.getElementById('idVerifyBlock').style.display = 'none';
+    document.getElementById('idVerifiedDate').textContent = dateStr ? formatDate(dateStr) : '—';
+    document.getElementById('idVerifiedCollapsed').style.display = 'flex';
+  }
+  function openReverifyModal() {
+    history.pushState({ modal: true }, '');
+    document.getElementById('reverifyModalOverlay').classList.add('visible');
+    document.body.classList.add('modal-open');
+  }
+  function closeReverifyModal() {
+    document.getElementById('reverifyModalOverlay').classList.remove('visible');
+    document.body.classList.remove('modal-open');
+  }
+  function closeReverifyModalOnOverlay(e) {
+    if (e.target === document.getElementById('reverifyModalOverlay')) closeReverifyModal();
+  }
   function highlightCompromiseLabel() {
     ['hacked','banned','permanently_lost'].forEach(v => {
       const lbl = document.getElementById('cLabel_' + v);
@@ -3742,12 +3783,12 @@
 
   // Keyboard: close modal on Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal(); }
+    if (e.key === 'Escape') { closeModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal(); closeReverifyModal(); }
   });
 
   // Back button: close any open modal instead of navigating away
   window.addEventListener('popstate', (e) => {
-    closeModal(); closeProfileModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal();
+    closeModal(); closeProfileModal(); closeCompromiseModal(); closeReportFakeModal(); closeCaseFile(); closeAllReportsModal(); closeReverifyModal();
     if (e.state && e.state.modal === 'allReports') {
       showAllReportsModal();
     }
