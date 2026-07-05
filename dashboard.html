@@ -965,24 +965,26 @@
       </div>
     </div>
     <div class="section-body">
-      <img id="badgePreviewImg" src="" alt="Your REAL badge" width="260" height="64" style="display:block; margin-bottom:14px; border-radius:4px;">
-      <div style="margin-bottom:14px;">
-        <button id="badgeToggleBtn" class="notice-action-btn" onclick="toggleBadgeCode()">Show code</button>
-      </div>
-      <div id="badgeCodeBox" style="display:none; background:var(--navy); padding:16px 18px; margin-bottom:14px;">
-        <p id="badgeEmbedSnippet" style="font-size:12px; color:rgba(255,255,255,0.85); line-height:1.6; margin-bottom:12px; font-family:'DM Mono',monospace; word-break:break-all; white-space:pre-wrap;"></p>
-        <button id="badgeCopyBtn" onclick="copyBadgeEmbed(this)" style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 16px; background:var(--gold); color:var(--navy); border:none; cursor:pointer; font-weight:500;">Copy code</button>
-      </div>
-      <div style="margin-top:24px;">
-        <p class="section-subtitle" style="margin-top:0; margin-bottom:10px;">For email signatures (static version):</p>
-        <img id="emailBadgePreviewImg" src="https://realverified.co.uk/real-verified-badge.png" alt="REAL Verified" width="260" height="64" style="display:block; margin-bottom:14px; border-radius:4px;">
-        <button id="emailBadgeToggleBtn" class="notice-action-btn" onclick="toggleEmailBadgeCode()">Show code</button>
-        <div id="emailBadgeCodeBox" style="display:none; background:var(--navy); padding:16px 18px; margin-top:14px;">
-          <p id="emailBadgeEmbedSnippet" style="font-size:12px; color:rgba(255,255,255,0.85); line-height:1.6; margin-bottom:12px; font-family:'DM Mono',monospace; word-break:break-all; white-space:pre-wrap;"></p>
-          <button onclick="copyEmailBadgeEmbed(this)" style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 16px; background:var(--gold); color:var(--navy); border:none; cursor:pointer; font-weight:500;">Copy code</button>
+      <div style="display:flex; gap:32px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <p style="font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:rgba(15,32,68,0.5); margin-bottom:10px;">Live badge</p>
+          <img id="badgePreviewImg" src="" alt="Your REAL badge" width="260" height="64" style="display:block; margin-bottom:10px; border-radius:4px;">
+          <button id="badgeToggleBtn" class="notice-action-btn" onclick="toggleBadgeCode()">Show code</button>
+          <div id="badgeCodeBox" style="display:none; background:var(--navy); padding:16px 18px; margin-top:10px;">
+            <p id="badgeEmbedSnippet" style="font-size:12px; color:rgba(255,255,255,0.85); line-height:1.6; margin-bottom:12px; font-family:'DM Mono',monospace; word-break:break-all; white-space:pre-wrap;"></p>
+            <button id="badgeCopyBtn" onclick="copyBadgeEmbed(this)" style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 16px; background:var(--gold); color:var(--navy); border:none; cursor:pointer; font-weight:500;">Copy code</button>
+          </div>
+        </div>
+        <div style="flex:1; min-width:260px;">
+          <p style="font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:rgba(15,32,68,0.5); margin-bottom:10px;">Email badge</p>
+          <img id="emailBadgePreviewImg" src="https://realverified.co.uk/real-verified-badge.png" alt="REAL Verified" width="260" height="64" style="display:block; margin-bottom:10px; border-radius:4px;">
+          <button id="emailBadgeToggleBtn" class="notice-action-btn" onclick="toggleEmailBadgeCode()">Show code</button>
+          <div id="emailBadgeCodeBox" style="display:none; background:var(--navy); padding:16px 18px; margin-top:10px;">
+            <p id="emailBadgeEmbedSnippet" style="font-size:12px; color:rgba(255,255,255,0.85); line-height:1.6; margin-bottom:12px; font-family:'DM Mono',monospace; word-break:break-all; white-space:pre-wrap;"></p>
+            <button onclick="copyEmailBadgeEmbed(this)" style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:6px 16px; background:var(--gold); color:var(--navy); border:none; cursor:pointer; font-weight:500;">Copy code</button>
+          </div>
         </div>
       </div>
-      <p class="section-subtitle" style="margin-top:0;">Works on your website, Linktree, Stan Store, Beacons, or anywhere else that accepts HTML code — not on Instagram or TikTok bios, which only accept plain text. For those, use your profile link instead: realverified.co.uk/RL-000001</p>
     </div>
   </div>
 
