@@ -1768,14 +1768,28 @@
     const since = new Date(user.created_at);
     document.getElementById('memberSince').textContent = 'Member since ' + since.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
-    // Show a neutral banner if returning from Stripe — we don't yet know if they completed or declined
+    // Returning from Stripe — ask what actually happened before saying anything to the member
     if (params.get('verification') === 'returned') {
       history.replaceState(null, '', window.location.pathname);
-      document.getElementById('idVerifyConfirm').classList.add('visible');
-      const idPill = document.getElementById('idVerifyStatus');
-      idPill.className = 'status-pill pending';
-      idPill.innerHTML = '<span class="dot"></span><span>Checking status</span>';
-      // Leave the "Start verification" button active in case they need to retry
+      (async () => {
+        try {
+          const r = await fetch('/api/create-verification-session?action=status', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+          });
+          const data = await r.json();
+          if (data.status === 'processing' || data.status === 'verified') {
+            document.getElementById('idVerifyConfirm').textContent =
+              "You're back from identity verification. Stripe is checking your details now — this can take a few minutes. Your status will update automatically, no need to do anything.";
+            document.getElementById('idVerifyConfirm').classList.add('visible');
+            const idPill = document.getElementById('idVerifyStatus');
+            idPill.className = 'status-pill pending';
+            idPill.innerHTML = '<span class="dot"></span><span>Checking status</span>';
+          }
+          // If status is requires_input or canceled, or the check fails, show nothing — the dashboard already reflects reality
+        } catch (e) {
+          console.error('Verification status check failed:', e);
+        }
+      })();
     }
 
     // Lock Step 2 until government ID is verified (read from members table via loadMemberData)
