@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
   // Build the return URL — where Stripe sends the user after verification
   const proto = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['x-forwarded-host'] || req.headers['host'];
-  const returnUrl = `${proto}://${host}/dashboard.html?verification=complete`;
+  const returnUrl = `${proto}://${host}/dashboard.html?verification=returned`;
 
   // Create the Stripe Identity hosted verification session
   try {

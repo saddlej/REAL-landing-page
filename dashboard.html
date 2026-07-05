@@ -914,7 +914,7 @@
       </div>
       <div class="stripe-note">🔒 Secured by Stripe Identity · Your document is verified and immediately discarded · REAL only receives a confirmation</div>
       <div class="msg error" id="idVerifyError"></div>
-      <div class="msg success" id="idVerifyConfirm">Your verification has been submitted. We'll update your status within a few minutes — you can close this tab and come back.</div>
+      <div class="msg success" id="idVerifyConfirm">You're back from identity verification. If you completed it, your status will update automatically within a few minutes. If you didn't finish, you can start again anytime below.</div>
     </div>
   </div>
 
@@ -1768,15 +1768,14 @@
     const since = new Date(user.created_at);
     document.getElementById('memberSince').textContent = 'Member since ' + since.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
-    // Show confirmation banner if returning from Stripe after completing verification
-    if (params.get('verification') === 'complete') {
+    // Show a neutral banner if returning from Stripe — we don't yet know if they completed or declined
+    if (params.get('verification') === 'returned') {
       history.replaceState(null, '', window.location.pathname);
       document.getElementById('idVerifyConfirm').classList.add('visible');
       const idPill = document.getElementById('idVerifyStatus');
       idPill.className = 'status-pill pending';
-      idPill.innerHTML = '<span class="dot"></span><span>Under review</span>';
-      document.getElementById('idVerifyBtn').disabled = true;
-      document.getElementById('idVerifyBtn').textContent = 'Verification submitted';
+      idPill.innerHTML = '<span class="dot"></span><span>Checking status</span>';
+      // Leave the "Start verification" button active in case they need to retry
     }
 
     // Lock Step 2 until government ID is verified (read from members table via loadMemberData)
