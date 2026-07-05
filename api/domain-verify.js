@@ -56,14 +56,14 @@ function buildBadgeSvg(state, displayId) {
   const labelY = showTapLine ? 21 : 27;
   const subY = showTapLine ? 36 : 44;
   const tapLine = showTapLine
-    ? `<text x="64" y="49" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="0.2" fill="${subFill}" opacity="0.6">Tap to verify →</text>`
+    ? `<text x="68" y="49" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="0.2" fill="${subFill}" opacity="0.6">Tap to verify →</text>`
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="64" viewBox="0 0 260 64">` +
     `<rect width="260" height="64" fill="${bg}"/>` +
-    `<svg x="12" y="12" width="40" height="40" viewBox="200 200 1100 1100">${shieldPaths(outlineFill, checkFill, letterFill)}</svg>` +
-    `<text x="64" y="${labelY}" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="0.4" fill="${labelFill}">${escapeXml(label)}</text>` +
-    `<text x="64" y="${subY}" font-family="'DM Mono', monospace" font-size="11" letter-spacing="0.8" fill="${subFill}">${subLabel}</text>` +
+    `<svg x="10" y="9" width="46" height="46" viewBox="200 200 1100 1100">${shieldPaths(outlineFill, checkFill, letterFill)}</svg>` +
+    `<text x="68" y="${labelY}" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="0.4" fill="${labelFill}">${escapeXml(label)}</text>` +
+    `<text x="68" y="${subY}" font-family="'DM Mono', monospace" font-size="11" letter-spacing="0.8" fill="${subFill}">${subLabel}</text>` +
     tapLine +
     `</svg>`;
 }
