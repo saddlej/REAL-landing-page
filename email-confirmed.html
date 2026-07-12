@@ -43,11 +43,11 @@
 <script>
   const status = new URLSearchParams(window.location.search).get('status') || 'invalid';
   const states = {
-    success: { icon: '✓', iconClass: 'success', label: 'Verification Complete', title: 'Email confirmed', message: 'Your email address has been verified and added to your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard.html' },
-    already: { icon: '✓', iconClass: 'success', label: 'Already Verified', title: 'Already confirmed', message: 'This email address has already been verified on your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard.html' },
-    expired: { icon: '⏱', iconClass: 'warning', label: 'Link Expired', title: 'This link has expired', message: 'Confirmation links are valid for 24 hours. Head back to your dashboard and request a new one.', btn: 'Go to dashboard →', href: '/dashboard.html' },
-    error: { icon: '!', iconClass: 'error', label: 'Something went wrong', title: 'Verification failed', message: 'Something went wrong. Please try again from your dashboard or contact info@realverified.co.uk.', btn: 'Go to dashboard →', href: '/dashboard.html' },
-    invalid: { icon: '!', iconClass: 'error', label: 'Invalid Link', title: 'This link is not valid', message: 'This confirmation link is invalid or has already been used.', btn: 'Go to dashboard →', href: '/dashboard.html' }
+    success: { icon: '✓', iconClass: 'success', label: 'Verification Complete', title: 'Email confirmed', message: 'Your email address has been verified and added to your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard' },
+    already: { icon: '✓', iconClass: 'success', label: 'Already Verified', title: 'Already confirmed', message: 'This email address has already been verified on your REAL profile.', btn: 'Go to dashboard →', href: '/dashboard' },
+    expired: { icon: '⏱', iconClass: 'warning', label: 'Link Expired', title: 'This link has expired', message: 'Confirmation links are valid for 24 hours. Head back to your dashboard and request a new one.', btn: 'Go to dashboard →', href: '/dashboard' },
+    error: { icon: '!', iconClass: 'error', label: 'Something went wrong', title: 'Verification failed', message: 'Something went wrong. Please try again from your dashboard or contact info@realverified.co.uk.', btn: 'Go to dashboard →', href: '/dashboard' },
+    invalid: { icon: '!', iconClass: 'error', label: 'Invalid Link', title: 'This link is not valid', message: 'This confirmation link is invalid or has already been used.', btn: 'Go to dashboard →', href: '/dashboard' }
   };
   const s = states[status] || states.invalid;
   document.getElementById('content').innerHTML = `<div class="icon ${s.iconClass}">${s.icon}</div><div class="label">${s.label}</div><h1>${s.title}</h1><p>${s.message}</p><a href="${s.href}" class="btn">${s.btn}</a>`;

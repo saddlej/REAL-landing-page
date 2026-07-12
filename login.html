@@ -251,7 +251,7 @@
       // Store session token and redirect to dashboard
       localStorage.setItem('real_access_token', data.access_token);
       localStorage.setItem('real_refresh_token', data.refresh_token);
-      window.location.href = 'dashboard.html';
+      window.location.href = '/dashboard';
 
     } catch (err) {
       showError('errorMsg', 'Something went wrong. Please check your connection and try again.');
