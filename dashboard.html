@@ -244,6 +244,22 @@
     border-radius: 6px;
   }
   .btn-primary:hover { background: var(--navy-mid); transform: translateY(-1px); }
+  .btn-gold-primary {
+    padding: 13px 28px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+  .btn-gold-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,208,7,0.35); }
   .btn-secondary {
     padding: 12px 24px;
     background: transparent;
@@ -959,13 +975,22 @@
       </div>
     </div>
     <div class="section-body">
-      <div style="margin-top:0; font-size:13px; line-height:1.7; color:rgba(15,32,68,0.7);">
+      <div style="margin-top:0; padding:20px 22px; background: var(--gold-dim); border-radius:8px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+        <div>
+          <p style="font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:rgba(15,32,68,0.5); margin-bottom:6px;">Your profile link</p>
+          <p id="profileLinkDisplay" style="font-family:'DM Mono',monospace; font-size:18px; font-weight:500; color: var(--navy); word-break:break-all; margin:0;"></p>
+        </div>
+        <button id="copyProfileLinkBtn" class="btn-gold-primary" onclick="copyProfileLink(this)">Copy link</button>
+      </div>
+      <div style="margin-top:20px; font-size:13px; line-height:1.7; color:rgba(15,32,68,0.7);">
         <strong>Where can I use this?</strong><br>
         ✅ Your website, Linktree, Stan Store, Beacons — the badge displays<br>
         🔗 Instagram, TikTok bios — these only accept plain text, so use your profile link instead: <span id="badgePlainLink"></span><br>
         📧 Email signature — use the static badge below
       </div>
-      <div style="display:flex; gap:32px; flex-wrap:wrap; margin-top:28px;">
+      <p style="font-size:13px; font-weight:600; color: var(--navy); margin-top:28px; margin-bottom:2px;">Badge embed code</p>
+      <p style="font-size:12px; color: rgba(15,32,68,0.55); margin-bottom:14px;">For email signatures or your website — not for pasting into a normal email.</p>
+      <div style="display:flex; gap:32px; flex-wrap:wrap;">
         <div style="flex:1; min-width:260px;">
           <p style="font-size:12px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:rgba(15,32,68,0.5); margin-bottom:10px;">Live badge</p>
           <img id="badgePreviewImg" src="" alt="Your REAL badge" width="260" height="64" style="display:block; margin-bottom:10px; border-radius:4px;">
@@ -1905,6 +1930,7 @@
   <img src="https://realverified.co.uk/api/badge?id=${realId}" alt="REAL Verified ${realId}" width="260" height="64">
 </a>`;
           document.getElementById('badgePlainLink').textContent = `realverified.co.uk/${realId}`;
+          document.getElementById('profileLinkDisplay').textContent = `realverified.co.uk/${realId}`;
           document.getElementById('emailBadgeEmbedSnippet').textContent =
 `<a href="https://realverified.co.uk/${realId}" target="_blank" rel="noopener">
   <img src="https://realverified.co.uk/real-verified-badge.png" alt="REAL Verified" width="260" height="64">
@@ -3235,6 +3261,22 @@
     }).finally(() => {
       btn.textContent = 'Copied!';
       setTimeout(() => { btn.textContent = 'Copy code'; }, 2000);
+    });
+  }
+
+  function copyProfileLink(btn) {
+    const realId = document.getElementById('realId').textContent || '';
+    const text = `https://realverified.co.uk/${realId}`;
+    navigator.clipboard.writeText(text).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }).finally(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy link'; }, 2000);
     });
   }
 
