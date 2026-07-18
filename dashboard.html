@@ -3402,9 +3402,12 @@
       let savedScreenshotPaths = null;
       if (newReportId && reportFakeScreenshotFiles.length > 0) {
         const screenshotPaths = [];
-        for (const file of reportFakeScreenshotFiles) {
+        for (let i = 0; i < reportFakeScreenshotFiles.length; i++) {
+          const file = reportFakeScreenshotFiles[i];
           try {
-            const path = `${currentUser.id}/${newReportId}/${encodeURIComponent(file.name)}`;
+            const extMatch = /\.([a-zA-Z0-9]+)$/.exec(file.name);
+            const ext = extMatch ? extMatch[1].toLowerCase() : 'dat';
+            const path = `${currentUser.id}/${newReportId}/screenshot-${i + 1}.${ext}`;
             const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/impersonation-evidence/${path}`, {
               method: 'POST',
               headers: {
