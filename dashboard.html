@@ -3399,6 +3399,7 @@
       }
 
       // Upload screenshots (if any) and attach their paths to the report
+      let savedScreenshotPaths = null;
       if (newReportId && reportFakeScreenshotFiles.length > 0) {
         const screenshotPaths = [];
         for (const file of reportFakeScreenshotFiles) {
@@ -3435,6 +3436,7 @@
               const errData = await patchRes.json().catch(() => ({}));
               throw new Error(errData.message || errData.hint || `Failed to save screenshot_paths (status ${patchRes.status})`);
             }
+            savedScreenshotPaths = screenshotPaths;
           } catch (e) {
             console.warn('Failed to save screenshot_paths:', e);
           }
@@ -3466,6 +3468,16 @@
       }
 
       await loadImpersonationReports(accessToken);
+
+      // Reload can return the pre-PATCH row (network/cache timing), so stamp
+      // the known-good screenshot_paths onto local state as a source of truth.
+      if (savedScreenshotPaths) {
+        const justSaved = impersonationReports.find(r => r.id === newReportId);
+        if (justSaved) {
+          justSaved.screenshot_paths = savedScreenshotPaths;
+          renderImpersonationReports();
+        }
+      }
 
       // Build and show success screen
       const realId = document.getElementById('realId').textContent || '';
