@@ -3715,14 +3715,16 @@
 
   function openScreenshotLightbox(urls) {
     if (!urls || !urls.length) return;
+    document.body.classList.add('modal-open');
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,32,68,0.75);z-index:2500;display:flex;align-items:center;justify-content:center;padding:24px;';
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    const closeLightbox = () => { modal.remove(); document.body.classList.remove('modal-open'); };
+    modal.onclick = (e) => { if (e.target === modal) closeLightbox(); };
     modal.innerHTML = `
       <div style="background:white;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;border-radius:4px;">
         <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;">
           <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy);font-weight:600;">Screenshots</h3>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">×</button>
+          <button onclick="this.closest('[style*=fixed]').remove();document.body.classList.remove('modal-open');" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">×</button>
         </div>
         <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;">
           ${urls.map(u => `<img src="${escapeHtml(u)}" style="width:100%;border:1px solid var(--border);">`).join('')}
@@ -3869,6 +3871,10 @@
             generated_at: new Date().toISOString()
           })
         });
+        // Refresh local state so the "✓ Evidence report logged" line appears
+        // immediately, instead of only after the next full page load.
+        await loadEvidenceReportCount();
+        renderImpersonationReports();
       }
     } catch(e) { console.log('Evidence report log error:', e); }
     const realId      = document.getElementById('realId').textContent || '—';
@@ -3992,7 +3998,7 @@
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Situation</span><span class="val" style="font-weight:400; color:#333;">${escapeHtmlStatic(situationLabel)}</span></div>
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Date noticed</span><span class="val">${formatDate(rep.date_noticed)}</span></div>
         <div class="row" style="margin-bottom:5px;"><span class="lbl">Date logged with REAL</span><span class="val">${formatDate(rep.created_at)}</span></div>
-        <div class="row" style="margin-bottom:5px;"><span class="lbl">Evidence</span><span class="val" style="font-weight:400; color:#333;">Screenshots and supporting documentation held by member.</span></div>
+        <div class="row" style="margin-bottom:5px;"><span class="lbl">Evidence</span><span class="val" style="font-weight:400; color:#333;">${screenshotUrls.length > 0 ? `${screenshotUrls.length} screenshot${screenshotUrls.length > 1 ? 's' : ''} attached — see below.` : 'No screenshots attached to this report.'}</span></div>
         ${rep.notes ? `<div class="row" style="margin-bottom:0;"><span class="lbl">Notes</span><span class="val" style="font-weight:400; color:#333;">${escapeHtmlStatic(rep.notes)}</span></div>` : ''}
       </div>
     </div>
@@ -4000,8 +4006,8 @@
     ${screenshotUrls.length > 0 ? `
     <div class="section">
       <div class="section-title">Screenshots</div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        ${screenshotUrls.map(u => `<img src="${escapeHtmlStatic(u)}" style="width:100%; max-width:100%; border:1px solid #E2DDD6;">`).join('')}
+      <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+        ${screenshotUrls.map(u => `<img src="${escapeHtmlStatic(u)}" style="width:100%; max-width:360px; height:auto; display:block; border:1px solid #E2DDD6;">`).join('')}
       </div>
     </div>` : ''}
 
