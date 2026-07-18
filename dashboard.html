@@ -3693,7 +3693,7 @@
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.signedURL) {
-          urls.push(SUPABASE_URL + data.signedURL);
+          urls.push(`${SUPABASE_URL}/storage/v1${data.signedURL}`);
         }
       } catch (e) {
         console.warn('Failed to sign screenshot URL:', path, e);
