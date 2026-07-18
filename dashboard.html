@@ -3143,8 +3143,8 @@
     document.getElementById('rfStep2').style.display = 'none';
     document.getElementById('reportFakeModalTitle').textContent = 'Report a Fake Account';
     history.pushState({ modal: true }, '');
-    document.querySelector('#reportFakeModalOverlay .modal-body').scrollTop = 0;
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
+    document.querySelector('#reportFakeModalOverlay .modal').scrollTop = 0;
     document.body.classList.add('modal-open');
   }
 
@@ -3536,7 +3536,7 @@
       }
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
-      document.querySelector('#reportFakeModalOverlay .modal-body').scrollTop = 0;
+      document.querySelector('#reportFakeModalOverlay .modal').scrollTop = 0;
       document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
 
     } catch (e) {
