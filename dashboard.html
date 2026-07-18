@@ -3138,6 +3138,7 @@
     document.getElementById('rfStep2').style.display = 'none';
     document.getElementById('reportFakeModalTitle').textContent = 'Report a Fake Account';
     history.pushState({ modal: true }, '');
+    document.querySelector('#reportFakeModalOverlay .modal-body').scrollTop = 0;
     document.getElementById('reportFakeModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
