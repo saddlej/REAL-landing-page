@@ -3530,6 +3530,7 @@
       }
       document.getElementById('rfStep1').style.display = 'none';
       document.getElementById('rfStep2').style.display = 'block';
+      document.querySelector('#reportFakeModalOverlay .modal-body').scrollTop = 0;
       document.getElementById('reportFakeModalTitle').textContent = 'Report logged ✓';
 
     } catch (e) {
