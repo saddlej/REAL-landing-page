@@ -3431,13 +3431,17 @@
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`,
                 'apikey': SUPABASE_KEY,
-                'Prefer': 'return=minimal'
+                'Prefer': 'return=representation'
               },
               body: JSON.stringify({ screenshot_paths: screenshotPaths })
             });
             if (!patchRes.ok) {
               const errData = await patchRes.json().catch(() => ({}));
               throw new Error(errData.message || errData.hint || `Failed to save screenshot_paths (status ${patchRes.status})`);
+            }
+            const patchedRows = await patchRes.json().catch(() => []);
+            if (!Array.isArray(patchedRows) || patchedRows.length === 0) {
+              throw new Error('screenshot_paths PATCH returned success but updated 0 rows — likely blocked by RLS (missing UPDATE policy on impersonation_reports)');
             }
             savedScreenshotPaths = screenshotPaths;
           } catch (e) {
