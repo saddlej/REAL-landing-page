@@ -3025,7 +3025,7 @@
   async function renderImpersonationReports() {
     const list = document.getElementById('impersonationList');
     if (!list) return;
-    const loggedRecords = await fetchLoggedReportIds();
+    await fetchLoggedReportIds();
     if (!impersonationReports.length) {
       list.innerHTML = `<div class="impersonation-empty"><p>No fake accounts reported yet.<br>If you spot someone impersonating you, use the button above to log it.</p></div>`;
       return;
@@ -3044,17 +3044,12 @@
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
           ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-            ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged — <a href="#" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="event.preventDefault();generateCaseFile(JSON.parse(this.dataset.rep))" style="color:#22a366;text-decoration:underline;text-underline-offset:3px;">view →</a></span>`
+            ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged (REAL-${escapeHtml(String(rep.id).substring(0, 8).toUpperCase())}) — <a href="#" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="event.preventDefault();generateCaseFile(JSON.parse(this.dataset.rep))" style="color:#22a366;text-decoration:underline;text-underline-offset:3px;">view →</a></span>`
             : `<button class="btn-secondary evidence-btn" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="generateCaseFile(JSON.parse(this.dataset.rep))">Generate evidence report →</button>`
           }
         </div>
       </div>
-    `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '') + `
-<div id="logged-evidence-reports" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
-  <span id="evidence-report-count" style="font-size:13px; color:var(--gray);"></span>
-  <a id="view-evidence-reports-link" href="#" onclick="openEvidenceReportsModal(); return false;" style="font-size:13px; color:var(--navy); text-decoration:underline; text-underline-offset:3px; margin-left:8px; display:none;">View logged evidence reports →</a>
-</div>`;
-  updateEvidenceReportCountUI(loggedRecords);
+    `).join('') + (overflow > 0 ? `<div style="text-align:right; margin-top:8px;"><a href="#" onclick="openAllReportsModal(); return false;" style="font-size:12px; color:var(--navy); text-decoration:none; opacity:0.6;">View all ${impersonationReports.length} reports →</a></div>` : '');
   }
 
   function highlightSituationLabels() {
@@ -3756,7 +3751,7 @@
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
-              ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged — <a href="#" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="event.preventDefault();generateCaseFile(JSON.parse(this.dataset.rep))" style="color:#22a366;text-decoration:underline;text-underline-offset:3px;">view →</a></span>`
+              ? `<span style="font-size:13px;color:#22a366;font-weight:500;letter-spacing:0.02em;">✓ Evidence report logged (REAL-${escapeHtml(String(rep.id).substring(0, 8).toUpperCase())}) — <a href="#" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="event.preventDefault();generateCaseFile(JSON.parse(this.dataset.rep))" style="color:#22a366;text-decoration:underline;text-underline-offset:3px;">view →</a></span>`
               : `<button class="btn-secondary evidence-btn" data-rep='${JSON.stringify(rep).replace(/'/g, "&#39;")}' onclick="generateCaseFile(JSON.parse(this.dataset.rep))">Generate evidence report →</button>`
             }
           </div>
@@ -3787,14 +3782,14 @@
     if (e.target === document.getElementById('allReportsOverlay')) closeAllReportsModal();
   }
 
-  // ─── EVIDENCE REPORT COUNT ───
+  // ─── EVIDENCE REPORT LOGGED STATE ───
   // Fetches which reports have a logged evidence report and sets window.loggedReportIds.
-  // Separated from the DOM-update below so callers can await fresh data BEFORE
-  // building card HTML, instead of rendering first and refreshing too late.
+  // Callers await this BEFORE building card HTML, instead of rendering first and
+  // refreshing too late.
   async function fetchLoggedReportIds() {
     try {
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=id,case_reference,generated_at,report_id`,
+        `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=report_id`,
         {
           headers: {
             'apikey': SUPABASE_KEY,
@@ -3811,44 +3806,6 @@
       window.loggedReportIds = window.loggedReportIds || [];
       return [];
     }
-  }
-
-  function updateEvidenceReportCountUI(records) {
-    const countEl = document.getElementById('evidence-report-count');
-    const linkEl = document.getElementById('view-evidence-reports-link');
-    if (!countEl || !linkEl) return;
-    if (records && records.length > 0) {
-      countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
-      linkEl.style.display = 'inline';
-      linkEl.dataset.records = JSON.stringify(records);
-    } else {
-      countEl.textContent = 'No evidence reports logged yet.';
-    }
-  }
-
-  async function openEvidenceReportsModal() {
-    const linkEl = document.getElementById('view-evidence-reports-link');
-    const records = JSON.parse(linkEl.dataset.records || '[]');
-
-    const rows = records.map(r => `
-      <div style="padding:14px 0; border-bottom:1px solid var(--border);">
-        <div style="font-family:'DM Mono',monospace; font-size:13px; color:var(--navy); font-weight:600;">${r.case_reference}</div>
-        <div style="font-size:12px; color:var(--gray); margin-top:4px;">Logged ${new Date(r.generated_at).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}</div>
-      </div>
-    `).join('');
-
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,32,68,0.75);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;';
-    modal.innerHTML = `
-      <div style="background:white;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;border-radius:4px;">
-        <div style="padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;">
-          <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--navy);font-weight:600;">Logged Evidence Reports</h3>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">×</button>
-        </div>
-        <div style="padding:0 28px 24px;">${rows}</div>
-      </div>
-    `;
-    document.body.appendChild(modal);
   }
 
   // ─── GENERATE CASE FILE (new tab) ───
