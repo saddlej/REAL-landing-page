@@ -1340,6 +1340,12 @@
           <textarea class="modal-input" id="fakeReportNotes" rows="3" placeholder="Add the fake account URL and any details — the more evidence you record here, the stronger your case." style="resize:vertical;"></textarea>
           <p style="font-size:11px; color:var(--gray-light); margin-top:7px; line-height:1.5; font-style:italic;">Tip: screenshot the fake account before reporting — platforms may remove it before your report is reviewed.</p>
         </div>
+        <div class="modal-field">
+          <label class="modal-label">Screenshots <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:10px; color:var(--gray-light);">(optional, up to 5)</span></label>
+          <input type="file" id="reportFakeScreenshotInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleReportFakeScreenshots(this)">
+          <button type="button" class="btn-secondary" style="font-size:12px; padding:8px 14px;" onclick="document.getElementById('reportFakeScreenshotInput').click()">Choose files…</button>
+          <div id="reportFakeScreenshotPreviews" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"></div>
+        </div>
         <div id="reportFakeMsg" class="msg"></div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeReportFakeModal()">Cancel</button>
@@ -1501,6 +1507,7 @@
   let compromiseRowId = null;
   let compromisePlatformName = null;
   let impersonationReports = [];
+  let reportFakeScreenshotFiles = [];
   let dnsRetryInterval = null;
   let dnsRetryRowId = null;
   let dnsLastChecked = null;
@@ -3027,6 +3034,7 @@
           <span class="impersonation-date">Noticed ${formatDate(rep.date_noticed)}</span>
         </div>
         ${rep.notes ? `<div class="impersonation-notes">${escapeHtml(rep.notes)}</div>` : ''}
+        ${rep.screenshot_paths && rep.screenshot_paths.length > 0 ? `<div style="margin-top:8px;"><a href="#" onclick="event.preventDefault();viewReportScreenshots('${escapeHtml(String(rep.id))}')" style="font-size:12px; color:var(--navy); text-decoration:underline; text-underline-offset:3px;">📷 View screenshots (${rep.screenshot_paths.length})</a></div>` : ''}
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
           <button class="btn-secondary" onclick="openReportPack('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:12px; padding:7px 14px;">Get report pack →</button>
           ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
@@ -3119,6 +3127,9 @@
     highlightSituationLabels();
     document.getElementById('fakeReportMyAccountField').style.display = 'none';
     document.getElementById('fakeReportMyAccount').innerHTML = '<option value="">Select your account…</option>';
+    reportFakeScreenshotFiles = [];
+    document.getElementById('reportFakeScreenshotInput').value = '';
+    renderReportFakeScreenshotPreviews();
     const msg = document.getElementById('reportFakeMsg');
     msg.className = 'msg'; msg.textContent = '';
     const btn = document.getElementById('reportFakeSubmitBtn');
@@ -3138,6 +3149,36 @@
 
   function closeReportFakeModalOnOverlay(e) {
     if (e.target === document.getElementById('reportFakeModalOverlay')) closeReportFakeModal();
+  }
+
+  function handleReportFakeScreenshots(input) {
+    const msg = document.getElementById('reportFakeMsg');
+    const combined = reportFakeScreenshotFiles.concat(Array.from(input.files || []));
+    input.value = '';
+    if (combined.length > 5) {
+      msg.textContent = 'You can attach up to 5 screenshots.';
+      msg.className = 'msg error visible';
+      return;
+    }
+    msg.className = 'msg'; msg.textContent = '';
+    reportFakeScreenshotFiles = combined;
+    renderReportFakeScreenshotPreviews();
+  }
+
+  function removeReportFakeScreenshot(index) {
+    reportFakeScreenshotFiles.splice(index, 1);
+    renderReportFakeScreenshotPreviews();
+  }
+
+  function renderReportFakeScreenshotPreviews() {
+    const wrap = document.getElementById('reportFakeScreenshotPreviews');
+    if (!wrap) return;
+    wrap.innerHTML = reportFakeScreenshotFiles.map((file, i) => `
+      <div style="position:relative; width:56px; height:56px;">
+        <img src="${URL.createObjectURL(file)}" style="width:56px; height:56px; object-fit:cover; border:1px solid var(--border); display:block;">
+        <button type="button" onclick="removeReportFakeScreenshot(${i})" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--navy); color:#fff; border:none; font-size:11px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;">×</button>
+      </div>
+    `).join('');
   }
 
   function openReportPack(platform, fakeHandle, situation) {
@@ -3333,7 +3374,7 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
           'apikey': SUPABASE_KEY,
-          'Prefer': 'return=minimal'
+          'Prefer': 'return=representation'
         },
         body: JSON.stringify({
           user_id: currentUser.id,
@@ -3347,6 +3388,47 @@
       if (!r.ok) {
         const errData = await r.json().catch(() => ({}));
         throw new Error(errData.message || errData.hint || 'Failed to save report');
+      }
+      const rData = await r.json().catch(() => []);
+      const newReportId = Array.isArray(rData) && rData[0] ? rData[0].id : null;
+
+      // Upload screenshots (if any) and attach their paths to the report
+      if (newReportId && reportFakeScreenshotFiles.length > 0) {
+        const screenshotPaths = [];
+        for (const file of reportFakeScreenshotFiles) {
+          try {
+            const path = `${currentUser.id}/${newReportId}/${encodeURIComponent(file.name)}`;
+            const upRes = await fetch(`${SUPABASE_URL}/storage/v1/object/impersonation-evidence/${path}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'apikey': SUPABASE_KEY,
+                'Content-Type': file.type
+              },
+              body: file
+            });
+            if (!upRes.ok) throw new Error('Upload failed for ' + file.name);
+            screenshotPaths.push(path);
+          } catch (e) {
+            console.warn('Screenshot upload failed:', e);
+          }
+        }
+        if (screenshotPaths.length > 0) {
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/impersonation_reports?id=eq.${newReportId}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'apikey': SUPABASE_KEY,
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({ screenshot_paths: screenshotPaths })
+            });
+          } catch (e) {
+            console.warn('Failed to save screenshot_paths:', e);
+          }
+        }
       }
 
       // Increment impersonation_count on members
@@ -3568,6 +3650,57 @@
     });
   }
 
+  // ─── SCREENSHOT EVIDENCE ───
+  async function getSignedScreenshotUrls(paths) {
+    const urls = [];
+    for (const path of (paths || [])) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/storage/v1/object/sign/impersonation-evidence/${path}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({ expiresIn: 3600 })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.signedURL) {
+          urls.push(SUPABASE_URL + data.signedURL);
+        }
+      } catch (e) {
+        console.warn('Failed to sign screenshot URL:', path, e);
+      }
+    }
+    return urls;
+  }
+
+  async function viewReportScreenshots(reportId) {
+    const rep = impersonationReports.find(r => String(r.id) === String(reportId));
+    if (!rep || !rep.screenshot_paths || !rep.screenshot_paths.length) return;
+    const urls = await getSignedScreenshotUrls(rep.screenshot_paths);
+    openScreenshotLightbox(urls);
+  }
+
+  function openScreenshotLightbox(urls) {
+    if (!urls || !urls.length) return;
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,32,68,0.75);z-index:2500;display:flex;align-items:center;justify-content:center;padding:24px;';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    modal.innerHTML = `
+      <div style="background:white;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;border-radius:4px;">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy);font-weight:600;">Screenshots</h3>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray);">×</button>
+        </div>
+        <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px;">
+          ${urls.map(u => `<img src="${escapeHtml(u)}" style="width:100%;border:1px solid var(--border);">`).join('')}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
   // ─── ALL REPORTS MODAL ───
   function showAllReportsModal() {
     const body = document.getElementById('allReportsBody');
@@ -3584,6 +3717,7 @@
             <span style="font-family:'DM Mono',monospace; font-size:10px; color:var(--gray-light); margin-left:auto; white-space:nowrap;">Noticed ${formatDate(rep.date_noticed)} · Logged ${formatDate(rep.created_at)}</span>
           </div>
           ${rep.notes ? `<div class="impersonation-notes" style="margin-top:4px; font-size:11px;">${escapeHtml(rep.notes)}</div>` : ''}
+          ${rep.screenshot_paths && rep.screenshot_paths.length > 0 ? `<div style="margin-top:6px;"><a href="#" onclick="event.preventDefault();viewReportScreenshots('${escapeHtml(String(rep.id))}')" style="font-size:11px; color:var(--navy); text-decoration:underline; text-underline-offset:3px;">📷 View screenshots (${rep.screenshot_paths.length})</a></div>` : ''}
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
             <button class="btn-secondary" onclick="openReportPackFromAllReports('${escapeHtml(rep.platform)}','${escapeHtml(rep.fake_handle)}','${escapeHtml(String(rep.situation || ''))}')" style="font-size:11px; padding:5px 10px;">Get report pack →</button>
             ${window.loggedReportIds && window.loggedReportIds.includes(rep.id)
@@ -3721,6 +3855,7 @@
       : '—';
     const fullName = profileData.full_name || '';
     const caseRef  = rep.id ? `REAL-${rep.id.slice(0, 8).toUpperCase()}` : '—';
+    const screenshotUrls = (rep.screenshot_paths && rep.screenshot_paths.length > 0) ? await getSignedScreenshotUrls(rep.screenshot_paths) : [];
 
     const html = `<!DOCTYPE html>
 <html lang="en" style="width:100%;margin:0;padding:0">
@@ -3829,6 +3964,14 @@
         ${rep.notes ? `<div class="row" style="margin-bottom:0;"><span class="lbl">Notes</span><span class="val" style="font-weight:400; color:#333;">${escapeHtmlStatic(rep.notes)}</span></div>` : ''}
       </div>
     </div>
+
+    ${screenshotUrls.length > 0 ? `
+    <div class="section">
+      <div class="section-title">Screenshots</div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        ${screenshotUrls.map(u => `<img src="${escapeHtmlStatic(u)}" style="width:100%; max-width:100%; border:1px solid #E2DDD6;">`).join('')}
+      </div>
+    </div>` : ''}
 
     <div class="section">
       <div class="section-title">Registry Statement</div>
