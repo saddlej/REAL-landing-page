@@ -3614,6 +3614,7 @@
     `;
 
     history.pushState({ modal: true }, '');
+    document.querySelector('#caseFileOverlay .case-file-body').scrollTop = 0;
     document.getElementById('caseFileOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -3735,6 +3736,7 @@
         </div>
       `).join('');
     }
+    document.querySelector('#allReportsOverlay .all-reports-body').scrollTop = 0;
     document.getElementById('allReportsOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
