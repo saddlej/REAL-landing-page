@@ -1910,7 +1910,7 @@
         const liveLink = document.getElementById('profileLiveLink');
         if (realId && realId !== 'RL-PENDING') {
           document.getElementById('profileLiveLinkId').textContent = realId;
-          document.getElementById('profileLiveLinkAnchor').href = '/' + realId;
+          document.getElementById('profileLiveLinkAnchor').href = '/' + realId + '?from=dashboard';
           liveLink.style.display = '';
         } else {
           liveLink.style.display = 'none';
@@ -1919,7 +1919,7 @@
         // View my public profile button
         const vpBtn = document.getElementById('viewProfileBtn');
         if (realId && realId !== 'RL-PENDING') {
-          vpBtn.href = '/' + realId;
+          vpBtn.href = '/' + realId + '?from=dashboard';
           vpBtn.target = '_blank';
           vpBtn.style.display = '';
         } else {

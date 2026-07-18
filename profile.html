@@ -51,6 +51,15 @@
       letter-spacing: 0.05em;
     }
 
+    .nav-back-link {
+      font-size: 12px;
+      color: var(--gold);
+      text-decoration: none;
+      opacity: 0.8;
+    }
+
+    .nav-back-link:hover { opacity: 1; }
+
     .nav-search {
       display: flex;
       align-items: center;
@@ -525,6 +534,7 @@
 <body>
 
 <nav>
+  <a href="#" id="backToDashboardLink" class="nav-back-link" style="display:none;">← Back to dashboard</a>
   <a href="/" class="nav-brand">
     <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px;">
       <path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z"/>
@@ -556,6 +566,12 @@
   const SUPABASE_URL = 'https://esqmwktnnjuztyhityeo.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcW13a3Rubmp1enR5aGl0eWVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTAxNzgsImV4cCI6MjA5MjkyNjE3OH0.4ZaYlwojE9jbRO1O3wxfWgQgUK4q5FsCzeMonGlcbuY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  if (window.location.search.includes('from=dashboard')) {
+    const backLink = document.getElementById('backToDashboardLink');
+    backLink.href = '/dashboard';
+    backLink.style.display = 'inline-block';
+  }
 
   function escapeHtml(str) {
     if (str == null) return '';
