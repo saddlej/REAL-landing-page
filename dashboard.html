@@ -3014,17 +3014,18 @@
       } else {
         impersonationReports = Array.isArray(data) ? data : [];
       }
-      renderImpersonationReports();
+      await renderImpersonationReports();
     } catch (e) {
       console.error('loadImpersonationReports exception:', e);
       impersonationReports = [];
-      renderImpersonationReports();
+      await renderImpersonationReports();
     }
   }
 
-  function renderImpersonationReports() {
+  async function renderImpersonationReports() {
     const list = document.getElementById('impersonationList');
     if (!list) return;
+    const loggedRecords = await fetchLoggedReportIds();
     if (!impersonationReports.length) {
       list.innerHTML = `<div class="impersonation-empty"><p>No fake accounts reported yet.<br>If you spot someone impersonating you, use the button above to log it.</p></div>`;
       return;
@@ -3053,7 +3054,7 @@
   <span id="evidence-report-count" style="font-size:13px; color:var(--gray);"></span>
   <a id="view-evidence-reports-link" href="#" onclick="openEvidenceReportsModal(); return false;" style="font-size:13px; color:var(--navy); text-decoration:underline; text-underline-offset:3px; margin-left:8px; display:none;">View logged evidence reports →</a>
 </div>`;
-  loadEvidenceReportCount();
+  updateEvidenceReportCountUI(loggedRecords);
   }
 
   function highlightSituationLabels() {
@@ -3482,7 +3483,7 @@
         const justSaved = impersonationReports.find(r => r.id === newReportId);
         if (justSaved) {
           justSaved.screenshot_paths = savedScreenshotPaths;
-          renderImpersonationReports();
+          await renderImpersonationReports();
         }
       }
 
@@ -3735,7 +3736,8 @@
   }
 
   // ─── ALL REPORTS MODAL ───
-  function showAllReportsModal() {
+  async function showAllReportsModal() {
+    await fetchLoggedReportIds();
     const body = document.getElementById('allReportsBody');
     const subtitle = document.getElementById('allReportsSubtitle');
     subtitle.textContent = `${impersonationReports.length} report${impersonationReports.length !== 1 ? 's' : ''} logged`;
@@ -3786,7 +3788,10 @@
   }
 
   // ─── EVIDENCE REPORT COUNT ───
-  async function loadEvidenceReportCount() {
+  // Fetches which reports have a logged evidence report and sets window.loggedReportIds.
+  // Separated from the DOM-update below so callers can await fresh data BEFORE
+  // building card HTML, instead of rendering first and refreshing too late.
+  async function fetchLoggedReportIds() {
     try {
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/case_files?member_id=eq.${currentUser.id}&select=id,case_reference,generated_at,report_id`,
@@ -3798,19 +3803,27 @@
         }
       );
       const records = await res.json();
-      const countEl = document.getElementById('evidence-report-count');
-      const linkEl = document.getElementById('view-evidence-reports-link');
+      const list = Array.isArray(records) ? records : [];
+      window.loggedReportIds = list.map(r => r.report_id);
+      return list;
+    } catch (e) {
+      console.log('Evidence count error:', e);
+      window.loggedReportIds = window.loggedReportIds || [];
+      return [];
+    }
+  }
 
-      window.loggedReportIds = records.map(r => r.report_id);
-
-      if (records && records.length > 0) {
-        countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
-        linkEl.style.display = 'inline';
-        linkEl.dataset.records = JSON.stringify(records);
-      } else {
-        countEl.textContent = 'No evidence reports logged yet.';
-      }
-    } catch(e) { console.log('Evidence count error:', e); }
+  function updateEvidenceReportCountUI(records) {
+    const countEl = document.getElementById('evidence-report-count');
+    const linkEl = document.getElementById('view-evidence-reports-link');
+    if (!countEl || !linkEl) return;
+    if (records && records.length > 0) {
+      countEl.textContent = `${records.length} evidence report${records.length > 1 ? 's' : ''} officially logged by REAL.`;
+      linkEl.style.display = 'inline';
+      linkEl.dataset.records = JSON.stringify(records);
+    } else {
+      countEl.textContent = 'No evidence reports logged yet.';
+    }
   }
 
   async function openEvidenceReportsModal() {
@@ -3873,8 +3886,7 @@
         });
         // Refresh local state so the "✓ Evidence report logged" line appears
         // immediately, instead of only after the next full page load.
-        await loadEvidenceReportCount();
-        renderImpersonationReports();
+        await renderImpersonationReports();
       }
     } catch(e) { console.log('Evidence report log error:', e); }
     const realId      = document.getElementById('realId').textContent || '—';
@@ -4006,8 +4018,8 @@
     ${screenshotUrls.length > 0 ? `
     <div class="section">
       <div class="section-title">Screenshots</div>
-      <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
-        ${screenshotUrls.map(u => `<img src="${escapeHtmlStatic(u)}" style="width:100%; max-width:360px; height:auto; display:block; border:1px solid #E2DDD6;">`).join('')}
+      <div style="display:flex; flex-wrap:wrap; gap:12px;">
+        ${screenshotUrls.map(u => `<img src="${escapeHtmlStatic(u)}" style="width:calc(50% - 6px); max-width:220px; height:auto; display:block; border:1px solid #E2DDD6;">`).join('')}
       </div>
     </div>` : ''}
 
