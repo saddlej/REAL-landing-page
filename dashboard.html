@@ -2024,6 +2024,7 @@
     selectProfileTheme(currentProfileTheme);
     document.getElementById('profileModalMsg').className = 'msg';
     history.pushState({ modal: true }, '');
+    document.querySelector('#profileModalOverlay .modal-body').scrollTop = 0;
     document.getElementById('profileModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -2310,6 +2311,7 @@
   function openModal() {
     if (!idVerified) return;
     history.pushState({ modal: true }, '');
+    document.querySelector('#modalOverlay .modal-body').scrollTop = 0;
     document.getElementById('modalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
     goToStepA();
@@ -2362,6 +2364,7 @@
       document.getElementById(s).classList.remove('active');
     });
     document.getElementById(id).classList.add('active');
+    document.querySelector('#modalOverlay .modal-body').scrollTop = 0;
   }
 
   function goToStepA() { showStep('modalStepA'); document.getElementById('modalTitle').textContent = 'Add a Platform'; }
@@ -2896,6 +2899,7 @@
     const btn = document.getElementById('compromiseConfirmBtn');
     btn.disabled = false; btn.textContent = 'Report →';
     history.pushState({ modal: true }, '');
+    document.querySelector('#compromiseModalOverlay .modal-body').scrollTop = 0;
     document.getElementById('compromiseModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
@@ -2914,6 +2918,7 @@
   }
   function openReverifyModal() {
     history.pushState({ modal: true }, '');
+    document.querySelector('#reverifyModalOverlay .modal-body').scrollTop = 0;
     document.getElementById('reverifyModalOverlay').classList.add('visible');
     document.body.classList.add('modal-open');
   }
