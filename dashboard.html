@@ -1342,9 +1342,10 @@
         </div>
         <div class="modal-field">
           <label class="modal-label">Screenshots <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:10px; color:var(--gray-light);">(optional, up to 5)</span></label>
-          <input type="file" id="reportFakeScreenshotInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleReportFakeScreenshots(this)">
+          <input type="file" id="reportFakeScreenshotInput" accept="image/*" multiple style="display:none;" onchange="handleReportFakeScreenshots(this)">
           <button type="button" class="btn-secondary" style="font-size:12px; padding:8px 14px;" onclick="document.getElementById('reportFakeScreenshotInput').click()">Choose files…</button>
           <div id="reportFakeScreenshotPreviews" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"></div>
+          <div id="reportFakeScreenshotErrors" style="margin-top:8px; font-size:11px; color:var(--error); line-height:1.5;"></div>
         </div>
         <div id="reportFakeMsg" class="msg"></div>
         <div class="modal-actions">
@@ -3131,6 +3132,7 @@
     reportFakeScreenshotFiles = [];
     document.getElementById('reportFakeScreenshotInput').value = '';
     renderReportFakeScreenshotPreviews();
+    renderReportFakeScreenshotErrors([]);
     const msg = document.getElementById('reportFakeMsg');
     msg.className = 'msg'; msg.textContent = '';
     const btn = document.getElementById('reportFakeSubmitBtn');
@@ -3153,18 +3155,78 @@
     if (e.target === document.getElementById('reportFakeModalOverlay')) closeReportFakeModal();
   }
 
-  function handleReportFakeScreenshots(input) {
+  const REPORT_FAKE_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const REPORT_FAKE_MAX_BYTES = 10 * 1024 * 1024;
+
+  function reportFakeConvertToJpeg(file) {
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob(blob => {
+            URL.revokeObjectURL(url);
+            if (!blob) { resolve(null); return; }
+            const jpgName = (file.name || 'photo').replace(/\.[^.]+$/, '') + '.jpg';
+            resolve(new File([blob], jpgName, { type: 'image/jpeg' }));
+          }, 'image/jpeg', 0.85);
+        } catch (e) {
+          URL.revokeObjectURL(url);
+          resolve(null);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      img.src = url;
+    });
+  }
+
+  async function handleReportFakeScreenshots(input) {
     const msg = document.getElementById('reportFakeMsg');
-    const combined = reportFakeScreenshotFiles.concat(Array.from(input.files || []));
+    const newFiles = Array.from(input.files || []);
     input.value = '';
-    if (combined.length > 5) {
+    if (!newFiles.length) return;
+
+    if (reportFakeScreenshotFiles.length + newFiles.length > 5) {
       msg.textContent = 'You can attach up to 5 screenshots.';
       msg.className = 'msg error visible';
       return;
     }
     msg.className = 'msg'; msg.textContent = '';
-    reportFakeScreenshotFiles = combined;
+
+    const errors = [];
+    for (const file of newFiles) {
+      let usable = file;
+      if (!REPORT_FAKE_ALLOWED_TYPES.includes(file.type)) {
+        const converted = await reportFakeConvertToJpeg(file);
+        if (!converted) {
+          errors.push({ name: file.name || 'photo', message: "This photo couldn't be used — try a different one or a screenshot instead." });
+          continue;
+        }
+        usable = converted;
+      }
+      if (usable.size > REPORT_FAKE_MAX_BYTES) {
+        errors.push({ name: file.name || 'photo', message: 'This photo is too large (over 10MB) — try a smaller one.' });
+        continue;
+      }
+      reportFakeScreenshotFiles.push(usable);
+    }
+
     renderReportFakeScreenshotPreviews();
+    renderReportFakeScreenshotErrors(errors);
+  }
+
+  function renderReportFakeScreenshotErrors(errors) {
+    const wrap = document.getElementById('reportFakeScreenshotErrors');
+    if (!wrap) return;
+    wrap.innerHTML = (errors || []).map(err => `<div>${escapeHtml(err.name)}: ${escapeHtml(err.message)}</div>`).join('');
   }
 
   function removeReportFakeScreenshot(index) {
