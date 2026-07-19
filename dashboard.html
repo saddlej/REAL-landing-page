@@ -1024,6 +1024,7 @@
       <button class="btn-primary" style="font-size:13px; padding:10px 20px;" onclick="openReportFakeModal()">+ Report a fake account</button>
     </div>
     <div class="section-body">
+      <p style="font-size:12px; color:var(--gray-light); line-height:1.5; margin-bottom:14px;">Evidence Report: a formal record you can attach to most platforms' own report forms, or keep for legal escalation.</p>
       <div id="impersonationList" class="impersonation-list"></div>
     </div>
   </div>
@@ -1293,7 +1294,7 @@
 
       <!-- STEP 1: Form -->
       <div id="rfStep1">
-        <p style="font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6;">Log a fake or impersonating account. This creates a permanent record you can use when reporting to the platform or as legal evidence.</p>
+        <p style="font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6;">Once submitted, this information is used two ways: a Report Pack — text to paste directly into the platform's own report form — and an Evidence Report, a formal PDF with your verified identity and screenshots. For TikTok, Instagram, Facebook, X and LinkedIn, you can attach it directly to their report form. For YouTube, Email and Website/Domain reports, keep it for your records or for legal escalation if needed.</p>
         <div class="modal-field">
           <label class="modal-label">Platform</label>
           <select class="modal-input" id="fakeReportPlatform" style="cursor:pointer; appearance:auto;" onchange="onFakePlatformChange()">
@@ -1406,6 +1407,7 @@
       </div>
       <button class="modal-close" onclick="closeAllReportsModal()">✕</button>
     </div>
+    <p style="font-size:12px; color:var(--gray-light); line-height:1.5; padding:12px 20px 0;">Evidence Report: a formal record you can attach to most platforms' own report forms, or keep for legal escalation.</p>
     <div class="all-reports-body" id="allReportsBody"></div>
   </div>
 </div>
