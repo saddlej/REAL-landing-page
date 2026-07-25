@@ -211,6 +211,53 @@ function buildWelcomeEmailHtml(firstName, realId) {
 </html>`;
 }
 
+// Plain-English translations of Stripe Identity's decline/error codes — kept in sync with the
+// same mapping used on the dashboard, so the reason shown to Sadi matches what the member saw.
+const VERIFY_ERROR_MESSAGES = {
+  document_expired: 'The document provided had expired.',
+  document_type_not_supported: "That document type isn't supported.",
+  document_unverified_other: "The document couldn't be verified.",
+  id_number_mismatch: "The ID number provided didn't match records.",
+  id_number_insufficient_document_data: "Not enough data could be read from the document to confirm the ID number.",
+  id_number_unverified_other: "The ID number couldn't be verified.",
+  selfie_document_missing_photo: "The document didn't contain a usable photo to compare against the selfie.",
+  selfie_face_mismatch: "The selfie didn't match the photo on the document.",
+  selfie_manipulated: 'The selfie appeared to be manipulated or edited.',
+  selfie_unverified_other: "The selfie couldn't be verified against the document.",
+  under_supported_age: "The member didn't meet the minimum age requirement.",
+  country_not_supported: "Documents from that country aren't currently supported.",
+  consent_declined: "The member didn't consent to identity verification.",
+  device_not_supported: "The member's device wasn't supported for this verification method.",
+  abandoned: 'The verification session was left incomplete.'
+};
+
+function describeVerificationFailure(lastError) {
+  if (lastError && lastError.code && VERIFY_ERROR_MESSAGES[lastError.code]) {
+    return VERIFY_ERROR_MESSAGES[lastError.code];
+  }
+  if (lastError && lastError.reason) {
+    return lastError.reason;
+  }
+  return "Stripe didn't provide a specific reason.";
+}
+
+function buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, sessionId) {
+  const body = `
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Admin Notification</p>
+    <p style="margin:0 0 24px;font-size:24px;font-weight:700;color:#0F2044;font-family:Georgia,serif;">Identity verification failed</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+      <tr><td style="background-color:#fdf0ef;border-left:3px solid #c0392b;padding:16px 20px;">
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Name:</strong> ${fullName || 'Unknown (no member record found)'}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Email:</strong> ${memberEmail || 'Unknown'}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Reason:</strong> ${reason}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Stripe code:</strong> ${code || 'none'}</p>
+        <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Session:</strong> ${sessionId}</p>
+      </td></tr>
+    </table>
+    <p style="margin:0;font-size:14px;color:#0F2044;">The member has already seen this reason on their dashboard. No action needed unless they contact you directly.</p>`;
+  return buildEmailShell(body);
+}
+
 // Collect the raw request body — required for Stripe signature verification
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
@@ -539,6 +586,55 @@ async function handler(req, res) {
       }
     } catch (e) {
       console.error('Failed to assign REAL ID after gov ID verification:', e.message);
+    }
+  }
+
+  // Member's verification was declined — Sadi needs to know, since right now this is
+  // otherwise invisible to her unless she goes looking in the Stripe dashboard herself.
+  if (event.type === 'identity.verification_session.requires_input') {
+    const session = event.data.object;
+    const userId = session.metadata?.supabase_user_id;
+    const reason = describeVerificationFailure(session.last_error);
+    const code = session.last_error?.code || null;
+
+    let fullName = '';
+    let memberEmail = '';
+
+    try {
+      if (userId) {
+        const sbHeaders = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+        };
+        const memberRes = await fetch(
+          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=full_name&limit=1`,
+          { headers: sbHeaders }
+        );
+        const members = await memberRes.json();
+        fullName = members?.[0]?.full_name || '';
+
+        const userRes = await fetch(
+          `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
+          { headers: sbHeaders }
+        );
+        const userData = await userRes.json();
+        memberEmail = userData?.email || '';
+      }
+
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'REAL <info@realverified.co.uk>',
+          to: 'info@realverified.co.uk',
+          subject: `Verification declined — ${fullName || memberEmail || 'unknown member'}`,
+          html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id),
+        }),
+      });
+      console.log(`Verification declined for user ${userId || 'unknown'} (${reason}) — admin alert sent`);
+    } catch (e) {
+      console.error('identity.verification_session.requires_input handler error:', e.message);
     }
   }
 
