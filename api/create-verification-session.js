@@ -25,7 +25,18 @@ module.exports = async function handler(req, res) {
       if (!sessionId) return res.status(200).json({ status: 'none' });
 
       const session = await stripe.identity.verificationSessions.retrieve(sessionId);
-      return res.status(200).json({ status: session.status });
+
+      // Surface Stripe's actual failure reason so the dashboard can tell the member the truth,
+      // rather than silently reverting to the "not started" state on a decline.
+      let lastError = null;
+      if (session.last_error) {
+        lastError = {
+          code: session.last_error.code || null,
+          reason: session.last_error.reason || null
+        };
+      }
+
+      return res.status(200).json({ status: session.status, last_error: lastError });
     } catch (e) {
       console.error('Verification status check failed:', e.message);
       return res.status(500).json({ error: e.message });

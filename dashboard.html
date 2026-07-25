@@ -1801,26 +1801,115 @@
     const since = new Date(user.created_at);
     document.getElementById('memberSince').textContent = 'Member since ' + since.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
-    // Returning from Stripe — ask what actually happened before saying anything to the member
+    // Returning from Stripe — tell the member exactly what Stripe reported, whatever it is
     if (params.get('verification') === 'returned') {
       history.replaceState(null, '', window.location.pathname);
+
+      // Plain-English translations of Stripe Identity's decline/error codes
+      const VERIFY_ERROR_MESSAGES = {
+        document_expired: "The document you provided has expired.",
+        document_type_not_supported: "That document type isn't currently supported.",
+        document_unverified_other: "We couldn't verify the document you provided.",
+        id_number_mismatch: "The ID number provided didn't match our records.",
+        id_number_insufficient_document_data: "We couldn't read enough data from the document to confirm the ID number.",
+        id_number_unverified_other: "We couldn't verify the ID number provided.",
+        selfie_document_missing_photo: "The document didn't contain a usable photo to compare against your selfie.",
+        selfie_face_mismatch: "Your selfie didn't match the photo on the document.",
+        selfie_manipulated: "The selfie appeared to be manipulated or edited.",
+        selfie_unverified_other: "We couldn't verify your selfie against the document.",
+        under_supported_age: "This service requires you to meet a minimum age, which we couldn't confirm.",
+        country_not_supported: "Documents from that country aren't currently supported.",
+        consent_declined: "You didn't consent to identity verification.",
+        device_not_supported: "Your device wasn't supported for this verification method.",
+        abandoned: "The verification session was left incomplete."
+      };
+
+      function describeFailure(lastError) {
+        if (lastError && lastError.code && VERIFY_ERROR_MESSAGES[lastError.code]) {
+          return VERIFY_ERROR_MESSAGES[lastError.code];
+        }
+        if (lastError && lastError.reason) {
+          return lastError.reason;
+        }
+        return "We couldn't complete your verification.";
+      }
+
+      function showIdMessage(text, type) {
+        const msgEl = document.getElementById('idVerifyConfirm');
+        msgEl.textContent = text;
+        msgEl.classList.remove('success', 'error');
+        msgEl.classList.add(type, 'visible');
+      }
+
+      async function checkVerificationStatus() {
+        const r = await fetch('/api/create-verification-session?action=status', {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        return r.json();
+      }
+
       (async () => {
         try {
-          const r = await fetch('/api/create-verification-session?action=status', {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-          });
-          const data = await r.json();
-          if (data.status === 'processing' || data.status === 'verified') {
-            document.getElementById('idVerifyConfirm').textContent =
-              "You're back from identity verification. Stripe is checking your details now — this can take a few minutes. Your status will update automatically, no need to do anything.";
-            document.getElementById('idVerifyConfirm').classList.add('visible');
+          let data = await checkVerificationStatus();
+
+          if (data.status === 'verified') {
+            showIdMessage("You're verified. Your REAL ID is now active.", 'success');
+            loadMemberData(accessToken, currentUser.id);
+            return;
+          }
+
+          if (data.status === 'requires_input') {
+            showIdMessage("Verification wasn't successful: " + describeFailure(data.last_error) + " You can try again below.", 'error');
+            return;
+          }
+
+          if (data.status === 'canceled') {
+            showIdMessage("You didn't complete identity verification. Start again whenever you're ready.", 'error');
+            return;
+          }
+
+          if (data.status === 'processing') {
+            showIdMessage("You're back from identity verification. Stripe is checking your details now — this can take a few minutes. We'll update this automatically.", 'success');
             const idPill = document.getElementById('idVerifyStatus');
             idPill.className = 'status-pill pending';
             idPill.innerHTML = '<span class="dot"></span><span>Checking status</span>';
+
+            // Poll for the real outcome instead of leaving the member to guess or refresh manually
+            const maxAttempts = 24; // ~2 minutes at 5s intervals
+            let attempts = 0;
+            const poll = setInterval(async () => {
+              attempts++;
+              try {
+                const polled = await checkVerificationStatus();
+                if (polled.status === 'verified') {
+                  clearInterval(poll);
+                  showIdMessage("You're verified. Your REAL ID is now active.", 'success');
+                  loadMemberData(accessToken, currentUser.id);
+                } else if (polled.status === 'requires_input') {
+                  clearInterval(poll);
+                  showIdMessage("Verification wasn't successful: " + describeFailure(polled.last_error) + " You can try again below.", 'error');
+                  idPill.className = 'status-pill pending';
+                  idPill.innerHTML = '<span class="dot"></span><span>Not verified</span>';
+                } else if (polled.status === 'canceled') {
+                  clearInterval(poll);
+                  showIdMessage("You didn't complete identity verification. Start again whenever you're ready.", 'error');
+                  idPill.className = 'status-pill pending';
+                  idPill.innerHTML = '<span class="dot"></span><span>Not verified</span>';
+                } else if (attempts >= maxAttempts) {
+                  clearInterval(poll);
+                  showIdMessage("This is taking longer than usual. Refresh the page in a few minutes to see your latest status.", 'error');
+                }
+              } catch (e) {
+                console.error('Verification status poll failed:', e);
+              }
+            }, 5000);
+            return;
           }
-          // If status is requires_input or canceled, or the check fails, show nothing — the dashboard already reflects reality
+
+          // status === 'none' or anything unrecognised — nothing to report
         } catch (e) {
           console.error('Verification status check failed:', e);
+          showIdMessage("We couldn't check your verification status right now. Refresh the page to try again.", 'error');
         }
       })();
     }
