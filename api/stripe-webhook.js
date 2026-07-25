@@ -241,7 +241,11 @@ function describeVerificationFailure(lastError) {
   return "Stripe didn't provide a specific reason.";
 }
 
-function buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, sessionId) {
+function buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, sessionId, stripeCustomerId) {
+  const stripeLinkRow = stripeCustomerId
+    ? `<p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Stripe customer:</strong> <a href="https://dashboard.stripe.com/customers/${stripeCustomerId}" style="color:#0F2044;">${stripeCustomerId} — view / refund →</a></p>`
+    : `<p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Stripe customer:</strong> Not found — no stripe_customer_id on this member's record.</p>`;
+
   const body = `
     <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#FFD007;font-weight:700;">Admin Notification</p>
     <p style="margin:0 0 24px;font-size:24px;font-weight:700;color:#0F2044;font-family:Georgia,serif;">Identity verification failed</p>
@@ -251,10 +255,11 @@ function buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, co
         <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Email:</strong> ${memberEmail || 'Unknown'}</p>
         <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Reason:</strong> ${reason}</p>
         <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Stripe code:</strong> ${code || 'none'}</p>
-        <p style="margin:0;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Session:</strong> ${sessionId}</p>
+        <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:12px;color:#0F2044;"><strong>Session:</strong> ${sessionId}</p>
+        ${stripeLinkRow}
       </td></tr>
     </table>
-    <p style="margin:0;font-size:14px;color:#0F2044;">The member has already seen this reason on their dashboard. No action needed unless they contact you directly.</p>`;
+    <p style="margin:0;font-size:14px;color:#0F2044;">The member has already seen this reason on their dashboard. If they ask for a refund, use the Stripe customer link above to find their payment and process it directly — nothing here happens automatically.</p>`;
   return buildEmailShell(body);
 }
 
@@ -599,6 +604,7 @@ async function handler(req, res) {
 
     let fullName = '';
     let memberEmail = '';
+    let stripeCustomerId = '';
 
     try {
       if (userId) {
@@ -608,11 +614,12 @@ async function handler(req, res) {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
         };
         const memberRes = await fetch(
-          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=full_name&limit=1`,
+          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=full_name,stripe_customer_id&limit=1`,
           { headers: sbHeaders }
         );
         const members = await memberRes.json();
         fullName = members?.[0]?.full_name || '';
+        stripeCustomerId = members?.[0]?.stripe_customer_id || '';
 
         const userRes = await fetch(
           `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
@@ -629,7 +636,7 @@ async function handler(req, res) {
           from: 'REAL <info@realverified.co.uk>',
           to: 'info@realverified.co.uk',
           subject: `Verification declined — ${fullName || memberEmail || 'unknown member'}`,
-          html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id),
+          html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id, stripeCustomerId),
         }),
       });
       console.log(`Verification declined for user ${userId || 'unknown'} (${reason}) — admin alert sent`);
