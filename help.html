@@ -281,7 +281,7 @@
       <span class="nav-logo-text">REAL™</span>
     </a>
     <div class="nav-links" id="navLinks">
-      <a href="index.html">Home</a>
+      <a href="index.html" id="homeLink">Home</a>
       <a href="what-is-real.html" class="btn-outline">What is REAL?</a>
     </div>
   </nav>
@@ -290,10 +290,9 @@
     (function () {
       var params = new URLSearchParams(window.location.search);
       if (params.get('from') === 'dashboard') {
-        var backLink = document.createElement('a');
-        backLink.href = 'dashboard.html';
-        backLink.textContent = '← Back to Dashboard';
-        document.getElementById('navLinks').prepend(backLink);
+        var homeLink = document.getElementById('homeLink');
+        homeLink.href = 'dashboard.html';
+        homeLink.textContent = '← Back to Dashboard';
       }
     })();
   </script>
