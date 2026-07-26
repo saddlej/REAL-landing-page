@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help &amp; FAQ — REAL™</title>
+  <meta name="description" content="REAL Help &amp; FAQ — answers to the questions members actually ask about verification, badges, reporting impersonation, and billing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2044;
+      --gold: #FFD007;
+      --white: #FFFFFF;
+      --navy-light: #1a3366;
+      --text-body: #1a1a2e;
+      --text-muted: #4a5568;
+      --border: #e2e8f0;
+      --bg: #f8f9fc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-body);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--navy);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo svg { height: 32px; width: auto; }
+
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.08em;
+    }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-links .btn-outline {
+      border: 1px solid rgba(255,208,7,0.5);
+      border-radius: 4px;
+      padding: 6px 16px;
+      color: var(--gold);
+    }
+
+    .nav-links .btn-outline:hover {
+      background: rgba(255,208,7,0.1);
+      border-color: var(--gold);
+    }
+
+    /* ── HERO BAND ── */
+    .page-hero {
+      background: var(--navy);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .page-hero .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .page-hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── LAYOUT ── */
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── TABLE OF CONTENTS ── */
+    .toc {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 6px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .toc-groups {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 2rem;
+    }
+
+    @media (max-width: 580px) { .toc-groups { grid-template-columns: 1fr; } }
+
+    .toc-group-title {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .toc-group ul {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .toc-group li { font-size: 0.88rem; }
+
+    .toc-group li a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .toc-group li a:hover { color: var(--gold); text-decoration: underline; }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-of-type { border-bottom: none; }
+
+    .section-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      line-height: 1.3;
+    }
+
+    .section h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 1.6rem 0 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.88rem;
+    }
+
+    .section p { margin-bottom: 1rem; color: var(--text-body); font-size: 0.95rem; }
+
+    .section ul, .section ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .section li {
+      font-size: 0.95rem;
+      color: var(--text-body);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.gold { border-left-color: var(--gold); background: #fffdf0; }
+    .callout.navy { border-left-color: var(--navy); background: #f0f3fa; }
+
+    .callout strong { display: block; margin-bottom: 0.3rem; color: var(--navy); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    footer p {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.78rem;
+      margin-bottom: 0.5rem;
+    }
+
+    footer a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      margin: 0 0.75rem;
+      font-size: 0.78rem;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/><path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/><g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g></svg>
+      <span class="nav-logo-text">REAL™</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="what-is-real.html" class="btn-outline">What is REAL?</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="label">Support</div>
+    <h1>Help &amp; FAQ</h1>
+    <p>Answers to the questions members actually ask — how verification works, how to report a fake account, and how to manage your membership.</p>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="wrapper">
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <div class="toc-groups">
+        <div class="toc-group">
+          <div class="toc-group-title">Getting Verified</div>
+          <ul>
+            <li><a href="#add-platform">How do I add another platform to my profile?</a></li>
+            <li><a href="#platform-pending">Why does my platform show as "pending"?</a></li>
+            <li><a href="#second-business">Can I verify a second business under the same ID?</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-title">Your Profile &amp; Badge</div>
+          <ul>
+            <li><a href="#badge-code">How do I get my badge code?</a></li>
+            <li><a href="#change-handle">Can I change my display name or handle after verifying?</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-title">Reporting Impersonation</div>
+          <ul>
+            <li><a href="#report-fake-account">How do I report a fake account?</a></li>
+            <li><a href="#evidence-report">What's an Evidence Report and when should I use it?</a></li>
+            <li><a href="#report-pack-platforms">Which platforms support the pre-written report pack?</a></li>
+          </ul>
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-title">Account &amp; Billing</div>
+          <ul>
+            <li><a href="#update-billing">How do I update my card or billing details?</a></li>
+            <li><a href="#cancel-membership">How do I cancel, and what happens to my RL number?</a></li>
+            <li><a href="#lost-access">I've lost access to my own account — what do I do?</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. GETTING VERIFIED -->
+    <div class="section" id="getting-verified">
+      <span class="section-number">Section 01</span>
+      <h2>Getting Verified</h2>
+
+      <h3 id="add-platform">How do I add another platform to my profile?</h3>
+      <p>From your dashboard, click "Add Platform." You'll be asked to prove you control that account — the exact method depends on the platform. Once confirmed, it appears on your public REAL profile immediately.</p>
+
+      <h3 id="platform-pending">Why does my platform show as "pending"?</h3>
+      <p>Pending means we've received your request but haven't confirmed control of that account yet. This isn't automatic for every platform — some steps need a manual check. It'll update as soon as verification completes.</p>
+
+      <h3 id="second-business">Can I verify a second business under the same ID?</h3>
+      <p>Not yet — right now, one REAL ID covers one identity and its linked platforms. Multiple business profiles under a single government ID is something we're building, but it isn't live yet.</p>
+    </div>
+
+    <!-- 2. YOUR PROFILE & BADGE -->
+    <div class="section" id="profile-badge">
+      <span class="section-number">Section 02</span>
+      <h2>Your Profile &amp; Badge</h2>
+
+      <h3 id="badge-code">How do I get my badge code?</h3>
+      <p>It's on your dashboard, in the Badge section. There are two versions — a live badge with embed code for your website or Linktree, and a static image version for email signatures. Full instructions for each are shown right there.</p>
+
+      <h3 id="change-handle">Can I change my display name or handle after verifying?</h3>
+      <p>Not yet self-serve — if your handle or display name changes on an already-verified platform, <a href="mailto:info@realverified.co.uk">get in touch</a> and we'll update it manually for now. A dashboard option for this is coming.</p>
+
+      <div class="callout navy">
+        <strong>Need to Get in Touch?</strong>
+        For handle or display name updates, or anything else our dashboard can't handle yet, email us at <a href="mailto:info@realverified.co.uk">info@realverified.co.uk</a>.
+      </div>
+    </div>
+
+    <!-- 3. REPORTING IMPERSONATION -->
+    <div class="section" id="reporting-impersonation">
+      <span class="section-number">Section 03</span>
+      <h2>Reporting Impersonation</h2>
+
+      <h3 id="report-fake-account">How do I report a fake account?</h3>
+      <p>From your dashboard, click "Report a Fake Account," fill in the platform and details, and attach screenshots if you have them. This generates two things: a Report Pack (ready-to-paste text for that platform's own report form) and an Evidence Report (a formal PDF or image document with your verified identity and the screenshots attached).</p>
+
+      <h3 id="evidence-report">What's an Evidence Report and when should I use it?</h3>
+      <p>It's a formal record proving who you are and what happened, downloadable as a PDF or a JPEG image. Use it to strengthen a normal platform report, or keep it for legal escalation if things go further.</p>
+
+      <h3 id="report-pack-platforms">Which platforms support the pre-written report pack?</h3>
+      <p>TikTok, Instagram, Facebook, X and LinkedIn all have their own upload field, so you can attach your Evidence Report directly to their report form. For YouTube, Email and Website/Domain impersonation, keep your Evidence Report for your own records or escalation — those routes don't take a direct attachment the same way.</p>
+    </div>
+
+    <!-- 4. ACCOUNT & BILLING -->
+    <div class="section" id="account-billing">
+      <span class="section-number">Section 04</span>
+      <h2>Account &amp; Billing</h2>
+
+      <h3 id="update-billing">How do I update my card or billing details?</h3>
+      <p>Head to Billing from your dashboard — it opens Stripe's secure billing portal where you can update your card, see invoices, and manage your plan.</p>
+
+      <h3 id="cancel-membership">How do I cancel, and what happens to my RL number?</h3>
+      <p>You can cancel any time from the Billing page. Your public profile stays live but shows as "Verification Lapsed" — it isn't deleted. Your RL number is permanently retired and never reissued to anyone else. Cancelling ends active membership, not your verified history.</p>
+
+      <h3 id="lost-access">I've lost access to my own account — what do I do?</h3>
+      <p>On the affected platform's card, click "Report Compromise" and choose what happened — hacked, banned, or lost access. This immediately shows a warning on your public profile so nobody can be fooled by whoever's now controlling that account, and it's logged permanently in your trust timeline. Once you've recovered access, mark it as recovered and your profile updates straight back to normal.</p>
+    </div>
+
+  </div><!-- /wrapper -->
+
+  <!-- FOOTER -->
+  <footer>
+    <p>REAL™ — Identity Infrastructure for the Internet</p>
+    <p>
+      <a href="index.html">Home</a>
+      <a href="what-is-real.html">What is REAL?</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="help.html">Help</a>
+    </p>
+    <p style="margin-top:1rem;">© 2026 REAL. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
