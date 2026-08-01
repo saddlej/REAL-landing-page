@@ -4103,6 +4103,7 @@
     .print-btn { display: none; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body style="width:100%;margin:0;padding:0;box-sizing:border-box">
 <div class="doc">
@@ -4209,225 +4210,39 @@
     });
   }
 
-  function loadImageEl(src) {
-    return new Promise(function(resolve, reject) {
-      const img = new Image();
-      img.onload = function() { resolve(img); };
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
-  function wrapCanvasText(ctx, text, maxWidth) {
-    const words = String(text || '').split(/\s+/).filter(Boolean);
-    const lines = [];
-    let line = '';
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
-      const test = line ? line + ' ' + word : word;
-      if (line && ctx.measureText(test).width > maxWidth) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = test;
-      }
-    }
-    if (line) lines.push(line);
-    return lines.length ? lines : [''];
-  }
-
-  // Draws the report directly onto a canvas (no SVG/foreignObject — Chrome
-  // taints any canvas that has had a foreignObject-based SVG image drawn
-  // onto it, even same-origin, which makes that approach unusable here).
+  // Renders the actual, already-correctly-displaying report DOM straight to
+  // an image via html2canvas, instead of hand-drawing every character onto
+  // a blank canvas. The manual character-by-character approach previously
+  // used here was silently dropping specific glyphs (most visibly lowercase
+  // "s") during canvas text rendering — isolated to that manual drawing
+  // path and confirmed independent of the underlying data, network
+  // response, browser extensions, and GPU acceleration. Capturing the DOM
+  // directly sidesteps it, since the DOM has rendered correctly throughout.
   async function saveAsImage() {
     const btn = document.getElementById('saveImageBtn');
     const originalText = btn.textContent;
     btn.textContent = 'Preparing…';
     btn.disabled = true;
+    const actionsEl = document.querySelector('.doc-actions');
+    const prevDisplay = actionsEl.style.display;
     try {
-      const d = REPORT_DATA;
-
-      // Force all fonts to finish resolving before any canvas drawing starts.
-      // Without this, text drawn immediately after the async screenshot loads
-      // above can hit an unsettled font state and silently drop glyphs.
-      await document.fonts.ready;
-
-      const shotImages = [];
-      for (let i = 0; i < (d.screenshotUrls || []).length; i++) {
+      // Screenshot <img> tags point at signed, cross-origin Supabase URLs —
+      // swap them for data: URIs first so html2canvas can draw them without
+      // any cross-origin tainting.
+      const imgs = document.querySelectorAll('.doc img');
+      for (const img of imgs) {
+        if (img.src.startsWith('data:')) continue;
         try {
-          const dataUrl = await docImgToDataURL(d.screenshotUrls[i]);
-          shotImages.push(await loadImageEl(dataUrl));
-        } catch (e) { /* skip screenshots that fail to load or convert */ }
+          img.src = await docImgToDataURL(img.src);
+        } catch (e) { /* leave the original src if it fails to convert */ }
       }
 
-      const W = 1200;
-      const PAD = 64;
-      const CONTENT_W = W - PAD * 2;
-      const NAVY = '#0F2044', GOLD = '#FFD007', GRAY = '#6B6B6B', GRAY_LIGHT = '#9B9B9B',
-            VAL = '#0F2044', RED = '#c0392b', GREEN = '#22a366', BORDER = '#E2DDD6';
+      actionsEl.style.display = 'none';
+      const docEl = document.querySelector('.doc');
+      const canvas = await html2canvas(docEl, { backgroundColor: '#ffffff', useCORS: true, scale: 2 });
+      actionsEl.style.display = prevDisplay;
 
-      const MAX_H = 12000;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = MAX_H;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, W, MAX_H);
-      ctx.textBaseline = 'alphabetic';
-
-      function font(size, weight, style) {
-        ctx.font = (style ? style + ' ' : '') + (weight ? weight + ' ' : '') + size + 'px Arial, Helvetica, sans-serif';
-      }
-
-      let y;
-
-      // Header band
-      ctx.fillStyle = GOLD; ctx.fillRect(0, 0, W, 5);
-      const HEADER_H = 214;
-      ctx.fillStyle = NAVY; ctx.fillRect(0, 5, W, HEADER_H);
-      let hy = 46;
-      font(18, '700'); ctx.fillStyle = GOLD;
-      ctx.fillText('REAL IDENTITY REGISTRY', PAD, hy); hy += 42;
-      font(38, '700'); ctx.fillStyle = '#ffffff';
-      ctx.fillText('Identity Evidence Report', PAD, hy); hy += 32;
-      font(16, '400'); ctx.fillStyle = 'rgba(255,255,255,0.65)';
-      ctx.fillText('realverified.co.uk  ·  Generated ' + d.generatedStr, PAD, hy); hy += 24;
-      ctx.fillText('Case reference: ' + d.caseRef, PAD, hy); hy += 28;
-      ctx.fillStyle = '#f0f7f0';
-      ctx.fillRect(PAD, hy, CONTENT_W, 44);
-      ctx.strokeStyle = GREEN; ctx.lineWidth = 1.5;
-      ctx.strokeRect(PAD, hy, CONTENT_W, 44);
-      font(15, '400'); ctx.fillStyle = GREEN;
-      ctx.fillText('✓ This evidence report has been officially logged by REAL — Reference ' + d.caseRef, PAD + 18, hy + 27);
-
-      y = 5 + HEADER_H;
-      ctx.fillStyle = GOLD; ctx.globalAlpha = 0.3; ctx.fillRect(PAD, y, CONTENT_W, 2); ctx.globalAlpha = 1;
-      y += 48;
-
-      function sectionTitle(title) {
-        font(15, '700'); ctx.fillStyle = GRAY_LIGHT;
-        ctx.fillText(title.toUpperCase(), PAD, y);
-        y += 14;
-        ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(PAD + CONTENT_W, y); ctx.stroke();
-        y += 30;
-      }
-
-      const LABEL_W = 260;
-      function row(label, value, valueColor) {
-        font(17, '400'); ctx.fillStyle = GRAY;
-        ctx.fillText(label, PAD, y);
-        font(17, '700'); ctx.fillStyle = valueColor || VAL;
-        const lines = wrapCanvasText(ctx, value, CONTENT_W - LABEL_W);
-        lines.forEach(function(line, i) { ctx.fillText(line, PAD + LABEL_W, y + i * 24); });
-        y += Math.max(24, lines.length * 24) + 14;
-      }
-
-      sectionTitle('Verified Member');
-      row('Display name', d.memberName);
-      row('Legal name', d.fullName || 'Verified against government-issued ID — held securely by REAL');
-      row('REAL ID', d.realId);
-      row('Member since', d.memberSince);
-      row('Government ID verification', d.govIdStatus);
-      y += 20;
-
-      sectionTitle('Verified Platform — ' + d.platform);
-      if (d.verifiedPlatform) {
-        row('Verified handle', d.verifiedPlatform.handle);
-        row('Verified date', d.verifiedPlatform.verifiedDate);
-      } else {
-        font(16, '400', 'italic'); ctx.fillStyle = GRAY_LIGHT;
-        ctx.fillText('No verified account on ' + d.platform + ' on record at time of report.', PAD, y);
-        y += 30;
-      }
-      y += 20;
-
-      sectionTitle('Incident');
-      font(19, '700'); ctx.fillStyle = VAL;
-      ctx.fillText(d.platform, PAD, y); y += 26;
-      font(16, '400'); ctx.fillStyle = RED;
-      ctx.fillText(d.fakeHandle, PAD, y); y += 32;
-      const incidentRows = [
-        ['Situation', d.situationLabel],
-        ['Date noticed', d.dateNoticed],
-        ['Date logged with REAL', d.dateLogged],
-        ['Evidence', (d.screenshotUrls && d.screenshotUrls.length > 0) ? (d.screenshotUrls.length + ' screenshot' + (d.screenshotUrls.length > 1 ? 's' : '') + ' attached — see below.') : 'No screenshots attached to this report.']
-      ];
-      if (d.notes) incidentRows.push(['Notes', d.notes]);
-      incidentRows.forEach(function(pair) {
-        font(15, '400'); ctx.fillStyle = GRAY;
-        ctx.fillText(pair[0], PAD, y);
-        font(15, '400'); ctx.fillStyle = '#333333';
-        const lines = wrapCanvasText(ctx, pair[1], CONTENT_W - 220);
-        lines.forEach(function(line, i) { ctx.fillText(line, PAD + 220, y + i * 22); });
-        y += Math.max(22, lines.length * 22) + 10;
-      });
-      y += 20;
-
-      if (shotImages.length > 0) {
-        sectionTitle('Screenshots');
-        const gap = 24;
-        const cols = 2;
-        const boxW = Math.min(400, (CONTENT_W - gap * (cols - 1)) / cols);
-        let col = 0, rowStartY = y, rowMaxH = 0;
-        shotImages.forEach(function(img, i) {
-          const scale = Math.min(boxW / img.naturalWidth, boxW / img.naturalHeight, 1);
-          const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
-          const x = PAD + col * (boxW + gap);
-          ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
-          ctx.strokeRect(x, rowStartY, dw, dh);
-          ctx.drawImage(img, x, rowStartY, dw, dh);
-          rowMaxH = Math.max(rowMaxH, dh);
-          col++;
-          if (col >= cols || i === shotImages.length - 1) {
-            rowStartY += rowMaxH + gap;
-            col = 0; rowMaxH = 0;
-          }
-        });
-        y = rowStartY + 10;
-      }
-
-      sectionTitle('Registry Statement');
-      font(16, '400'); ctx.fillStyle = NAVY;
-      const registryText = 'This incident has been recorded on the REAL Identity Registry. The verified identity above predates this report. The REAL ID ' + d.realId + ' has been confirmed against government-issued identity documentation. Registry record: realverified.co.uk/' + d.realId;
-      wrapCanvasText(ctx, registryText, CONTENT_W).forEach(function(line) {
-        ctx.fillText(line, PAD, y);
-        y += 24;
-      });
-      y += 20;
-
-      sectionTitle('Action Requested');
-      font(16, '400'); ctx.fillStyle = NAVY;
-      wrapCanvasText(ctx, 'The member requests the immediate review and removal of the impersonating account identified above.', CONTENT_W).forEach(function(line) {
-        ctx.fillText(line, PAD, y);
-        y += 24;
-      });
-      y += 30;
-
-      font(13, '400'); ctx.fillStyle = GRAY_LIGHT;
-      ctx.strokeStyle = BORDER; ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(PAD + CONTENT_W, y); ctx.stroke();
-      y += 26;
-      wrapCanvasText(ctx, 'This document was generated from the REAL verified identity platform (realverified.co.uk). It confirms the verified identity and platform ownership of the above individual, and records the impersonation incident described. This file is suitable for use in platform abuse reports, legal correspondence, or solicitor reference.', CONTENT_W).forEach(function(line) {
-        ctx.fillText(line, PAD, y);
-        y += 20;
-      });
-      y += 30;
-
-      const FOOTER_H = 60;
-      ctx.fillStyle = NAVY; ctx.fillRect(0, y, W, FOOTER_H);
-      font(14, '400'); ctx.fillStyle = 'rgba(255,255,255,0.65)';
-      ctx.fillText('REAL™  ·  realverified.co.uk  ·  info@realverified.co.uk', PAD, y + FOOTER_H / 2 + 5);
-      const rightText = 'Generated ' + d.generatedStr;
-      const rightW = ctx.measureText(rightText).width;
-      ctx.fillText(rightText, W - PAD - rightW, y + FOOTER_H / 2 + 5);
-      y += FOOTER_H;
-
-      const finalCanvas = document.createElement('canvas');
-      finalCanvas.width = W;
-      finalCanvas.height = Math.ceil(y);
-      finalCanvas.getContext('2d').drawImage(canvas, 0, 0);
-
-      finalCanvas.toBlob(function(blob) {
+      canvas.toBlob(function(blob) {
         if (!blob) { throw new Error('toBlob returned null'); }
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -4439,6 +4254,7 @@
         btn.disabled = false;
       }, 'image/jpeg', 0.9);
     } catch (e) {
+      actionsEl.style.display = prevDisplay;
       console.error('Save as image failed:', e);
       alert('Could not generate the image export. Please try Print / Save PDF instead.');
       btn.textContent = originalText;
