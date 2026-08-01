@@ -4247,6 +4247,11 @@
     try {
       const d = REPORT_DATA;
 
+      // Force all fonts to finish resolving before any canvas drawing starts.
+      // Without this, text drawn immediately after the async screenshot loads
+      // above can hit an unsettled font state and silently drop glyphs.
+      await document.fonts.ready;
+
       const shotImages = [];
       for (let i = 0; i < (d.screenshotUrls || []).length; i++) {
         try {
