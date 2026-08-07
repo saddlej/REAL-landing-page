@@ -293,6 +293,11 @@
         var homeLink = document.getElementById('homeLink');
         homeLink.href = 'dashboard.html';
         homeLink.textContent = '← Back to Dashboard';
+
+        var whatIsRealLink = document.querySelector('.nav-links .btn-outline');
+        if (whatIsRealLink) {
+          whatIsRealLink.style.display = 'none';
+        }
       }
     })();
   </script>
