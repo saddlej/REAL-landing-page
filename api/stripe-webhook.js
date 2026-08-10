@@ -634,7 +634,7 @@ async function handler(req, res) {
         headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'REAL <info@realverified.co.uk>',
-          to: 'info@realverified.co.uk',
+          to: 'admin@realverified.co.uk',
           subject: `Verification declined — ${fullName || memberEmail || 'unknown member'}`,
           html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id, stripeCustomerId),
         }),
@@ -695,7 +695,7 @@ async function handler(req, res) {
             headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
               from: 'REAL <info@realverified.co.uk>',
-              to: 'info@realverified.co.uk',
+              to: 'admin@realverified.co.uk',
               subject: `Cancellation scheduled — ${fullName}`,
               html: buildCancellationAdminEmailHtml(fullName, memberEmail || 'unknown', accessDate, realId),
             }),
@@ -770,7 +770,7 @@ async function handler(req, res) {
           headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             from: 'REAL <info@realverified.co.uk>',
-            to: 'info@realverified.co.uk',
+            to: 'admin@realverified.co.uk',
             subject: `Membership ended — ${fullName}`,
             html: buildLapsedAdminEmailHtml(fullName, memberEmail || 'unknown', realId),
           }),
