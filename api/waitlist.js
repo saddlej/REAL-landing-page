@@ -50,9 +50,34 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Failed to save to waitlist' });
   }
 
-  // Send confirmation email via Resend
   const resendKey = process.env.RESEND_API_KEY || '';
 
+  // Send admin notification email via Resend
+  const adminEmailRes = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${resendKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'REAL <info@realverified.co.uk>',
+      to: 'admin@realverified.co.uk',
+      subject: `New waitlist signup: ${name}`,
+      html: `<p><strong>New waitlist signup</strong></p>
+             <p>Name: ${name}<br>
+             Email: ${email}<br>
+             Handle: ${handle || 'not provided'}<br>
+             Platform request: ${platform_request || 'not provided'}</p>`
+    })
+  });
+
+  if (!adminEmailRes.ok) {
+    const adminEmailErr = await adminEmailRes.text();
+    console.error('[waitlist] Admin notification error:', adminEmailRes.status, adminEmailErr);
+    // Don't fail the whole request — insert succeeded, admin email is best-effort
+  }
+
+  // Send confirmation email via Resend
   const emailRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
