@@ -211,6 +211,123 @@ function buildWelcomeEmailHtml(firstName, realId) {
 </html>`;
 }
 
+function buildPaymentConfirmedEmailHtml(firstName) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background-color:#0F2044; font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0F2044; padding:48px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <img src="https://realverified.co.uk/shield-email-white.png" width="60" height="60" alt="REAL" style="display:block; margin:0 auto;">
+              <p style="margin:6px 0 0; font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.2em; text-transform:uppercase;">Identity Infrastructure for the Internet</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:32px; font-size:0; line-height:0; text-align:center;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px; background-color:#FFD007;">&nbsp;</td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#ffffff; padding:48px 48px 40px;">
+              <p style="margin:0 0 12px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#FFD007; font-weight:700;">Payment Confirmed</p>
+              <p style="margin:0 0 20px; font-size:28px; font-weight:700; color:#0F2044; font-family:Georgia,serif; line-height:1.2;">One step to your<br>REAL ID.</p>
+              <div style="width:48px; height:3px; background:#FFD007; margin-bottom:28px; font-size:0; line-height:0;">&nbsp;</div>
+              <p style="margin:0 0 20px; font-size:15px; color:#333; line-height:1.8;">Hi ${firstName},</p>
+              <p style="margin:0 0 20px; font-size:15px; color:#333; line-height:1.8;">Payment received. You're one step away from your REAL ID.</p>
+              <p style="margin:0 0 20px; font-size:15px; color:#333; line-height:1.8;">Right now your account is set up, but not yet verified — your REAL ID is assigned the moment your government ID check is complete, not before. That's deliberate: it's what makes the number mean something.</p>
+              <p style="margin:0 0 32px; font-size:15px; color:#333; line-height:1.8;">It takes about 2 minutes. Head to your dashboard to get started.</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-bottom:32px;">
+                    <a href="https://realverified.co.uk/dashboard" style="display:inline-block; background-color:#0F2044; color:#FFD007; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:4px;">Verify my identity &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 24px; font-size:15px; color:#333; line-height:1.8;">Any trouble, just reply to this email — real person on the other end.</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:1px solid #E8EDF7; padding-top:24px;">
+                <p style="margin:0; font-size:14px; color:#555; line-height:1.8;">— Sadi, Founder of REAL</p>
+              </td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 48px; text-align:center;">
+              <p style="margin:0 0 6px; font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:0.1em;">REAL &trade; &mdash; realverified.co.uk</p>
+              <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.2);">info@realverified.co.uk &nbsp;&middot;&nbsp; London, UK</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildVerificationRetryEmailHtml(firstName) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background-color:#0F2044; font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0F2044; padding:48px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <img src="https://realverified.co.uk/shield-email-white.png" width="60" height="60" alt="REAL" style="display:block; margin:0 auto;">
+              <p style="margin:6px 0 0; font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.2em; text-transform:uppercase;">Identity Infrastructure for the Internet</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:32px; font-size:0; line-height:0; text-align:center;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="height:1px; background-color:#FFD007;">&nbsp;</td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#ffffff; padding:48px 48px 40px;">
+              <p style="margin:0 0 12px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#FFD007; font-weight:700;">Action Needed</p>
+              <p style="margin:0 0 20px; font-size:28px; font-weight:700; color:#0F2044; font-family:Georgia,serif; line-height:1.2;">Let's try that<br>again.</p>
+              <div style="width:48px; height:3px; background:#FFD007; margin-bottom:28px; font-size:0; line-height:0;">&nbsp;</div>
+              <p style="margin:0 0 20px; font-size:15px; color:#333; line-height:1.8;">Hi ${firstName},</p>
+              <p style="margin:0 0 20px; font-size:15px; color:#333; line-height:1.8;">Your ID verification didn't complete — no problem, this happens. Usually it's a blurry photo or the session timing out, nothing wrong on your end.</p>
+              <p style="margin:0 0 32px; font-size:15px; color:#333; line-height:1.8;">Your payment's already been received, so there's nothing more to do except try the check again.</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-bottom:32px;">
+                    <a href="https://realverified.co.uk/dashboard" style="display:inline-block; background-color:#0F2044; color:#FFD007; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:4px;">Try verification again &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 24px; font-size:15px; color:#333; line-height:1.8;">If it keeps failing after a couple of tries, reply to this email and I'll investigate what happened.</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:1px solid #E8EDF7; padding-top:24px;">
+                <p style="margin:0; font-size:14px; color:#555; line-height:1.8;">— Sadi, Founder of REAL</p>
+              </td></tr></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 48px; text-align:center;">
+              <p style="margin:0 0 6px; font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:0.1em;">REAL &trade; &mdash; realverified.co.uk</p>
+              <p style="margin:0; font-size:11px; color:rgba(255,255,255,0.2);">info@realverified.co.uk &nbsp;&middot;&nbsp; London, UK</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 // Plain-English translations of Stripe Identity's decline/error codes — kept in sync with the
 // same mapping used on the dashboard, so the reason shown to Sadi matches what the member saw.
 const VERIFY_ERROR_MESSAGES = {
@@ -431,6 +548,44 @@ async function handler(req, res) {
         console.error('Failed to insert member row:', err);
       } else {
         console.log(`Member row created (${tier}) for user ${userId} — awaiting gov ID verification`);
+
+        // Send payment-confirmed email now that the member row exists (best-effort — must never fail the signup)
+        try {
+          const userRes = await fetch(
+            `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
+            { headers: supabaseHeaders }
+          );
+          const userData = await userRes.json();
+          const customerEmail = userData?.email;
+          const firstName = userData?.user_metadata?.first_name || 'there';
+
+          if (customerEmail) {
+            const paymentEmailRes = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                from: 'REAL <info@realverified.co.uk>',
+                to: customerEmail,
+                subject: `Payment confirmed — let's verify your identity`,
+                html: buildPaymentConfirmedEmailHtml(firstName),
+              }),
+            });
+
+            if (!paymentEmailRes.ok) {
+              const emailErr = await paymentEmailRes.text();
+              console.error(`Failed to send payment-confirmed email to ${customerEmail}:`, paymentEmailRes.status, emailErr);
+            } else {
+              console.log(`Payment-confirmed email sent to ${customerEmail} for user ${userId}`);
+            }
+          } else {
+            console.error(`Could not retrieve email for user ${userId} — payment-confirmed email not sent`);
+          }
+        } catch (e) {
+          console.error('Payment-confirmed email send error:', e.message);
+        }
       }
     } catch (e) {
       console.error('checkout.session.completed handler error:', e.message);
@@ -594,9 +749,11 @@ async function handler(req, res) {
     }
   }
 
-  // Member's verification was declined — Sadi needs to know, since right now this is
-  // otherwise invisible to her unless she goes looking in the Stripe dashboard herself.
-  if (event.type === 'identity.verification_session.requires_input') {
+  // Member's verification was declined or abandoned. Sadi needs to know about declines, since right
+  // now that's otherwise invisible to her unless she goes looking in the Stripe dashboard herself.
+  // The member also needs to know either way, so they can go try again — but only if this is a
+  // genuine failed first attempt (no real_id yet); a later unrelated event shouldn't re-send this.
+  if (event.type === 'identity.verification_session.requires_input' || event.type === 'identity.verification_session.canceled') {
     const session = event.data.object;
     const userId = session.metadata?.supabase_user_id;
     const reason = describeVerificationFailure(session.last_error);
@@ -605,6 +762,8 @@ async function handler(req, res) {
     let fullName = '';
     let memberEmail = '';
     let stripeCustomerId = '';
+    let authFirstName = '';
+    let hasRealId = false;
 
     try {
       if (userId) {
@@ -614,12 +773,14 @@ async function handler(req, res) {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
         };
         const memberRes = await fetch(
-          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=full_name,stripe_customer_id&limit=1`,
+          `${process.env.SUPABASE_URL}/rest/v1/members?user_id=eq.${userId}&select=full_name,stripe_customer_id,real_id&limit=1`,
           { headers: sbHeaders }
         );
         const members = await memberRes.json();
         fullName = members?.[0]?.full_name || '';
         stripeCustomerId = members?.[0]?.stripe_customer_id || '';
+        const existingRealId = members?.[0]?.real_id;
+        hasRealId = existingRealId && existingRealId !== 'RL-PENDING';
 
         const userRes = await fetch(
           `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
@@ -627,21 +788,47 @@ async function handler(req, res) {
         );
         const userData = await userRes.json();
         memberEmail = userData?.email || '';
+        authFirstName = userData?.user_metadata?.first_name || '';
       }
 
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from: 'REAL <info@realverified.co.uk>',
-          to: 'admin@realverified.co.uk',
-          subject: `Verification declined — ${fullName || memberEmail || 'unknown member'}`,
-          html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id, stripeCustomerId),
-        }),
-      });
-      console.log(`Verification declined for user ${userId || 'unknown'} (${reason}) — admin alert sent`);
+      if (event.type === 'identity.verification_session.requires_input') {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'REAL <info@realverified.co.uk>',
+            to: 'admin@realverified.co.uk',
+            subject: `Verification declined — ${fullName || memberEmail || 'unknown member'}`,
+            html: buildVerificationFailedAdminEmailHtml(fullName, memberEmail, reason, code, session.id, stripeCustomerId),
+          }),
+        });
+        console.log(`Verification declined for user ${userId || 'unknown'} (${reason}) — admin alert sent`);
+      }
+
+      // Member-facing retry nudge — only for a genuine failed/abandoned first attempt
+      if (memberEmail && !hasRealId) {
+        const firstName = authFirstName || fullName.split(' ')[0] || 'there';
+        const retryEmailRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'REAL <info@realverified.co.uk>',
+            to: memberEmail,
+            subject: 'Your verification needs another try',
+            html: buildVerificationRetryEmailHtml(firstName),
+          }),
+        });
+        if (!retryEmailRes.ok) {
+          const emailErr = await retryEmailRes.text();
+          console.error(`Failed to send verification retry email to ${memberEmail}:`, retryEmailRes.status, emailErr);
+        } else {
+          console.log(`Verification retry email sent to ${memberEmail} (${event.type})`);
+        }
+      } else if (hasRealId) {
+        console.log(`Skipping verification retry email for user ${userId || 'unknown'} — real_id already assigned`);
+      }
     } catch (e) {
-      console.error('identity.verification_session.requires_input handler error:', e.message);
+      console.error('identity.verification_session.requires_input/canceled handler error:', e.message);
     }
   }
 
