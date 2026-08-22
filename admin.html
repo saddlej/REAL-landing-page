@@ -207,7 +207,7 @@
       document.getElementById('lock-error').textContent = '';
 
       try {
-        const res = await fetch('/api/admin-check', {
+        const res = await fetch('/api/admin?action=check', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: val })
@@ -253,7 +253,7 @@
 
     async function fetchUserEmails(userIds) {
       try {
-        const res = await fetch('/api/admin-users', {
+        const res = await fetch('/api/admin?action=users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: sessionPassword, userIds })
@@ -269,7 +269,7 @@
       if (!silent) container.innerHTML = `<div class="state-card"><div class="spinner"></div><div class="state-text">Loading pending verifications…</div></div>`;
 
       try {
-        const apiRes = await fetch('/api/admin-verifications', {
+        const apiRes = await fetch('/api/admin?action=verifications', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: sessionPassword })
@@ -429,7 +429,7 @@
       rowEl.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
 
       try {
-        const apiRes = await fetch('/api/admin-update', {
+        const apiRes = await fetch('/api/admin?action=update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password: sessionPassword, rowId, status: newStatus, ...(rejectionReason ? { rejection_reason: rejectionReason } : {}) })
