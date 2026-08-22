@@ -149,6 +149,21 @@
   .partial { color: #f0a500; font-size: 13px; font-weight: 500; }
   .gets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 52px; }
   .get-card { background: white; display: flex; flex-direction: column; }
+  .umbrella-card { background: var(--navy); padding: 56px 40px 40px; margin-top: 52px; }
+  .umbrella-diagram { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
+  .umbrella-canopy-line { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linecap: round; }
+  .umbrella-rib { fill: none; stroke: rgba(255,255,255,0.35); stroke-width: 2; stroke-linecap: round; }
+  .umbrella-pole { stroke: rgba(255,255,255,0.35); stroke-width: 2; }
+  .umbrella-hub-shield { fill: var(--navy); stroke: var(--gold); stroke-width: 2.5; }
+  .umbrella-hub-label { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 700; fill: #fff; letter-spacing: 0.02em; }
+  .umbrella-icon-badge { fill: var(--navy); stroke: var(--gold); stroke-width: 2; }
+  .umbrella-icon-glyph { fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .umbrella-icon-glyph-fill { fill: var(--gold); }
+  .umbrella-channel-label { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; fill: rgba(255,255,255,0.7); letter-spacing: 0.02em; }
+  .umbrella-base-label { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 700; fill: rgba(255,255,255,0.9); }
+  .umbrella-base-sub { font-family: 'DM Sans', sans-serif; font-size: 10.5px; fill: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; }
+  .umbrella-footnote { margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 13.5px; color: rgba(255,255,255,0.5); line-height: 1.7; max-width: 480px; margin-left: auto; margin-right: auto; text-align: center; font-weight: 300; }
+  .umbrella-footnote strong { color: rgba(255,255,255,0.85); font-weight: 600; }
   .get-preview { padding: 32px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; background: var(--warm-white); }
   .profile-preview { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
   .preview-shield-small { flex-shrink: 0; }
@@ -230,7 +245,7 @@
   @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
   #heroSearchInput { background: transparent !important; color: white !important; border: none !important; outline: none !important; }
   #heroSearchInput { background: transparent !important; -webkit-appearance: none !important; background-color: transparent !important; }
-  @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } .umbrella-showcase .umbrella-heading { font-size: 26px; } .umbrella-showcase .channel-label { font-size: 10.5px; } }
+  @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } .umbrella-showcase .umbrella-heading { font-size: 26px; } .umbrella-showcase .channel-label { font-size: 10.5px; } .umbrella-card { padding: 40px 20px 28px; } }
 </style>
 </head>
 <body>
@@ -428,7 +443,7 @@
     <div class="steps">
       <div class="step"><span class="step-number">01</span><div class="step-content"><h3>Verify your identity</h3><p>Government ID and biometric check via Stripe Identity. Takes 90 seconds. We store the result — never your raw document or biometric data. One real human. Confirmed.</p></div></div>
       <div class="step"><span class="step-number">02</span><div class="step-content"><h3>Link every account you own</h3><p>Instagram, TikTok, YouTube, LinkedIn, X, Facebook, your website, your email. Each confirmed with a unique code and permanently timestamped. No API access required.</p></div></div>
-      <div class="step"><span class="step-number">03</span><div class="step-content"><h3>Get your public REAL profile</h3><p>A permanent page at realverified.co.uk/RL-000001 (your unique REAL ID number — RL-000001 through RL-000100 for founding members, sequential from RL-000101 for everyone after) showing every verified platform handle, exactly as it appears on each platform, and your timestamped verification date. Anyone can check it in five seconds. The handles are the proof. A fake cannot simultaneously control your real accounts.</p></div></div>
+      <div class="step"><span class="step-number">03</span><div class="step-content"><h3>Get your public REAL profile</h3><p>A permanent page at realverified.co.uk/yourname showing your REAL ID number, every verified platform handle exactly as it appears, and your timestamped verification date. The handles are the proof — a fake cannot simultaneously control your real accounts.</p></div></div>
       <div class="step"><span class="step-number">04</span><div class="step-content"><h3>Respond when a fake appears</h3><p>Report it through REAL. Log a fake account and REAL guides you step by step — the right platform form, the right evidence, a formal case file ready if you need to escalate.</p></div></div>
     </div>
   </div>
@@ -488,25 +503,65 @@
 
 <section class="section" style="background: var(--cream);">
   <div class="section-inner">
-    <span class="section-label">What you get</span>
-    <h2>Your verified identity.<br><em>Everywhere you need it.</em></h2>
-    <p>The moment you're verified, REAL gives you everything you need to prove your identity across every platform you operate on.</p>
-    <div class="gets-grid">
-      <div class="get-card">
-        <div class="get-preview profile-preview">
-          <div class="preview-shield-small"><svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="72" height="72"><path fill="#0F2044" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/><path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/><g fill="#ffffff"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g></svg></div>
-          <div class="preview-profile-info"><span class="preview-name">Your Name</span><span class="preview-id">RL-000001</span><span class="preview-url">realverified.co.uk/RL-000001</span></div>
-          <div class="preview-verified-pill">✓ Verified</div>
-        </div>
-        <div class="get-content"><h3>Your public REAL profile</h3><p>A permanent page at <strong>realverified.co.uk/RL-000001</strong> showing every account you own, your REAL ID number, your verified platform handles, and your verification date. Anyone can check it in five seconds. Put the link in every bio.</p></div>
-      </div>
-      <div class="get-card">
-        <div class="get-preview badge-preview">
-          <div class="badge-demo"><svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg" width="72" height="72"><path fill="#ffffff" d="M 757 269 C 787 288 979 406 1148 406 L 1148 789 C 1148 789 1153 1132 755 1235 C 750 1237 745 1235 745 1235 C 347 1132 352 789 352 789 L 352 406 C 536 406 743 269 743 269 C 743 269 749 263 757 269 Z" fill-rule="evenodd"/><path fill="#FFD007" d="M 693 1040 L 567 915 L 617 864 L 693 940 L 883 750 L 933 800 Z"/><g fill="#0F2044"><path transform="translate(390,720)" d="M 15.5 -213 L 91.7 -213 C 112.2 -213 128.9 -207.6 141.8 -196.7 C 154.7 -185.7 161.1 -170.1 161.1 -149.8 C 161.1 -134.1 157.2 -121 149.4 -110.4 C 141.6 -99.8 130.9 -92.4 117.5 -88.1 L 190.8 0 L 129.1 0 L 64 -84.2 L 64 0 L 15.5 0 Z M 64 -118.5 L 69.7 -118.5 C 74.2 -118.5 78 -118.6 81.1 -118.8 C 84.2 -119 87.7 -119.6 91.7 -120.6 C 95.6 -121.6 98.8 -123.1 101.2 -125 C 103.6 -126.9 105.7 -129.6 107.4 -133.3 C 109.1 -136.9 110 -141.3 110 -146.4 C 110 -151.6 109.1 -156 107.4 -159.6 C 105.7 -163.2 103.6 -166 101.2 -167.9 C 98.8 -169.8 95.6 -171.2 91.7 -172.3 C 87.7 -173.3 84.2 -173.9 81.1 -174 C 78 -174.2 74.2 -174.3 69.7 -174.3 L 64 -174.3 Z"/><path transform="translate(587,720)" d="M 137.4 -213 L 137.4 -170.4 L 64 -170.4 L 64 -128.1 L 134.3 -128.1 L 134.3 -85.5 L 64 -85.5 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/><path transform="translate(750,720)" d="M 123.7 -213 L 209.7 0 L 157.5 0 L 141.8 -42.6 L 60.7 -42.6 L 45 0 L -7.2 0 L 78.8 -213 Z M 125.3 -85.2 L 101.5 -147.2 L 101 -147.2 L 77.2 -85.2 Z"/><path transform="translate(963,720)" d="M 64 -213 L 64 -42.6 L 137.4 -42.6 L 137.4 0 L 15.5 0 L 15.5 -213 Z"/></g></svg><div class="badge-demo-text"><span class="badge-demo-label">REAL Verified</span><span class="badge-demo-id">RL-000001</span><span class="badge-demo-tap">Tap to verify →</span></div></div>
-          <div class="badge-formats"><span class="badge-format-pill">Website embed</span><span class="badge-format-pill">Linktree</span><span class="badge-format-pill">Email footer</span></div>
-        </div>
-        <div class="get-content"><h3>Your REAL shield badge</h3><p>A dynamic badge hosted by REAL. Always reflects your current verified status. Embed it on your website or Linktree using an HTML/embed block, or use the static version in your email signature. Updates automatically.</p></div>
-      </div>
+    <span class="section-label">One identity, every channel</span>
+    <h2>Everywhere you show up.<br><em>Verified as one person.</em></h2>
+    <p>Your website, your socials, your email — all confirmed to be run by the same real, verified person.</p>
+    <div class="umbrella-card">
+      <svg class="umbrella-diagram" viewBox="0 0 640 560" xmlns="http://www.w3.org/2000/svg">
+        <path class="umbrella-hub-shield" d="M 320 20 L 346 31 L 346 57 Q 346 81 320 90 Q 294 81 294 57 L 294 31 Z" />
+        <text class="umbrella-hub-label" x="320" y="60" text-anchor="middle">REAL</text>
+        <line class="umbrella-pole" x1="320" y1="90" x2="320" y2="112" />
+        <path class="umbrella-canopy-line" d="M 60 240 Q 60 130 320 112 Q 580 130 580 240 Q 545 205 505 240 Q 465 205 425 240 Q 385 205 345 240 Q 320 260 295 240 Q 255 205 215 240 Q 175 205 135 240 Q 95 205 60 240 Z" fill="rgba(255,208,7,0.08)" />
+        <path class="umbrella-rib" d="M 320 118 Q 180 130 60 240" />
+        <path class="umbrella-rib" d="M 320 118 Q 240 130 135 240" />
+        <path class="umbrella-rib" d="M 320 118 Q 280 140 215 240" />
+        <path class="umbrella-rib" d="M 320 118 L 320 250" />
+        <path class="umbrella-rib" d="M 320 118 Q 360 140 425 240" />
+        <path class="umbrella-rib" d="M 320 118 Q 400 130 505 240" />
+        <path class="umbrella-rib" d="M 320 118 Q 460 130 580 240" />
+        <line class="umbrella-pole" x1="320" y1="250" x2="320" y2="440" />
+        <path class="umbrella-pole" d="M 320 440 Q 320 478 282 478 Q 253 478 253 456" fill="none" />
+        <circle class="umbrella-icon-badge" cx="95" cy="280" r="26" />
+        <path class="umbrella-icon-glyph" d="M 88 273 l -6 6 a5 5 0 0 0 7 7 l 3 -3" />
+        <path class="umbrella-icon-glyph" d="M 102 287 l 6 -6 a5 5 0 0 0 -7 -7 l -3 3" />
+        <text class="umbrella-channel-label" x="95" y="318" text-anchor="middle">Domain</text>
+        <circle class="umbrella-icon-badge" cx="185" cy="310" r="26" />
+        <circle class="umbrella-icon-glyph" cx="185" cy="310" r="12" />
+        <line class="umbrella-icon-glyph" x1="173" y1="310" x2="197" y2="310" />
+        <path class="umbrella-icon-glyph" d="M 185 298 Q 176 310 185 322 Q 194 310 185 298" />
+        <text class="umbrella-channel-label" x="185" y="348" text-anchor="middle">Website</text>
+        <circle class="umbrella-icon-badge" cx="275" cy="328" r="26" />
+        <rect class="umbrella-icon-glyph" x="263" y="316" width="24" height="24" rx="7" />
+        <circle class="umbrella-icon-glyph" cx="275" cy="328" r="5.5" />
+        <circle class="umbrella-icon-glyph-fill" cx="284.5" cy="319" r="1.8" />
+        <text class="umbrella-channel-label" x="275" y="366" text-anchor="middle">Instagram</text>
+        <circle class="umbrella-icon-badge" cx="365" cy="328" r="26" />
+        <g transform="translate(365,328) scale(1.3)">
+          <path fill="#FFD007" stroke="none" d="M 3.2 -7.5 C 3.2 -4.2 5.6 -1.6 8.8 -1.2 L 8.8 2.4 C 6.6 2.4 4.6 1.7 3.2 0.5 L 3.2 5.8 C 3.2 8.7 0.9 11 -2 11 C -4.9 11 -7.2 8.7 -7.2 5.8 C -7.2 2.9 -4.9 0.6 -2 0.6 C -1.6 0.6 -1.2 0.65 -0.9 0.75 L -0.9 4.3 C -1.2 4.2 -1.6 4.15 -2 4.15 C -3 4.15 -3.85 5 -3.85 6 C -3.85 7 -3 7.85 -2 7.85 C -1 7.85 -0.15 7 -0.15 6 L -0.15 -8.4 L 3.2 -8.4 Z" />
+        </g>
+        <text class="umbrella-channel-label" x="365" y="366" text-anchor="middle">TikTok</text>
+        <circle class="umbrella-icon-badge" cx="455" cy="310" r="26" />
+        <rect class="umbrella-icon-glyph" x="440" y="300" width="30" height="20" rx="3" />
+        <path class="umbrella-icon-glyph" d="M 440 302 L 455 315 L 470 302" />
+        <text class="umbrella-channel-label" x="455" y="348" text-anchor="middle">Email</text>
+        <circle class="umbrella-icon-badge" cx="545" cy="280" r="26" />
+        <rect class="umbrella-icon-glyph" x="530" y="268" width="30" height="24" rx="7" />
+        <path class="umbrella-icon-glyph-fill" d="M 539 275 L 552 280 L 539 285 Z" />
+        <text class="umbrella-channel-label" x="545" y="318" text-anchor="middle">YouTube</text>
+        <circle class="umbrella-icon-badge" cx="275" cy="410" r="24" />
+        <g transform="translate(275,410)">
+          <path class="umbrella-icon-glyph" d="M 7 -11 Q -2 -11 -2 -3 L -2 15" />
+          <path class="umbrella-icon-glyph" d="M -8 1 L 3 1" />
+        </g>
+        <text class="umbrella-channel-label" x="275" y="446" text-anchor="middle">Facebook</text>
+        <circle class="umbrella-icon-badge" cx="365" cy="410" r="24" />
+        <line class="umbrella-icon-glyph" x1="365" y1="399" x2="365" y2="421" />
+        <line class="umbrella-icon-glyph" x1="354" y1="410" x2="376" y2="410" />
+        <text class="umbrella-channel-label" x="365" y="446" text-anchor="middle">More</text>
+        <text class="umbrella-base-label" x="320" y="510" text-anchor="middle">Your Business</text>
+        <text class="umbrella-base-sub" x="320" y="528" text-anchor="middle">One real person. One verified identity.</text>
+      </svg>
+      <p class="umbrella-footnote"><strong>Every icon here is verified against the same government-ID-checked identity</strong> — anyone checking can confirm your website, your socials, and every other channel genuinely trace back to the same real person.</p>
     </div>
   </div>
 </section>
