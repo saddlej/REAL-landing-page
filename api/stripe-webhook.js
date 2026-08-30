@@ -529,6 +529,22 @@ async function handler(req, res) {
         'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
       };
 
+      // Seed display_name from the member's first/last name — same source auth.users uses.
+      // Best-effort: a lookup failure must never block member creation, and the member can
+      // always override this later via the dashboard "Edit profile" form.
+      let displayName = null;
+      try {
+        const metaRes = await fetch(
+          `${process.env.SUPABASE_URL}/auth/v1/admin/users/${userId}`,
+          { headers: supabaseHeaders }
+        );
+        const meta = (await metaRes.json())?.user_metadata || {};
+        const composed = [meta.first_name, meta.last_name].filter(Boolean).join(' ').trim();
+        displayName = composed || meta.full_name || null;
+      } catch (e) {
+        console.error(`checkout.session.completed ${session.id}: display_name lookup failed, leaving it null:`, e.message);
+      }
+
       // Insert the new member row — real_id and verified_since are set later, after gov ID verification
       const insertRes = await fetch(
         `${process.env.SUPABASE_URL}/rest/v1/members`,
@@ -539,6 +555,7 @@ async function handler(req, res) {
             user_id: userId,
             membership_tier: tier,
             is_active: true,
+            ...(displayName ? { display_name: displayName } : {}),
           }),
         }
       );
