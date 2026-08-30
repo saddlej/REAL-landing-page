@@ -678,10 +678,11 @@ async function handler(req, res) {
           : 0;
         const realId = 'RL-' + String(lastNum + 1).padStart(6, '0');
 
-        // Save real_id, verified_since, and full_name in one PATCH
+        // Save real_id, verified_since, id_verified, and full_name in one PATCH
         const patch = {
           real_id: realId,
           verified_since: new Date().toISOString(),
+          id_verified: true,
           ...(fullName ? { full_name: fullName } : {}),
         };
 
