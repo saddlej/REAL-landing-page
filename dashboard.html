@@ -806,6 +806,13 @@
     border: 1px solid var(--border);
     border-left: 3px solid var(--gold);
   }
+
+  /* ─── PWA INSTALL BANNER ─── */
+  #pwaBanner { display: none; background: var(--navy); color: #fff; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; align-items: center; gap: 12px; border-left: 3px solid var(--gold); }
+  #pwaBanner p { flex: 1; margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5; color: #fff; }
+  #pwaBanner .pwa-install-btn { flex-shrink: 0; background: var(--gold); color: var(--navy); border: none; border-radius: 6px; padding: 8px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  #pwaBanner .pwa-dismiss { flex-shrink: 0; background: none; border: none; color: rgba(255,255,255,0.55); font-size: 20px; line-height: 1; cursor: pointer; padding: 0 2px; }
+  @media (min-width: 641px) { #pwaBanner { display: none !important; } }
 </style>
 </head>
 <body onpageshow="if(event.persisted){window.location.reload();}">
@@ -836,6 +843,13 @@
 </nav>
 
 <div class="main" id="mainContent" style="opacity:0;transition:opacity 0.15s ease;">
+
+  <!-- PWA INSTALL BANNER -->
+  <div id="pwaBanner" role="region" aria-label="Install REAL">
+    <p data-pwa-text>Keep REAL one tap away — add it to your home screen.</p>
+    <button type="button" class="pwa-install-btn" id="pwaInstallBtn">Install REAL</button>
+    <button type="button" class="pwa-dismiss" id="pwaDismissBtn" aria-label="Dismiss">&times;</button>
+  </div>
 
   <!-- INACTIVE MEMBER BANNER -->
   <div id="inactiveBanner" style="display:none; background:#FEF3C7; color:#92400E; padding:16px 20px; border-radius:8px; margin-bottom:20px; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
@@ -4291,6 +4305,61 @@
       showAllReportsModal();
     }
   });
+
+  // ─── PWA install prompt (mobile only; desktop keeps the native browser affordance) ───
+  (function () {
+    var DISMISS_KEY = 'real_pwa_install_dismissed';
+    if (!window.matchMedia('(max-width: 640px)').matches) return;
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    if (isStandalone) return;
+    var dismissed;
+    try { dismissed = localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { dismissed = false; }
+    if (dismissed) return;
+
+    var banner = document.getElementById('pwaBanner');
+    if (!banner) return;
+    var textEl = banner.querySelector('[data-pwa-text]');
+    var installBtn = document.getElementById('pwaInstallBtn');
+    var dismissBtn = document.getElementById('pwaDismissBtn');
+    var deferredPrompt = null;
+
+    function setDismissed() { try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {} }
+    function show() { banner.style.display = 'flex'; }
+    function hide() { banner.style.display = 'none'; }
+
+    dismissBtn.addEventListener('click', function () { setDismissed(); hide(); });
+
+    var ua = navigator.userAgent || '';
+    var isIOS = /iP(hone|ad|od)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var inApp = /FBAN|FBAV|Instagram|Twitter|Line\/|TikTok|Snapchat/i.test(ua);
+
+    if (isIOS && !inApp) {
+      textEl.textContent = "Keep REAL one tap away: tap the Share icon, then 'Add to Home Screen'.";
+      installBtn.style.display = 'none';
+      show();
+      return;
+    }
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      textEl.textContent = 'Keep REAL one tap away — add it to your home screen.';
+      installBtn.style.display = '';
+      show();
+    });
+
+    installBtn.addEventListener('click', function () {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function (choice) {
+        if (choice && choice.outcome === 'accepted') setDismissed();
+        deferredPrompt = null;
+        hide();
+      });
+    });
+
+    window.addEventListener('appinstalled', function () { setDismissed(); hide(); });
+  })();
 </script>
 </body>
 </html>
