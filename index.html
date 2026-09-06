@@ -257,14 +257,6 @@
   #heroSearchInput { background: transparent !important; color: white !important; border: none !important; outline: none !important; }
   #heroSearchInput { background: transparent !important; -webkit-appearance: none !important; background-color: transparent !important; }
   @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } .umbrella-showcase .umbrella-heading { font-size: 26px; } .umbrella-showcase .channel-label { font-size: 10.5px; } .umbrella-card { padding: 40px 20px 28px; } }
-
-  /* ─── PWA INSTALL BANNER ─── */
-  .pwa-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; display: none; align-items: center; gap: 12px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); background: var(--navy); border-top: 2px solid var(--gold); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); transform: translateY(100%); transition: transform 0.3s ease; }
-  .pwa-banner.visible { transform: translateY(0); }
-  .pwa-banner p { flex: 1; margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5; color: #fff; }
-  .pwa-banner .pwa-install-btn { flex-shrink: 0; background: var(--gold); color: var(--navy); border: none; border-radius: 6px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .pwa-banner .pwa-dismiss { flex-shrink: 0; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px; }
-  @media (min-width: 641px) { .pwa-banner { display: none !important; } }
 </style>
 </head>
 <body>
@@ -670,61 +662,6 @@
       })
       .catch(function () {});
   })();
-
-  // ─── PWA install prompt (mobile only; desktop keeps the native browser affordance) ───
-  (function () {
-    var DISMISS_KEY = 'real_pwa_install_dismissed';
-    if (!window.matchMedia('(max-width: 640px)').matches) return;
-    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    if (isStandalone) return;
-    var dismissed;
-    try { dismissed = localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { dismissed = false; }
-    if (dismissed) return;
-
-    var banner = document.getElementById('pwaBanner');
-    if (!banner) return;
-    var textEl = banner.querySelector('[data-pwa-text]');
-    var installBtn = document.getElementById('pwaInstallBtn');
-    var dismissBtn = document.getElementById('pwaDismissBtn');
-    var deferredPrompt = null;
-
-    function setDismissed() { try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {} }
-    function show() { banner.style.display = 'flex'; requestAnimationFrame(function () { banner.classList.add('visible'); }); }
-    function hide() { banner.classList.remove('visible'); banner.style.display = 'none'; }
-
-    dismissBtn.addEventListener('click', function () { setDismissed(); hide(); });
-
-    var ua = navigator.userAgent || '';
-    var isIOS = /iP(hone|ad|od)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    var inApp = /FBAN|FBAV|Instagram|Twitter|Line\/|TikTok|Snapchat/i.test(ua);
-
-    if (isIOS && !inApp) {
-      textEl.textContent = "Install REAL: tap the Share icon, then 'Add to Home Screen'.";
-      installBtn.style.display = 'none';
-      show();
-      return;
-    }
-
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
-      deferredPrompt = e;
-      textEl.textContent = 'Install REAL for one-tap access from your home screen.';
-      installBtn.style.display = '';
-      show();
-    });
-
-    installBtn.addEventListener('click', function () {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function (choice) {
-        if (choice && choice.outcome === 'accepted') setDismissed();
-        deferredPrompt = null;
-        hide();
-      });
-    });
-
-    window.addEventListener('appinstalled', function () { setDismissed(); hide(); });
-  })();
 </script>
 <script>
 document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
@@ -736,10 +673,5 @@ document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
   updateFade();
 });
 </script>
-<div class="pwa-banner" id="pwaBanner" role="region" aria-label="Install REAL">
-  <p data-pwa-text>Install REAL for one-tap access from your home screen.</p>
-  <button type="button" class="pwa-install-btn" id="pwaInstallBtn">Install REAL</button>
-  <button type="button" class="pwa-dismiss" id="pwaDismissBtn" aria-label="Dismiss">&times;</button>
-</div>
 </body>
 </html>
