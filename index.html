@@ -634,9 +634,9 @@
         if (rt) localStorage.setItem('real_refresh_token', rt);
         try {
           const userId = JSON.parse(atob(at.split('.')[1])).sub;
-          window.location.href = 'https://buy.stripe.com/test_bJe00b45ebu9bn88QH9EI00?client_reference_id=' + userId;
+          window.location.href = 'https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00?client_reference_id=' + userId;
         } catch {
-          window.location.href = 'https://buy.stripe.com/test_bJe00b45ebu9bn88QH9EI00';
+          window.location.href = 'https://buy.stripe.com/00wcMX33dcJc4KxeXogjC00';
         }
       }
     }
