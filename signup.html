@@ -42,6 +42,8 @@
   .card-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.2em; color: var(--gray-light); text-transform: uppercase; text-align: center; margin-bottom: 12px; }
   .card-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--navy); text-align: center; line-height: 1.1; margin-bottom: 8px; }
   .card-sub { font-size: 14px; color: var(--gray); text-align: center; font-weight: 300; line-height: 1.6; margin-bottom: 40px; }
+  .founding-spots { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gray); text-align: center; letter-spacing: 0.05em; line-height: 1.6; margin: 0 0 32px; padding: 11px 16px; background: rgba(255,208,7,0.12); border: 1px solid rgba(255,208,7,0.3); }
+  .founding-spots strong { color: var(--navy); font-weight: 500; }
 
   /* FORM */
   .form { display: flex; flex-direction: column; gap: 16px; }
@@ -130,6 +132,7 @@
       <p class="card-eyebrow">Identity Infrastructure for the Internet</p>
       <h1 class="card-title">Create your<br>REAL account</h1>
       <p class="card-sub">You've been invited to join REAL. Set up your account below to begin your verification.</p>
+      <p class="founding-spots" id="signupSpots">Founding membership is limited to 100 members at £15/month.</p>
 
       <div class="msg error" id="errorMsg"></div>
 
@@ -247,6 +250,25 @@
       btn.textContent = 'Create my account →';
     }
   }
+
+  // Founding-spots counter — swap in the live number on load.
+  // Any failure leaves the static fallback line in place.
+  (function () {
+    var el = document.getElementById('signupSpots');
+    if (!el) return;
+    fetch('/api/create-verification-session?action=founding-count')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (d) {
+        if (typeof d.remaining !== 'number') return;
+        if (d.remaining <= 0) {
+          el.innerHTML = 'Founding membership is full — new members join at £25/month.';
+        } else {
+          el.innerHTML = 'Only <strong>' + d.remaining + '</strong> founding ' +
+            (d.remaining === 1 ? 'spot' : 'spots') + ' left at £15/month.';
+        }
+      })
+      .catch(function () {});
+  })();
 </script>
 </body>
 </html>

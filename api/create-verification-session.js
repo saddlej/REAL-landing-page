@@ -3,6 +3,29 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 module.exports = async function handler(req, res) {
+  // Public founding-spots counter — no auth. Uses the service-role bearer so it counts
+  // every membership_tier='founding' row regardless of verification state, matching the
+  // webhook's founding cap exactly so the number shown on the site can't disagree with it.
+  if (req.method === 'GET' && req.query.action === 'founding-count') {
+    const CAP = 100;
+    try {
+      const r = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/members?select=id&membership_tier=eq.founding`,
+        { headers: { 'apikey': process.env.SUPABASE_ANON_KEY, 'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}` } }
+      );
+      const rows = await r.json();
+      if (!r.ok || !Array.isArray(rows)) {
+        return res.status(503).json({ error: 'count unavailable' });
+      }
+      const count = rows.length;
+      res.setHeader('Cache-Control', 'public, max-age=60');
+      return res.status(200).json({ count, cap: CAP, remaining: Math.max(0, CAP - count) });
+    } catch (e) {
+      console.error('founding-count failed:', e.message);
+      return res.status(503).json({ error: 'count unavailable' });
+    }
+  }
+
   // Status-check branch: dashboard calls this (GET) to find out what actually happened with the last verification attempt
   if (req.method === 'GET' && req.query.action === 'status') {
     const authHeader = req.headers['authorization'] || '';

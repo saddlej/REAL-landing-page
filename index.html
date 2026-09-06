@@ -479,7 +479,7 @@
         <div class="perk"><span class="perk-label">Your history</span><span class="perk-value">Starts now</span><span class="perk-desc">You cannot buy three years of verified history. You can only earn it.</span></div>
         <div class="perk"><span class="perk-label">Your commitment</span><span class="perk-value">No trial needed</span><span class="perk-desc">Your REAL ID activates on first payment. Your number is yours from that moment — permanent, never reassigned.</span></div>
       </div>
-      <div class="spots-counter"><span class="spots-text">Limited to <strong>100 founding members</strong> — first come, first served</span></div>
+      <div class="spots-counter"><span class="spots-text" id="spotsText">Limited to <strong>100 founding members</strong> — first come, first served</span></div>
       <a href="#waitlist" class="btn-primary">Join the founding waitlist</a>
     </div>
   </div>
@@ -640,6 +640,22 @@
         }
       }
     }
+  })();
+
+  // Founding-spots counter — replace the static line with the live number on load.
+  // Any failure leaves the hardcoded fallback text in place.
+  (function () {
+    var el = document.getElementById('spotsText');
+    if (!el) return;
+    fetch('/api/create-verification-session?action=founding-count')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (d) {
+        if (typeof d.remaining !== 'number') return;
+        el.innerHTML = d.remaining <= 0
+          ? 'All 100 founding spots have been taken.'
+          : '<strong>' + d.remaining + '</strong> of 100 founding spots remaining';
+      })
+      .catch(function () {});
   })();
 </script>
 <script>
