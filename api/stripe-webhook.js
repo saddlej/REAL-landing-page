@@ -529,6 +529,35 @@ async function handler(req, res) {
         'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
       };
 
+      // ── Founding-member cap ───────────────────────────────────────────────
+      // First 100 founding members is a hard business limit. This gate runs for
+      // every path above that produced tier='founding' — the price-nickname
+      // match and both fail-safe fallbacks. Count existing founding rows; once
+      // 100 exist, the next signup (the 101st) is forced to 'standard'.
+      // Fail open: if the count query errors, leave tier unchanged so a real
+      // founding payment is never silently downgraded by an infra blip.
+      const FOUNDING_CAP = 100;
+      if (tier === 'founding') {
+        try {
+          const countRes = await fetch(
+            `${process.env.SUPABASE_URL}/rest/v1/members?select=id&membership_tier=eq.founding`,
+            { headers: supabaseHeaders }
+          );
+          const foundingRows = await countRes.json();
+          if (!countRes.ok || !Array.isArray(foundingRows)) {
+            console.error(`checkout.session.completed ${session.id}: founding-count query failed (status=${countRes.status}) — failing open, keeping tier=founding`);
+          } else if (foundingRows.length >= FOUNDING_CAP) {
+            tier = 'standard';
+            console.log(`checkout.session.completed ${session.id}: founding cap reached (${foundingRows.length}/${FOUNDING_CAP}) — forcing tier=standard`);
+          } else {
+            console.log(`checkout.session.completed ${session.id}: founding count ${foundingRows.length}/${FOUNDING_CAP} — keeping tier=founding`);
+          }
+        } catch (countErr) {
+          console.error(`checkout.session.completed ${session.id}: founding-count query threw (${countErr.message}) — failing open, keeping tier=founding`);
+        }
+      }
+      // ─────────────────────────────────────────────────────────────────────
+
       // Seed display_name from the member's first/last name — same source auth.users uses.
       // Best-effort: a lookup failure must never block member creation, and the member can
       // always override this later via the dashboard "Edit profile" form.
