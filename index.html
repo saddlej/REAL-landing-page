@@ -257,6 +257,14 @@
   #heroSearchInput { background: transparent !important; color: white !important; border: none !important; outline: none !important; }
   #heroSearchInput { background: transparent !important; -webkit-appearance: none !important; background-color: transparent !important; }
   @media (max-width: 640px) { nav { padding: 16px 20px; } .nav-link { display: none; } .stats-bar { gap: 32px; padding: 24px 20px; } .stat-divider { display: none; } .section { padding: 72px 20px; } .how-section { padding: 72px 20px; } .comparison-section { padding: 72px 20px; } .founding-section { padding: 72px 20px; } .founding-card { padding: 40px 28px; } .waitlist-section { padding: 72px 20px; } .statement-section { padding: 72px 20px; } footer { padding: 40px 20px; flex-direction: column; align-items: flex-start; } .form-row { flex-direction: column; } .comparison-table { font-size: 12px; } .comparison-table th, .comparison-table td { padding: 12px 12px; } .gets-grid { grid-template-columns: 1fr; } .nav-links { gap: 8px; } .nav-cta { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-cta-outline { font-size: 12px; padding: 8px 14px; border-radius: 6px; white-space: nowrap; } .nav-logo svg { width: 26px; height: 26px; } .nav-brand { font-size: 18px; } .umbrella-showcase .umbrella-heading { font-size: 26px; } .umbrella-showcase .channel-label { font-size: 10.5px; } .umbrella-card { padding: 40px 20px 28px; } }
+
+  /* ─── IN-APP BROWSER NUDGE ─── */
+  .inapp-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; display: none; align-items: center; gap: 12px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); background: var(--navy); border-top: 2px solid var(--gold); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); transform: translateY(100%); transition: transform 0.3s ease; }
+  .inapp-banner.visible { transform: translateY(0); }
+  .inapp-banner p { flex: 1; margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.5; color: #fff; }
+  .inapp-banner strong { color: var(--gold); font-weight: 600; }
+  .inapp-banner .inapp-dismiss { flex-shrink: 0; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px; }
+  @media (min-width: 641px) { .inapp-banner { display: none !important; } }
 </style>
 </head>
 <body>
@@ -662,6 +670,33 @@
       })
       .catch(function () {});
   })();
+
+  // ─── In-app browser nudge (mobile only; only inside a detected in-app webview) ───
+  (function () {
+    var DISMISS_KEY = 'real_inapp_dismissed';
+    if (!window.matchMedia('(max-width: 640px)').matches) return;
+
+    var ua = navigator.userAgent || '';
+    var inApp = /FBAN|FBAV|Instagram|Twitter|Line\/|TikTok|Snapchat|GSA\/|LinkedInApp|Pinterest|WhatsApp/i.test(ua);
+    if (!inApp) return;
+
+    var dismissed;
+    try { dismissed = localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) { dismissed = false; }
+    if (dismissed) return;
+
+    var banner = document.getElementById('inappBanner');
+    if (!banner) return;
+    var dismissBtn = document.getElementById('inappDismissBtn');
+
+    dismissBtn.addEventListener('click', function () {
+      try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+      banner.classList.remove('visible');
+      banner.style.display = 'none';
+    });
+
+    banner.style.display = 'flex';
+    requestAnimationFrame(function () { banner.classList.add('visible'); });
+  })();
 </script>
 <script>
 document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
@@ -673,5 +708,9 @@ document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
   updateFade();
 });
 </script>
+<div class="inapp-banner" id="inappBanner" role="region" aria-label="Open in browser">
+  <p>You're browsing inside another app. For sign-up and the full experience, tap the <strong>&#x22EF;</strong> menu and choose 'Open in browser'.</p>
+  <button type="button" class="inapp-dismiss" id="inappDismissBtn" aria-label="Dismiss">&times;</button>
+</div>
 </body>
 </html>
