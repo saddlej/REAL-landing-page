@@ -695,7 +695,7 @@
   })();
 
   // ─── In-app browser nudge (mobile only; only inside a detected in-app webview) ───
-  (function () {
+  document.addEventListener('DOMContentLoaded', function () {
     var DISMISS_KEY = 'real_inapp_dismissed';
     if (!window.matchMedia('(max-width: 640px)').matches) return;
 
@@ -719,7 +719,7 @@
 
     banner.style.display = 'flex';
     requestAnimationFrame(function () { banner.classList.add('visible'); });
-  })();
+  });
 </script>
 <script>
 document.querySelectorAll('.table-scroll-wrapper').forEach(function(wrapper) {
