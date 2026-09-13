@@ -269,6 +269,29 @@
 </head>
 <body>
 
+<!-- DEBUG-INAPP-START: temporary in-app-browser detection debug box, remove this whole block (including matching script) when done -->
+<div id="debugInappBox" style="display:none; position:relative; z-index:9999; background:#111; color:#0f0; font-family:monospace; font-size:11px; line-height:1.5; padding:8px 10px; word-break:break-all;"></div>
+<script>
+(function () {
+  if (!window.matchMedia('(max-width: 640px)').matches) return;
+  var box = document.getElementById('debugInappBox');
+  if (!box) return;
+
+  var ua = navigator.userAgent || '';
+  var inApp = /FBAN|FBAV|Instagram|Twitter|Line\/|TikTok|Snapchat|GSA\/|LinkedInApp|Pinterest|WhatsApp/i.test(ua);
+
+  var dismissed;
+  try { dismissed = localStorage.getItem('real_inapp_dismissed') === '1'; } catch (e) { dismissed = false; }
+
+  box.innerHTML =
+    '<strong>UA:</strong> ' + ua + '<br>' +
+    '<strong>inApp regex match:</strong> ' + inApp + '<br>' +
+    '<strong>real_inapp_dismissed set:</strong> ' + dismissed;
+  box.style.display = 'block';
+})();
+</script>
+<!-- DEBUG-INAPP-END -->
+
 <nav>
   <a href="#" class="nav-logo">
     <svg viewBox="200 200 1100 1100" xmlns="http://www.w3.org/2000/svg">
